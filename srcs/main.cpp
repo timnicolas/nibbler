@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Logging.hpp"
-#include "libs/circleTest/includes/Circle.hpp"
+#include "Circle.hpp"
 
 void	initLogs() {
 	// init logging

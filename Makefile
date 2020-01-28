@@ -30,6 +30,7 @@
 #	-> LIBS_FLAGS_OSX
 #	-> LIBS_FLAGS_LINUX
 #	-> LIBS_INC
+#	-> UNCOMPILED_LIBS
 
 # configure file
 #	-> CONFIGURE
@@ -119,6 +120,9 @@ LIBS_FLAGS_OSX		=
 LIBS_FLAGS_LINUX	=
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
+
+# libs that needd to be maked
+UNCOMPILED_LIBS		= libs/circleTest \
 
 ################################################################################
 # configure file
@@ -235,7 +239,10 @@ OBJS		= $(addprefix $(OBJS_DIR)/, $(SRC:.cpp=.o)) \
 DEPFILES	= $(addprefix $(DEP_DIR)/, $(SRC:.cpp=.d)) \
 			  $(addprefix $(DEP_DIR)/, $(LIBS_SRC_C:.c=.d)) \
 			  $(addprefix $(DEP_DIR)/, $(LIBS_SRC_CPP:.cpp=.d))
-INC			= $(addprefix -I , $(sort $(dir $(HEADS)))) $(addprefix -I , $(LIBS_INC)) -I .
+INC			= -I . $(addprefix -I , $(sort $(dir $(HEADS)))) \
+			  $(addprefix -I , $(LIBS_INC)) \
+			  $(addprefix -I , $(UNCOMPILED_LIBS)) \
+			  $(addprefix -I , $(addsuffix /$(INC_DIR), $(UNCOMPILED_LIBS))) \
 
 NORMAL = "\x1B[0m"
 RED = "\x1B[31m"
@@ -257,6 +264,10 @@ END = @printf $(GREEN)$(BOLD)"--------------------\n"$(NORMAL)
 # make rules
 
 all:
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i; \
+	done
+	$(eval UNCOMPILED_LIBS := )
 ifneq ($(DEBUG),)
 	@if [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]; then \
 		$(MAKE) $(MAKE_OPT) fclean; \
@@ -276,6 +287,10 @@ else
 endif
 
 install:
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i install; \
+	done
+	$(eval UNCOMPILED_LIBS := )
 	@printf $(YELLOW)$(BOLD)"INSTALL $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
 	@printf $(CYAN)"-> install nibbler\n"$(NORMAL)
 	@echo "$$CONFIGURE" > .tmpfile.sh
@@ -333,6 +348,10 @@ $(DEP_DIR)/%.d: $(DEP_DIR) ;
 -include $(DEPFILES)
 
 clean:
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i clean; \
+	done
+	$(eval UNCOMPILED_LIBS := )
 	$(START)
 	@printf $(RED)"-x remove .o & .d files\n"$(NORMAL)
 	@rm -rf $(OBJS_DIR)
@@ -340,13 +359,22 @@ clean:
 	@rm -rf $(DEBUG_DIR)
 	$(END)
 
-fclean: clean
+fclean:
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i fclean; \
+	done
+	$(eval UNCOMPILED_LIBS := )
+	@$(MAKE) $(MAKE_OPT) clean
 	$(START)
 	@printf $(RED)"-x remove $(NAME)\n"$(NORMAL)
 	@rm -f $(NAME)
 	$(END)
 
 re: fclean
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i re; \
+	done
+	$(eval UNCOMPILED_LIBS := )
 	@$(MAKE) $(MAKE_OPT)
 
 exec-nolint:
@@ -360,6 +388,9 @@ exec:
 	@$(MAKE) $(MAKE_OPT) exec-nolint ; true
 
 lint:
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i lint; \
+	done
 	@printf $(BLUE)$(BOLD)"LINTER ON $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
 	@if [ "$(LINTER)" = "" ]; then\
 		printf $(RED)$(BOLD)"Error:"$(NORMAL)" env var CPPLINT is not set\n"; \
@@ -369,6 +400,10 @@ lint:
 	@printf $(BLUE)$(BOLD)"--------------------\n"$(NORMAL)
 
 check:
+	@for i in $(UNCOMPILED_LIBS); do \
+		make -C $$i check; \
+	done
+	$(eval UNCOMPILED_LIBS := )
 	@$(MAKE) $(MAKE_OPT) fclean
 	@$(MAKE) $(MAKE_OPT) lint
 	@$(MAKE) $(MAKE_OPT)

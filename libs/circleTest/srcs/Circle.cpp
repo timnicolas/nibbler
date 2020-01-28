@@ -11,8 +11,9 @@ Circle::Circle(Circle const &src) {
 }
 
 Circle &Circle::operator=(Circle const &rhs) {
-	if (this != &rhs)
-		;
+	(void)rhs;
+	// if (this != &rhs)
+	// 	;
 	return *this;
 }
 
