@@ -124,6 +124,8 @@ LIBS_INC			= ~/.brew/include \
 # libs that needd to be maked
 UNCOMPILED_LIBS		= libs/circleTest \
 
+NEED_MAKE			= $(UNCOMPILED_LIBS)
+
 ################################################################################
 # configure file
 
@@ -264,10 +266,10 @@ END = @printf $(GREEN)$(BOLD)"--------------------\n"$(NORMAL)
 # make rules
 
 all:
-	@for i in $(UNCOMPILED_LIBS); do \
+	@for i in $(NEED_MAKE); do \
 		make -C $$i; \
 	done
-	$(eval UNCOMPILED_LIBS := )
+	$(eval NEED_MAKE := )
 ifneq ($(DEBUG),)
 	@if [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]; then \
 		$(MAKE) $(MAKE_OPT) fclean; \
@@ -287,10 +289,10 @@ else
 endif
 
 install:
-	@for i in $(UNCOMPILED_LIBS); do \
+	@for i in $(NEED_MAKE); do \
 		make -C $$i install; \
 	done
-	$(eval UNCOMPILED_LIBS := )
+	$(eval NEED_MAKE := )
 	@printf $(YELLOW)$(BOLD)"INSTALL $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
 	@printf $(CYAN)"-> install nibbler\n"$(NORMAL)
 	@echo "$$CONFIGURE" > .tmpfile.sh
@@ -348,10 +350,10 @@ $(DEP_DIR)/%.d: $(DEP_DIR) ;
 -include $(DEPFILES)
 
 clean:
-	@for i in $(UNCOMPILED_LIBS); do \
+	@for i in $(NEED_MAKE); do \
 		make -C $$i clean; \
 	done
-	$(eval UNCOMPILED_LIBS := )
+	$(eval NEED_MAKE := )
 	$(START)
 	@printf $(RED)"-x remove .o & .d files\n"$(NORMAL)
 	@rm -rf $(OBJS_DIR)
@@ -360,22 +362,23 @@ clean:
 	$(END)
 
 fclean:
-	@for i in $(UNCOMPILED_LIBS); do \
+	@for i in $(NEED_MAKE); do \
 		make -C $$i fclean; \
 	done
-	$(eval UNCOMPILED_LIBS := )
-	@$(MAKE) $(MAKE_OPT) clean
+	$(eval NEED_MAKE := )
+	@$(MAKE) $(MAKE_OPT) clean NEED_MAKE=$(NEED_MAKE)
 	$(START)
 	@printf $(RED)"-x remove $(NAME)\n"$(NORMAL)
 	@rm -f $(NAME)
 	$(END)
 
-re: fclean
-	@for i in $(UNCOMPILED_LIBS); do \
+re:
+	@for i in $(NEED_MAKE); do \
 		make -C $$i re; \
 	done
-	$(eval UNCOMPILED_LIBS := )
-	@$(MAKE) $(MAKE_OPT)
+	$(eval NEED_MAKE := )
+	@$(MAKE) $(MAKE_OPT) fclean NEED_MAKE=$(NEED_MAKE)
+	@$(MAKE) $(MAKE_OPT) NEED_MAKE=$(NEED_MAKE)
 
 exec-nolint:
 	@$(MAKE) $(MAKE_OPT)
@@ -384,11 +387,11 @@ exec-nolint:
 	@printf $(MAGENTA)$(BOLD)"--------------------\n"$(NORMAL)
 
 exec:
-	@$(MAKE) $(MAKE_OPT) lint ; true
-	@$(MAKE) $(MAKE_OPT) exec-nolint ; true
+	@$(MAKE) $(MAKE_OPT) lint NEED_MAKE=$(NEED_MAKE) ; true
+	@$(MAKE) $(MAKE_OPT) exec-nolint NEED_MAKE=$(NEED_MAKE) ; true
 
 lint:
-	@for i in $(UNCOMPILED_LIBS); do \
+	@for i in $(NEED_MAKE); do \
 		make -C $$i lint; \
 	done
 	@printf $(BLUE)$(BOLD)"LINTER ON $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
@@ -400,13 +403,13 @@ lint:
 	@printf $(BLUE)$(BOLD)"--------------------\n"$(NORMAL)
 
 check:
-	@for i in $(UNCOMPILED_LIBS); do \
+	@for i in $(NEED_MAKE); do \
 		make -C $$i check; \
 	done
-	$(eval UNCOMPILED_LIBS := )
-	@$(MAKE) $(MAKE_OPT) fclean
-	@$(MAKE) $(MAKE_OPT) lint
-	@$(MAKE) $(MAKE_OPT)
+	$(eval NEED_MAKE := )
+	@$(MAKE) $(MAKE_OPT) fclean NEED_MAKE=$(NEED_MAKE)
+	@$(MAKE) $(MAKE_OPT) lint NEED_MAKE=$(NEED_MAKE)
+	@$(MAKE) $(MAKE_OPT) NEED_MAKE=$(NEED_MAKE)
 
 help:
 	@printf $(YELLOW)$(BOLD)"HELP\n--------------------\n"$(NORMAL)
