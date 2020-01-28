@@ -28,13 +28,13 @@ int main(int ac, char const **av) {
 	// load librairy
 	hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
 	if (hndl == NULL) {
-		std::cerr << "dlopen : " << dlerror() << std::endl;
+		logErr(dlerror());
 		return EXIT_FAILURE;
 	}
 
 	void	*mkr = dlsym(hndl, "makeNibblerSDL");
 	if (mkr == NULL) {
-		std::cerr << "dlsym : " << dlerror() << std::endl;
+		logErr(dlerror());
 		return EXIT_FAILURE;
 	}
 	pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
