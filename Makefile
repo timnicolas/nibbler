@@ -31,6 +31,10 @@
 #	-> LIBS_FLAGS_LINUX
 #	-> LIBS_INC
 
+# configure file
+#	-> CONFIGURE
+#	CONFIGURE_LINTER
+
 # linter config
 #	LINTER
 #	LINTER_RULES
@@ -129,9 +133,6 @@ LINTER_RULES =	--filter=-whitespace/tab,-legal/copyright,-build/c++11,-whitespac
 define CONFIGURE
 #!/bin/bash
 
-# dependencies:
-# 	glfw, glm, freetype, boost
-
 # Linux
 if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 	echo "install linux dependencies"
@@ -148,8 +149,12 @@ export CONFIGURE
 define CONFIGURE_LINTER
 #!/bin/sh
 
-git clone https://www.github.com/tnicolas42/cpplinter ~/.cpplinter
-echo "source ~/.cpplinter/alias.zsh" >> ~/.zshrc
+if [[ ! -d ~/.cpplinter ]]; then
+	git clone https://www.github.com/tnicolas42/cpplinter ~/.cpplinter
+	echo "source ~/.cpplinter/alias.zsh" >> ~/.zshrc
+else
+	echo "linter already installed"
+fi
 endef
 export CONFIGURE_LINTER
 
@@ -268,7 +273,7 @@ endif
 
 install:
 	@printf $(YELLOW)$(BOLD)"INSTALL $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"install nibbler\n"$(NORMAL)
+	@printf $(CYAN)"-> install nibbler\n"$(NORMAL)
 	@echo "$$CONFIGURE" > .tmpfile.sh
 	@chmod 755 .tmpfile.sh
 	@./.tmpfile.sh
@@ -279,7 +284,7 @@ install:
 
 install_linter:
 	@printf $(YELLOW)$(BOLD)"INSTALL LINTER\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"install linter\n"$(NORMAL)
+	@printf $(CYAN)"-> install linter\n"$(NORMAL)
 	@echo "$$CONFIGURE_LINTER" > .tmpfile.sh
 	@chmod 755 .tmpfile.sh
 	@./.tmpfile.sh
@@ -288,10 +293,10 @@ install_linter:
 
 init:
 	@printf $(YELLOW)$(BOLD)"INIT $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"create pre-commit\n"$(NORMAL)
+	@printf $(CYAN)"-> create pre-commit\n"$(NORMAL)
 	@echo "$$PRE_COMMIT" > $(PRE_COMMIT_FILE)
 	@chmod 755 $(PRE_COMMIT_FILE)
-	@printf $(CYAN)"create pre-push\n"$(NORMAL)
+	@printf $(CYAN)"-> create pre-push\n"$(NORMAL)
 	@echo "$$PRE_PUSH" > $(PRE_PUSH_FILE)
 	@chmod 755 $(PRE_PUSH_FILE)
 	@printf $(YELLOW)$(BOLD)"--------------------\n"$(NORMAL)
@@ -366,7 +371,8 @@ check:
 
 help:
 	@printf $(YELLOW)$(BOLD)"HELP\n--------------------\n"$(NORMAL)
-	@printf $(NORMAL)"-> make "$(BOLD)"install"$(NORMAL)": install all depencies & run make init\n"
+	@printf $(NORMAL)"-> make "$(BOLD)"install"$(NORMAL)": install all depencies + linter & run make init\n"
+	@printf $(NORMAL)"-> make "$(BOLD)"install_linter"$(NORMAL)": install the linter\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"init"$(NORMAL)": init the project (add pre-commit & pre-push files)\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"all"$(NORMAL)": build the project and create $(NAME)\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"clean"$(NORMAL)": remove all .o files\n"
@@ -384,4 +390,4 @@ help:
 
 usage: help
 
-.PHONY: init all clean fclean re exec-nolint exec lint check help usage
+.PHONY: install install_linter init all clean fclean re exec-nolint exec lint check help usage
