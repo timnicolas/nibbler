@@ -125,7 +125,7 @@ LIBS_FLAGS_LINUX	=
 LIBS_INC			= ~/.brew/include \
 
 # libs created by user
-UNCOMPILED_LIBS		= libs/circleTest \
+UNCOMPILED_LIBS		= libs/nibblerSDL \
 # libs that need to be maked
 NEED_MAKE			= $(UNCOMPILED_LIBS)
 

@@ -50,7 +50,7 @@
 # project global config
 
 # executable name
-NAME = libcircle.so
+NAME = ../../libNibblerSDL.so
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
@@ -78,10 +78,10 @@ DEP_DIR		= .dep
 DEBUG_DIR	= $(DEP_DIR)
 
 # SRCS_DIR/SRC
-SRC =	Circle.cpp
+SRC =	NibblerSDL.cpp
 
 # INC_DIR/HEAD
-HEAD =	Circle.hpp
+HEAD =	NibblerSDL.hpp
 
 
 ################################################################################

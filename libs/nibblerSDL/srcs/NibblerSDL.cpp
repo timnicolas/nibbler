@@ -1,23 +1,23 @@
-#include "Circle.hpp"
+#include "NibblerSDL.hpp"
 
-Circle::Circle() {
+NibblerSDL::NibblerSDL() {
 }
 
-Circle::~Circle() {
+NibblerSDL::~NibblerSDL() {
 }
 
-Circle::Circle(Circle const &src) {
+NibblerSDL::NibblerSDL(NibblerSDL const &src) {
 	*this = src;
 }
 
-Circle &Circle::operator=(Circle const &rhs) {
+NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	(void)rhs;
 	// if (this != &rhs)
 	// 	;
 	return *this;
 }
 
-void Circle::draw() const {
+void NibblerSDL::draw() const {
 	std::cout << "  ###  " << std::endl;
 	std::cout << " #   # " << std::endl;
 	std::cout << "#     #" << std::endl;
@@ -27,7 +27,7 @@ void Circle::draw() const {
 }
 
 extern "C" {
-	Circle *makeCircle() {
-		return new Circle();
+	NibblerSDL *makeNibblerSDL() {
+		return new NibblerSDL();
 	}
 }

@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Logging.hpp"
-#include "Circle.hpp"
+#include "NibblerSDL.hpp"
 
 void	initLogs() {
 	// init logging
@@ -21,29 +21,27 @@ int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
 	void		*hndl;
-	makerCircle	pMaker;
+	makerNibblerSDL	pMaker;
 
 	initLogs();  // init logs functions
 
 	// load librairy
-	hndl = dlopen("libs/circleTest/libcircle.so", RTLD_LAZY);
+	hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
 	if (hndl == NULL) {
 		std::cerr << "dlopen : " << dlerror() << std::endl;
 		return EXIT_FAILURE;
 	}
 
-	// load makeCircle function
-	void	*mkr = dlsym(hndl, "makeCircle");
+	void	*mkr = dlsym(hndl, "makeNibblerSDL");
 	if (mkr == NULL) {
 		std::cerr << "dlsym : " << dlerror() << std::endl;
 		return EXIT_FAILURE;
 	}
-	pMaker = reinterpret_cast<makerCircle>(mkr);
+	pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
 
 
-	// create and use instance of class Circle
-	Circle	*myCircle = pMaker();
-	myCircle->draw();
+	NibblerSDL	*nibblerSDL = pMaker();
+	nibblerSDL->draw();
 	dlclose(hndl);
 
 	return EXIT_SUCCESS;
