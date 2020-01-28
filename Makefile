@@ -269,17 +269,13 @@ END = @printf $(GREEN)$(BOLD)"--------------------\n"$(NORMAL)
 # make rules
 
 all:
-ifneq ($(DEBUG),)
-	@if [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]; then \
-		$(MAKE) $(MAKE_OPT) fclean; \
+# if ((DEBUG && !debugFile) || (!DEBUG && debugFile)) then fclean
+	@if ([ ! -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]) || \
+([ -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ]); then\
+		$(MAKE) $(MAKE_OPT) fclean;\
 	fi;
-else
-	@if [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ]; then \
-		$(MAKE) $(MAKE_OPT) fclean; \
-	fi;
-endif
 
-	# call libs makefiles
+# call makefiles libs
 	@for i in $(NEED_MAKE); do \
 		make -C $$i; \
 	done
