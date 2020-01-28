@@ -1,6 +1,10 @@
-#include "Logging.hpp"
+#include <dlfcn.h>
+#include <iostream>
 
-int main(int ac, char **av) {
+#include "Logging.hpp"
+#include "libs/circleTest/includes/Circle.hpp"
+
+void	initLogs() {
 	// init logging
 	#if DEBUG
 		logging.setLoglevel(LOGDEBUG);
@@ -11,9 +15,36 @@ int main(int ac, char **av) {
 		logging.setLoglevel(LOGINFO);
 	#endif
 	logDebug("using debug mode");
+}
 
+int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
+	void		*hndl;
+	makerCircle	pMaker;
 
-	return 0;
+	initLogs();  // init logs functions
+
+	// load librairy
+	hndl = dlopen("libs/circleTest/libcircle.so", RTLD_LAZY);
+	if (hndl == NULL) {
+		std::cerr << "dlopen : " << dlerror() << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	// load makeCircle function
+	void	*mkr = dlsym(hndl, "makeCircle");
+	if (mkr == NULL) {
+		std::cerr << "dlsym : " << dlerror() << std::endl;
+		return EXIT_FAILURE;
+	}
+	pMaker = reinterpret_cast<makerCircle>(mkr);
+
+
+	// create and use instance of class Circle
+	Circle	*myCircle = pMaker();
+	myCircle->draw();
+	dlclose(hndl);
+
+	return EXIT_SUCCESS;
 }
