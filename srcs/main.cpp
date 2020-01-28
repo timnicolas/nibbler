@@ -42,6 +42,7 @@ int main(int ac, char const **av) {
 
 	NibblerSDL	*nibblerSDL = pMaker();
 	nibblerSDL->draw();
+	delete nibblerSDL;
 	dlclose(hndl);
 
 	return EXIT_SUCCESS;
