@@ -31,6 +31,7 @@
 #	-> LIBS_FLAGS_LINUX
 #	-> LIBS_INC
 #	-> UNCOMPILED_LIBS
+#	NEED_MAKE
 
 # configure file
 #	-> CONFIGURE
@@ -50,6 +51,8 @@
 #	make install  # this command will exectute ./configure.sh so you need to create this file
 # to compile & run
 #	make exec -j8 ARGS="--usage"
+# to make without make user libs
+#	make NEED_MAKE=""
 # to get help:
 #	make help
 
@@ -121,9 +124,9 @@ LIBS_FLAGS_LINUX	=
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 
-# libs that needd to be maked
+# libs created by user
 UNCOMPILED_LIBS		= libs/circleTest \
-
+# libs that need to be maked
 NEED_MAKE			= $(UNCOMPILED_LIBS)
 
 ################################################################################
