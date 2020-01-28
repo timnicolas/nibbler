@@ -255,7 +255,7 @@ install_linter:
 
 $(NAME): $(OBJS_DIR) $(OBJS)
 	@printf $(CYAN)"-> create library : $(NAME)\n"$(NORMAL)
-	@$(CC) $(CFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS_FLAGS) -ldl
+	@$(CC) $(CFLAGS) -shared -fPIC -o $(NAME) $(OBJS) $(LIBS_FLAGS) -ldl
 
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c $(DEP_DIR)/%.d
