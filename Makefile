@@ -307,7 +307,7 @@ init:
 
 $(NAME): $(OBJS_DIR) $(OBJS)
 	@printf $(CYAN)"-> create program : $(NAME)\n"$(NORMAL)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS_FLAGS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBS_FLAGS) -ldl
 
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c $(DEP_DIR)/%.d
