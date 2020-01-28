@@ -33,9 +33,9 @@
 
 # configure file
 #	-> CONFIGURE
-#	CONFIGURE_LINTER
 
 # linter config
+#	CONFIGURE_LINTER
 #	LINTER
 #	LINTER_RULES
 
@@ -117,19 +117,9 @@ LIBS_FLAGS_LINUX	=
 LIBS_INC			= ~/.brew/include \
 
 ################################################################################
-# linter config
-
-# download the cpp linter (https://github.com/isocpp/CppCoreGuidelines)
-# set command to launch linter on LINTER
-# add rules for linter in LINTER_RULES
-LINTER = $(CPPLINT)
-LINTER_RULES =	--filter=-whitespace/tab,-legal/copyright,-build/c++11,-whitespace/newline,-readability/braces,-whitespace/indent,-build/include_what_you_use,-build/header_guard,-runtime/references \
-				--linelength=120 --quiet
-
-################################################################################
 # configure file
 
-# installation
+# installation script (installation for all libs)
 define CONFIGURE
 #!/bin/bash
 
@@ -145,7 +135,10 @@ exit 0
 endef
 export CONFIGURE
 
-# installation linter
+################################################################################
+# linter config
+
+# installation script for cpp linter
 define CONFIGURE_LINTER
 #!/bin/sh
 
@@ -157,6 +150,13 @@ else
 fi
 endef
 export CONFIGURE_LINTER
+
+# download the cpp linter (https://github.com/isocpp/CppCoreGuidelines)
+# set command to launch linter on LINTER
+# add rules for linter in LINTER_RULES
+LINTER = $(CPPLINT)
+LINTER_RULES =	--filter=-whitespace/tab,-legal/copyright,-build/c++11,-whitespace/newline,-readability/braces,-whitespace/indent,-build/include_what_you_use,-build/header_guard,-runtime/references \
+				--linelength=120 --quiet
 
 ################################################################################
 # pre-commit & pre-push files
