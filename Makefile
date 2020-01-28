@@ -89,10 +89,14 @@ DEP_DIR		= .dep
 DEBUG_DIR	= $(DEP_DIR)
 
 # SRCS_DIR/SRC
-SRC =	main.cpp
+SRC =	main.cpp \
+		utils/Logging.cpp \
+		utils/Stats.cpp \
 
 # INC_DIR/HEAD
-HEAD =
+HEAD =	nibbler.hpp \
+		utils/Logging.hpp \
+		utils/Stats.hpp \
 
 
 ################################################################################
