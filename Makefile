@@ -269,10 +269,6 @@ END = @printf $(GREEN)$(BOLD)"--------------------\n"$(NORMAL)
 # make rules
 
 all:
-	@for i in $(NEED_MAKE); do \
-		make -C $$i; \
-	done
-	$(eval NEED_MAKE := )
 ifneq ($(DEBUG),)
 	@if [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]; then \
 		$(MAKE) $(MAKE_OPT) fclean; \
@@ -282,6 +278,13 @@ else
 		$(MAKE) $(MAKE_OPT) fclean; \
 	fi;
 endif
+
+	# call libs makefiles
+	@for i in $(NEED_MAKE); do \
+		make -C $$i; \
+	done
+	$(eval NEED_MAKE := )
+
 	$(START)
 	@$(MAKE) $(MAKE_OPT) $(NAME)
 	$(END)
