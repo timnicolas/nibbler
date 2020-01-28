@@ -1,10 +1,9 @@
-# Makefile
+# Makefile for libs
 # for each project, you can configure the Makefile
 # /!\ each variables with -> need to be changed /!\
 
 # project global config
 #	-> NAME
-#	ARGS
 #	CC
 #	CFLAGS
 #	DEBUG_FLAGS
@@ -39,16 +38,8 @@
 #	LINTER
 #	LINTER_RULES
 
-# pre-commit & pre-push files
-#	PRE_COMMIT_FILE
-#	PRE_COMMIT
-#	PRE_PUSH_FILE
-#	PRE_PUSH
-
 # after this, to install the project:
 #	make install  # this command will exectute ./configure.sh so you need to create this file
-# to compile & run
-#	make exec -j8 ARGS="--usage"
 # to get help:
 #	make help
 
@@ -60,8 +51,6 @@
 
 # executable name
 NAME = libcircle.so
-# args (./NAME ARGS) (make exec ARGS="-v" -> ./name -v)
-ARGS =
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
@@ -157,33 +146,6 @@ export CONFIGURE_LINTER
 LINTER = $(CPPLINT)
 LINTER_RULES =	--filter=-whitespace/tab,-legal/copyright,-build/c++11,-whitespace/newline,-readability/braces,-whitespace/indent,-build/include_what_you_use,-build/header_guard,-runtime/references \
 				--linelength=120 --quiet
-
-################################################################################
-# pre-commit & pre-push files
-
-# pre-commit rules
-PRE_COMMIT_FILE = .git/hooks/pre-commit
-define PRE_COMMIT
-#!/bin/zsh
-
-$(MAKE) $(MAKE_OPT) lint
-res=$$?
-
-exit $${res}
-endef
-export PRE_COMMIT
-
-# pre-push rules
-PRE_PUSH_FILE = .git/hooks/pre-push
-define PRE_PUSH
-#!/bin/zsh
-
-$(MAKE) $(MAKE_OPT) check -j8
-res=$$?
-
-exit $${res}
-endef
-export PRE_PUSH
 
 ################################################################################
 # automatic defined variables
@@ -291,19 +253,9 @@ install_linter:
 	@rm -f ./.tmpfile.sh
 	@printf $(YELLOW)$(BOLD)"--------------------\n"$(NORMAL)
 
-init:
-	@printf $(YELLOW)$(BOLD)"INIT $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"-> create pre-commit\n"$(NORMAL)
-	@echo "$$PRE_COMMIT" > $(PRE_COMMIT_FILE)
-	@chmod 755 $(PRE_COMMIT_FILE)
-	@printf $(CYAN)"-> create pre-push\n"$(NORMAL)
-	@echo "$$PRE_PUSH" > $(PRE_PUSH_FILE)
-	@chmod 755 $(PRE_PUSH_FILE)
-	@printf $(YELLOW)$(BOLD)"--------------------\n"$(NORMAL)
-
 $(NAME): $(OBJS_DIR) $(OBJS)
 	@printf $(CYAN)"-> create library : $(NAME)\n"$(NORMAL)
-	@$(CC) $(CFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS_FLAGS)
+	@$(CC) $(CFLAGS) -shared -o $(NAME) $(OBJS) $(LIBS_FLAGS) -ldl
 
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c
 $(OBJS_DIR)/%.o: $(LIBS_DIR)/%.c $(DEP_DIR)/%.d
@@ -345,16 +297,6 @@ fclean: clean
 re: fclean
 	@$(MAKE) $(MAKE_OPT)
 
-exec-nolint:
-	@$(MAKE) $(MAKE_OPT)
-	@printf $(MAGENTA)$(BOLD)"EXEC $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@./$(NAME) $(ARGS)
-	@printf $(MAGENTA)$(BOLD)"--------------------\n"$(NORMAL)
-
-exec:
-	@$(MAKE) $(MAKE_OPT) lint ; true
-	@$(MAKE) $(MAKE_OPT) exec-nolint ; true
-
 lint:
 	@printf $(BLUE)$(BOLD)"LINTER ON $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
 	@if [ "$(LINTER)" = "" ]; then\
@@ -373,21 +315,17 @@ help:
 	@printf $(YELLOW)$(BOLD)"HELP\n--------------------\n"$(NORMAL)
 	@printf $(NORMAL)"-> make "$(BOLD)"install"$(NORMAL)": install all depencies + linter & run make init\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"install_linter"$(NORMAL)": install the linter\n"
-	@printf $(NORMAL)"-> make "$(BOLD)"init"$(NORMAL)": init the project (add pre-commit & pre-push files)\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"all"$(NORMAL)": build the project and create $(NAME)\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"clean"$(NORMAL)": remove all .o files\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"fclean"$(NORMAL)": make clean and remove executable\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"re"$(NORMAL)": make fclean and make all\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"lint"$(NORMAL)": exec linter on project (use env var CPPLINT)\n"
-	@printf $(NORMAL)"-> make "$(BOLD)"exec"$(NORMAL)": make lint, make all and exec the program: ./$(NAME) ARGS('$(ARGS)')\n"
-	@printf $(NORMAL)"-> make "$(BOLD)"exec-nolint"$(NORMAL)": make all and exec the program: ./$(NAME) ARGS('$(ARGS)')\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"check"$(NORMAL)": make fclean, make lint, make exec-nolint -> stop if there is an error\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"help | usage"$(NORMAL)": show the help\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"... DEBUG=1"$(NORMAL)": use debug mode\n"
-	@printf $(NORMAL)"-> make "$(BOLD)"... ARGS='...'"$(NORMAL)": add arguments to exec: ./$(NAME) ARGS (for make exec & exec-nolint)\n"
 	@printf $(NORMAL)"-> make "$(BOLD)"... DEFINE=\"DEFINE=value\""$(NORMAL)": send `#define DEFINE value` to all files\n"
 	@printf $(YELLOW)$(BOLD)"--------------------\n"$(NORMAL)
 
 usage: help
 
-.PHONY: install install_linter init all clean fclean re exec-nolint exec lint check help usage
+.PHONY: install install_linter all clean fclean re lint check help usage
