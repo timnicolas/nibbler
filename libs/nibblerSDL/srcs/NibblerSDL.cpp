@@ -15,9 +15,11 @@ NibblerSDL::NibblerSDL(NibblerSDL const &src) {
 }
 
 NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
-	(void)rhs;
-	// if (this != &rhs)
-	// 	;
+	if (this != &rhs) {
+		_win = rhs._win;
+		_surface = rhs._surface;
+		_event = rhs._event;
+	}
 	return *this;
 }
 
