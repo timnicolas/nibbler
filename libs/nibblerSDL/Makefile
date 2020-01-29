@@ -232,19 +232,8 @@ endif
 
 install:
 	@printf $(YELLOW)$(BOLD)"INSTALL $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"-> install nibbler\n"$(NORMAL)
+	@printf $(CYAN)"-> install $(NAME)\n"$(NORMAL)
 	@echo "$$CONFIGURE" > .tmpfile.sh
-	@chmod 755 .tmpfile.sh
-	@./.tmpfile.sh
-	@rm -f ./.tmpfile.sh
-	@printf $(YELLOW)$(BOLD)"--------------------\n"$(NORMAL)
-	@$(MAKE) $(MAKE_OPT) install_linter
-	@$(MAKE) $(MAKE_OPT) init
-
-install_linter:
-	@printf $(YELLOW)$(BOLD)"INSTALL LINTER\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"-> install linter\n"$(NORMAL)
-	@echo "$$CONFIGURE_LINTER" > .tmpfile.sh
 	@chmod 755 .tmpfile.sh
 	@./.tmpfile.sh
 	@rm -f ./.tmpfile.sh

@@ -151,19 +151,6 @@ export CONFIGURE
 ################################################################################
 # linter config
 
-# installation script for cpp linter
-define CONFIGURE_LINTER
-#!/bin/sh
-
-if [[ ! -d ~/.cpplinter ]]; then
-	git clone https://www.github.com/tnicolas42/cpplinter ~/.cpplinter
-	echo "source ~/.cpplinter/alias.zsh" >> ~/.zshrc
-else
-	echo "linter already installed"
-fi
-endef
-export CONFIGURE_LINTER
-
 # download the cpp linter (https://github.com/isocpp/CppCoreGuidelines)
 # set command to launch linter on LINTER
 # add rules for linter in LINTER_RULES
@@ -297,7 +284,7 @@ install:
 	done
 	$(eval NEED_MAKE := )
 	@printf $(YELLOW)$(BOLD)"INSTALL $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@printf $(CYAN)"-> install nibbler\n"$(NORMAL)
+	@printf $(CYAN)"-> install $(NAME)\n"$(NORMAL)
 	@echo "$$CONFIGURE" > .tmpfile.sh
 	@chmod 755 .tmpfile.sh
 	@./.tmpfile.sh
