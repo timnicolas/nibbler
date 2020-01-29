@@ -39,7 +39,6 @@ int main(int ac, char const **av) {
 	}
 	pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
 
-
 	NibblerSDL	*nibblerSDL = pMaker();
 	nibblerSDL->draw();
 	delete nibblerSDL;

@@ -182,7 +182,6 @@ endif
 # send define to program
 CFLAGS := $(CFLAGS) $(addprefix -D, $(DEFINE))
 
-
 HEADS		= $(addprefix $(INC_DIR)/, $(HEAD)) $(addprefix $(LIBS_DIR)/, $(LIBS_HEAD))
 SRCS		= $(addprefix $(SRCS_DIR)/, $(SRC)) \
 			  $(addprefix $(LIBS_DIR)/, $(LIBS_SRC_C)) \
@@ -215,15 +214,12 @@ END = @printf $(GREEN)$(BOLD)"--------------------\n"$(NORMAL)
 # make rules
 
 all:
-ifneq ($(DEBUG),)
-	@if [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]; then \
-		$(MAKE) $(MAKE_OPT) fclean; \
+# if ((DEBUG && !debugFile) || (!DEBUG && debugFile)) then fclean
+	@if ([ ! -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]) || \
+([ -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ]); then\
+		$(MAKE) $(MAKE_OPT) fclean;\
 	fi;
-else
-	@if [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ]; then \
-		$(MAKE) $(MAKE_OPT) fclean; \
-	fi;
-endif
+
 	$(START)
 	@$(MAKE) $(MAKE_OPT) $(NAME)
 	$(END)
