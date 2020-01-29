@@ -97,7 +97,7 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			= -lSDL2
+LIBS_FLAGS			= -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		=
 # flags for libs on LINUX only
