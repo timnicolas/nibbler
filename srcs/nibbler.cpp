@@ -22,18 +22,24 @@ std::chrono::milliseconds getMs() {
 		std::chrono::system_clock::now().time_since_epoch());
 }
 
-void	gameLoop(INibblerGui * nibblerGui) {
+void	gameLoop(ANibblerGui * nibblerGui) {
 	float						loopTime = 1000 / FPS;
 	std::chrono::milliseconds	time_start;
-	Input::eInput				input = Input::NOTHING;
 	#if DEBUG_FPS_LOW == true
 		bool firstLoop = true;
 	#endif
 
-	while (input != Input::QUIT) {
+	while (nibblerGui->input.quit == false) {
 		time_start = getMs();
 
-		input = nibblerGui->getInput();
+		nibblerGui->updateInput();
+
+		logDebug("moving direction " << nibblerGui->input.direction);
+		if (nibblerGui->input.loadGuiID > 0) {
+			logDebug("load GUI " << nibblerGui->input.loadGuiID);
+			nibblerGui->input.loadGuiID = 0;
+		}
+
 		nibblerGui->draw();
 
 		// fps

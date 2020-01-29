@@ -265,7 +265,7 @@ all:
 	@if [ -d $(OBJS_DIR) ] && \
 (([ ! -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]) || \
 ([ -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ])); then\
-		$(MAKE) $(MAKE_OPT) fclean;\
+		$(MAKE) $(MAKE_OPT) fclean NEED_MAKE=$(NEED_MAKE);\
 	fi;
 
 # call makefiles libs

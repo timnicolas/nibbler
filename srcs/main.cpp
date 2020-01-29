@@ -8,7 +8,7 @@
 int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
-	void		*hndl;
+	void			*hndl;
 	makerNibblerSDL	pMaker;
 
 	initLogs();  // init logs functions
@@ -27,7 +27,7 @@ int main(int ac, char const **av) {
 	}
 	pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
 
-	INibblerGui	*nibblerGui = pMaker();
+	ANibblerGui	*nibblerGui = pMaker();
 	nibblerGui->init();
 
 	gameLoop(nibblerGui);
