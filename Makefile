@@ -384,8 +384,8 @@ exec-nolint:
 	@printf $(MAGENTA)$(BOLD)"--------------------\n"$(NORMAL)
 
 exec:
-	@$(MAKE) $(MAKE_OPT) lint NEED_MAKE=$(NEED_MAKE) ; true
-	@$(MAKE) $(MAKE_OPT) exec-nolint NEED_MAKE=$(NEED_MAKE) ; true
+	@$(MAKE) $(MAKE_OPT) lint ; true
+	@$(MAKE) $(MAKE_OPT) exec-nolint ; true
 
 lint:
 	@for i in $(NEED_MAKE); do \

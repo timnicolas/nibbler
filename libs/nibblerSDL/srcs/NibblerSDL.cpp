@@ -30,7 +30,7 @@ bool NibblerSDL::init() {
 		return false;
     }
 
-	_win = SDL_CreateWindow("Nibbler", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	_win = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
 	if (_win == nullptr) {
         std::cout << "[ERROR]: while loading SDL" << SDL_GetError() << std::endl;
@@ -73,7 +73,7 @@ void NibblerSDL::updateInput() {
 	}
 }
 
-bool NibblerSDL::draw() const {
+bool NibblerSDL::draw() {
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
 

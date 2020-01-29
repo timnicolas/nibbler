@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include "ANibblerGui.hpp"
 
 #define WIDTH 800
@@ -15,9 +17,11 @@ class NibblerSFML : public ANibblerGui {
 
 		virtual bool	init();
 		virtual void	updateInput();
-		virtual bool	draw() const;
+		virtual bool	draw();
 
 	private:
+		sf::RenderWindow	_win;
+		sf::Event			_event;
 };
 
-typedef NibblerSFML *(*makerNibblerSDL)();
+typedef NibblerSFML *(*makerNibblerSFML)();

@@ -3,12 +3,16 @@
 
 #include <unistd.h>
 
+#define TITLE	"nibbler"
+#define WIDTH	800
+#define HEIGHT	600
+
 class ANibblerGui {
 	public:
 		virtual ~ANibblerGui() {}
 		virtual	bool	init() = 0;
 		virtual void	updateInput() = 0;
-		virtual	bool	draw() const = 0;
+		virtual	bool	draw() = 0;
 
 		struct Input {
 			bool		quit;
