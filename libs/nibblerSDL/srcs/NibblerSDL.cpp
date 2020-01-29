@@ -1,7 +1,8 @@
 #include "NibblerSDL.hpp"
 
 NibblerSDL::NibblerSDL() :
-  _win(nullptr) {}
+  _win(nullptr),
+  _event(new SDL_Event()) {}
 
 NibblerSDL::~NibblerSDL() {
 	std::cout << "[INFO]: exit SDL" << std::endl;
@@ -42,7 +43,11 @@ bool NibblerSDL::init() {
 }
 
 Input::eInput NibblerSDL::getInput() const {
-	return Input::QUIT;
+	SDL_PollEvent(_event);
+
+	if(_event->window.event == SDL_WINDOWEVENT_CLOSE)
+		return Input::QUIT;
+	return Input::NOTHING;
 }
 
 bool NibblerSDL::draw() const {

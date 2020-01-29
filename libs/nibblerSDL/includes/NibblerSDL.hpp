@@ -20,6 +20,7 @@ class NibblerSDL : public INibblerGui {
 
 	private:
 		SDL_Window *	_win;
+		SDL_Event *		_event;
 };
 
 typedef NibblerSDL *(*makerNibblerSDL)();

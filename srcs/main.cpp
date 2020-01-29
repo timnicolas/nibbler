@@ -1,21 +1,9 @@
 #include <dlfcn.h>
 #include <iostream>
 
+#include "nibbler.hpp"
 #include "Logging.hpp"
 #include "NibblerSDL.hpp"
-
-void	initLogs() {
-	// init logging
-	#if DEBUG
-		logging.setLoglevel(LOGDEBUG);
-		logging.setPrintFileLine(LOGWARN, true);
-		logging.setPrintFileLine(LOGERROR, true);
-		logging.setPrintFileLine(LOGFATAL, true);
-	#else
-		logging.setLoglevel(LOGINFO);
-	#endif
-	logDebug("using debug mode");
-}
 
 int main(int ac, char const **av) {
 	(void)ac;
@@ -42,12 +30,7 @@ int main(int ac, char const **av) {
 	INibblerGui	*nibblerGui = pMaker();
 	nibblerGui->init();
 
-	Input::eInput input = Input::NOTHING;
-
-	while (input != Input::QUIT) {
-		input = nibblerGui->getInput();
-		nibblerGui->draw();
-	}
+	gameLoop(nibblerGui);
 
 	delete nibblerGui;
 	dlclose(hndl);
