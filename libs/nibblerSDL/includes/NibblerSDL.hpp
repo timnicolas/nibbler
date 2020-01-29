@@ -4,9 +4,6 @@
 #include <iostream>
 #include "ANibblerGui.hpp"
 
-#define WIDTH 800
-#define HEIGHT 600
-
 class NibblerSDL : public ANibblerGui {
 	public:
 		NibblerSDL();
@@ -16,10 +13,11 @@ class NibblerSDL : public ANibblerGui {
 
 		virtual bool	init();
 		virtual void	updateInput();
-		virtual bool	draw() const;
+		virtual bool	draw();
 
 	private:
 		SDL_Window *	_win;
+		SDL_Surface *	_surface;
 		SDL_Event *		_event;
 };
 

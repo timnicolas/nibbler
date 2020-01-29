@@ -4,30 +4,52 @@
 #include "nibbler.hpp"
 #include "Logging.hpp"
 #include "NibblerSDL.hpp"
+#include "NibblerSFML.hpp"
 
 int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
-	void			*hndl;
-	makerNibblerSDL	pMaker;
+	void *			hndl = nullptr;
+	ANibblerGui	*	nibblerGui = nullptr;
 
 	initLogs();  // init logs functions
 
-	// load librairy
-	hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
-	if (hndl == NULL) {
-		logErr(dlerror());
-		return EXIT_FAILURE;
+	int lib = 1;
+	if (lib == 1) {
+		makerNibblerSDL		pMaker;
+		// load librairy
+		hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
+		if (hndl == NULL) {
+			logErr(dlerror());
+			return EXIT_FAILURE;
+		}
+
+		void	*mkr = dlsym(hndl, "makeNibblerSDL");
+		if (mkr == NULL) {
+			logErr(dlerror());
+			return EXIT_FAILURE;
+		}
+		pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
+		nibblerGui = pMaker();
+	}
+	else {
+		makerNibblerSFML	pMaker;
+		// load librairy
+		hndl = dlopen("libNibblerSFML.so", RTLD_LAZY);
+		if (hndl == NULL) {
+			logErr(dlerror());
+			return EXIT_FAILURE;
+		}
+
+		void	*mkr = dlsym(hndl, "makeNibblerSFML");
+		if (mkr == NULL) {
+			logErr(dlerror());
+			return EXIT_FAILURE;
+		}
+		pMaker = reinterpret_cast<makerNibblerSFML>(mkr);
+		nibblerGui = pMaker();
 	}
 
-	void	*mkr = dlsym(hndl, "makeNibblerSDL");
-	if (mkr == NULL) {
-		logErr(dlerror());
-		return EXIT_FAILURE;
-	}
-	pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
-
-	ANibblerGui	*nibblerGui = pMaker();
 	nibblerGui->init();
 
 	gameLoop(nibblerGui);
