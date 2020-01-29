@@ -9,4 +9,4 @@
 #include "DynGuiManager.hpp"
 
 void	initLogs();
-void	gameLoop(DynGuiManager const &dynGuiManager);
+void	gameLoop(DynGuiManager &dynGuiManager);

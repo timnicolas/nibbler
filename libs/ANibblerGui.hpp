@@ -1,6 +1,8 @@
 #ifndef ANIBBLERGUI_HPP_
 #define ANIBBLERGUI_HPP_
 
+#define NO_GUI_LOADED 255
+
 #include <unistd.h>
 #include <iostream>
 
@@ -26,7 +28,7 @@ class ANibblerGui {
 			eDirection	direction;
 			uint8_t		loadGuiID;
 
-			Input() : quit(false), direction(MOVE_UP), loadGuiID(0) {}
+			Input() : quit(false), direction(MOVE_UP), loadGuiID(NO_GUI_LOADED) {}
 		};
 
 		Input input;

@@ -37,6 +37,9 @@ void	DynGuiManager::_quitGui() {
 }
 
 void	DynGuiManager::loadGui(uint8_t id) {
+	logInfo("_____________________");
+	logInfo("load GUI " << +id);
+
 	// quit current gui before loading a new one
 	if (_currentGuiID != NO_GUI_LOADED) {
 		_quitGui();
@@ -59,6 +62,8 @@ void	DynGuiManager::loadGui(uint8_t id) {
 
 	_currentGuiID = id;
 }
+
+uint8_t		DynGuiManager::getCurrentGuiID() const { return _currentGuiID; }
 
 // -- Exceptions errors --------------------------------------------------------
 DynGuiManager::DynGuiManagerException::DynGuiManagerException()

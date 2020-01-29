@@ -67,11 +67,11 @@ void NibblerSDL::updateInput() {
 			input.direction = ANibblerGui::Input::MOVE_RIGHT;
 
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
-			input.loadGuiID = 1;
+			input.loadGuiID = 0;
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_2)
-			input.loadGuiID = 2;
+			input.loadGuiID = 1;
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_3)
-			input.loadGuiID = 3;
+			input.loadGuiID = 2;
 	}
 }
 

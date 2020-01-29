@@ -1,7 +1,6 @@
 #ifndef DYNGUIMANAGER_HPP_
 #define DYNGUIMANAGER_HPP_
 
-#define NO_GUI_LOADED 255
 #define NB_GUI 2
 
 #include <dlfcn.h>
@@ -21,8 +20,6 @@ class DynGuiManager {
 		DynGuiManager(DynGuiManager const &src);
 		DynGuiManager &operator=(DynGuiManager const &rhs);
 
-		void	loadGui(uint8_t id);
-
 		class DynGuiManagerException : public std::runtime_error {
 			public:
 				DynGuiManagerException();
@@ -30,6 +27,9 @@ class DynGuiManager {
 		};
 
 		ANibblerGui	*nibblerGui;
+
+		void		loadGui(uint8_t id);
+		uint8_t		getCurrentGuiID() const;
 
 	private:
 		void	_quitGui();

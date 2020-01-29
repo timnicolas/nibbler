@@ -24,7 +24,7 @@ std::chrono::milliseconds getMs() {
 		std::chrono::system_clock::now().time_since_epoch());
 }
 
-void	gameLoop(DynGuiManager const &dynGuiManager) {
+void	gameLoop(DynGuiManager &dynGuiManager) {
 	float						loopTime = 1000 / FPS;
 	std::chrono::milliseconds	time_start;
 	ANibblerGui					*nibblerGui = nullptr;
@@ -37,13 +37,19 @@ void	gameLoop(DynGuiManager const &dynGuiManager) {
 	while (nibblerGui->input.quit == false) {
 		time_start = getMs();
 
-		dynGuiManager.
 		nibblerGui->updateInput();
 
-		logDebug("moving direction " << nibblerGui->input.direction);
-		if (nibblerGui->input.loadGuiID > 0) {
-			logDebug("load GUI " << +nibblerGui->input.loadGuiID);
-			nibblerGui->input.loadGuiID = 0;
+		// logDebug("moving direction " << nibblerGui->input.direction);
+
+		// verify id viability
+		if (nibblerGui->input.loadGuiID < NB_GUI && \
+		nibblerGui->input.loadGuiID != dynGuiManager.getCurrentGuiID()) {
+			// change Gui
+			dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
+			nibblerGui = dynGuiManager.nibblerGui;
+			nibblerGui->init();
+
+			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
 		}
 
 		nibblerGui->draw();

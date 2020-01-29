@@ -17,13 +17,13 @@ int main(int ac, char const **av) {
 	try {
 		dynGuiManager.loadGui(guiId);
 		dynGuiManager.nibblerGui->init();
+
+		gameLoop(dynGuiManager);
 	}
 	catch(const std::exception& e) {
 		logErr(e.what());
 		return EXIT_FAILURE;
 	}
-
-	gameLoop(dynGuiManager);
 
 	return EXIT_SUCCESS;
 }
