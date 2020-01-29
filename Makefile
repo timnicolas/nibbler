@@ -269,9 +269,10 @@ END = @printf $(GREEN)$(BOLD)"--------------------\n"$(NORMAL)
 # make rules
 
 all:
-# if ((DEBUG && !debugFile) || (!DEBUG && debugFile)) then fclean
-	@if ([ ! -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]) || \
-([ -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ]); then\
+# if OBJS_DIR && (((DEBUG && !debugFile) || (!DEBUG && debugFile))) then fclean
+	@if [ -d $(OBJS_DIR) ] && \
+(([ ! -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ ! -f $(DEBUG_DIR)/DEBUG ]) || \
+([ -z $(DEBUG) ] && [ -d $(DEBUG_DIR) ] && [ -f $(DEBUG_DIR)/DEBUG ])); then\
 		$(MAKE) $(MAKE_OPT) fclean;\
 	fi;
 
