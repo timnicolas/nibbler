@@ -97,7 +97,7 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			= -L ~/.brew/lib -lsfml-graphics -lsfml-window -lsfml-system
+LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l sfml-graphics -l sfml-window -l sfml-system
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		=
 # flags for libs on LINUX only

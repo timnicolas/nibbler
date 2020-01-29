@@ -3,59 +3,27 @@
 
 #include "nibbler.hpp"
 #include "Logging.hpp"
-#include "NibblerSDL.hpp"
-#include "NibblerSFML.hpp"
+#include "DynGuiManager.hpp"
 
 int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
-	void *			hndl = nullptr;
-	ANibblerGui	*	nibblerGui = nullptr;
+	uint8_t			guiId = 0;
+	DynGuiManager	dynGuiManager;
 
 	initLogs();  // init logs functions
 
-	int lib = 1;
-	if (lib == 1) {
-		makerNibblerSDL		pMaker;
-		// load librairy
-		hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
-		if (hndl == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
-		}
+	// load the defaut gui
+	try {
+		dynGuiManager.loadGui(guiId);
+		dynGuiManager.nibblerGui->init();
 
-		void	*mkr = dlsym(hndl, "makeNibblerSDL");
-		if (mkr == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
-		}
-		pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
-		nibblerGui = pMaker();
+		gameLoop(dynGuiManager);
 	}
-	else {
-		makerNibblerSFML	pMaker;
-		// load librairy
-		hndl = dlopen("libNibblerSFML.so", RTLD_LAZY);
-		if (hndl == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
-		}
-
-		void	*mkr = dlsym(hndl, "makeNibblerSFML");
-		if (mkr == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
-		}
-		pMaker = reinterpret_cast<makerNibblerSFML>(mkr);
-		nibblerGui = pMaker();
+	catch(const std::exception& e) {
+		logErr(e.what());
+		return EXIT_FAILURE;
 	}
-
-	nibblerGui->init();
-
-	gameLoop(nibblerGui);
-
-	delete nibblerGui;
-	dlclose(hndl);
 
 	return EXIT_SUCCESS;
 }

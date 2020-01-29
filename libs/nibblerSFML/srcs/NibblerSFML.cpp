@@ -51,11 +51,11 @@ void NibblerSFML::updateInput() {
 
 
 				else if (_event.key.code == sf::Keyboard::Num1)
-					input.loadGuiID = 1;
+					input.loadGuiID = 0;
 				else if (_event.key.code == sf::Keyboard::Num2)
-					input.loadGuiID = 2;
+					input.loadGuiID = 1;
 				else if (_event.key.code == sf::Keyboard::Num3)
-					input.loadGuiID = 3;
+					input.loadGuiID = 2;
 				break;
 
 			default:
@@ -78,7 +78,7 @@ bool NibblerSFML::draw() {
 }
 
 extern "C" {
-	NibblerSFML *makeNibblerSFML() {
+	ANibblerGui *makeNibblerSFML() {
 		return new NibblerSFML();
 	}
 }
