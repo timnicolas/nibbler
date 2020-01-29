@@ -20,6 +20,7 @@ class NibblerSDL : public ANibblerGui {
 
 	private:
 		SDL_Window *	_win;
+		SDL_Surface *	_surface;
 		SDL_Event *		_event;
 };
 
