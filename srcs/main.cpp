@@ -14,7 +14,7 @@ int main(int ac, char const **av) {
 
 	initLogs();  // init logs functions
 
-	int lib = 2;
+	int lib = 1;
 	if (lib == 1) {
 		makerNibblerSDL		pMaker;
 		// load librairy

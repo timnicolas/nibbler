@@ -13,9 +13,9 @@ NibblerSFML::NibblerSFML(NibblerSFML const &src) {
 }
 
 NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
-	(void)rhs;
-	// if (this != &rhs)
-	// 	;
+	if (this != &rhs) {
+		std::cout << "[ERROR]: unable to copy NibblerSFML" << std::endl;
+	}
 	return *this;
 }
 
