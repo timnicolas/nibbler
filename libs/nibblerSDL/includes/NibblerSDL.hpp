@@ -20,5 +20,3 @@ class NibblerSDL : public ANibblerGui {
 		SDL_Surface *	_surface;
 		SDL_Event *		_event;
 };
-
-typedef NibblerSDL *(*makerNibblerSDL)();

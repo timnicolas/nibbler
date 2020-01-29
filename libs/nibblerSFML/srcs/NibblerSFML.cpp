@@ -78,7 +78,7 @@ bool NibblerSFML::draw() {
 }
 
 extern "C" {
-	NibblerSFML *makeNibblerSFML() {
+	ANibblerGui *makeNibblerSFML() {
 		return new NibblerSFML();
 	}
 }

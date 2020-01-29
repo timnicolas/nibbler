@@ -92,7 +92,7 @@ bool NibblerSDL::draw() {
 }
 
 extern "C" {
-	NibblerSDL *makeNibblerSDL() {
+	ANibblerGui *makeNibblerSDL() {
 		return new NibblerSDL();
 	}
 }

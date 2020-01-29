@@ -1,14 +1,14 @@
 #include "DynGuiManager.hpp"
 
-std::map<uint8_t, char const *> const	DynGuiManager::_guiNames = {
-	{0, "libNibblerSDL.so"},
-	{1, "libNibblerSFML.so"}
+std::map<uint8_t, std::pair< std::string const, std::string const > > const	DynGuiManager::_guiNames = {
+	{0, {"libNibblerSDL.so", "makeNibblerSDL"}},
+	{1, {"libNibblerSFML.so", "makeNibblerSFML"}}
 };
 
 DynGuiManager::DynGuiManager()
-: _currentGuiID(NO_GUI_LOADED),
-  _hndl(nullptr),
-  _nibblerGui(nullptr) {
+: nibblerGui(nullptr),
+  _currentGuiID(NO_GUI_LOADED),
+  _hndl(nullptr) {
 }
 
 DynGuiManager::~DynGuiManager() {
@@ -29,7 +29,7 @@ DynGuiManager &DynGuiManager::operator=(DynGuiManager const &rhs) {
 }
 
 void	DynGuiManager::_quitGui() {
-	delete _nibblerGui;
+	delete nibblerGui;
 	dlclose(_hndl);
 
 	_currentGuiID = NO_GUI_LOADED;
@@ -42,19 +42,19 @@ void	DynGuiManager::loadGui(uint8_t id) {
 	}
 
 	// load librairy
-	_hndl = dlopen(_guiNames.at(id), RTLD_LAZY);
+	_hndl = dlopen(_guiNames.at(id).first.c_str(), RTLD_LAZY);
 	if (_hndl == NULL) {
 		throw DynGuiManagerException(dlerror());
 	}
 
-	// void	*mkr = dlsym(_hndl, "makeNibblerSDL");
-	// if (mkr == NULL) {
-	// 	throw DynGuiManagerException(dlerror());
-	// }
+	// get the correct nibblerGuiCreator
+	void	*mkr = dlsym(_hndl, _guiNames.at(id).second.c_str());
+	if (mkr == NULL) {
+		throw DynGuiManagerException(dlerror());
+	}
 
-	// makerNibblerSDL		pMaker;
-	// pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
-	// nibblerGui = pMaker();
+	// construct the gui
+	nibblerGui = reinterpret_cast<nibblerGuiCreator>(mkr)();
 
 	_currentGuiID = id;
 }

@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <iostream>
 
-
 #define TITLE	"nibbler"
 #define WIDTH	800
 #define HEIGHT	600
@@ -32,5 +31,7 @@ class ANibblerGui {
 
 		Input input;
 };
+
+typedef ANibblerGui *(*nibblerGuiCreator)();
 
 #endif  // ANIBBLERGUI_HPP_

@@ -23,5 +23,3 @@ class NibblerSFML : public ANibblerGui {
 		sf::RenderWindow	_win;
 		sf::Event			_event;
 };
-
-typedef NibblerSFML *(*makerNibblerSFML)();

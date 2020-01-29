@@ -3,6 +3,8 @@
 
 #include "nibbler.hpp"
 #include "Logging.hpp"
+#include "ANibblerGui.hpp"
+
 
 void	initLogs() {
 	// init logging
@@ -22,16 +24,20 @@ std::chrono::milliseconds getMs() {
 		std::chrono::system_clock::now().time_since_epoch());
 }
 
-void	gameLoop(ANibblerGui * nibblerGui) {
+void	gameLoop(DynGuiManager const &dynGuiManager) {
 	float						loopTime = 1000 / FPS;
 	std::chrono::milliseconds	time_start;
+	ANibblerGui					*nibblerGui = nullptr;
 	#if DEBUG_FPS_LOW == true
 		bool firstLoop = true;
 	#endif
 
+	nibblerGui = dynGuiManager.nibblerGui;
+
 	while (nibblerGui->input.quit == false) {
 		time_start = getMs();
 
+		dynGuiManager.
 		nibblerGui->updateInput();
 
 		logDebug("moving direction " << nibblerGui->input.direction);

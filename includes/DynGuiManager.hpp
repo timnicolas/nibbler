@@ -5,11 +5,13 @@
 
 #include <dlfcn.h>
 #include <map>
+#include <utility>
 #include <stdexcept>
 
 #include "Logging.hpp"
-#include "NibblerSDL.hpp"
-#include "NibblerSFML.hpp"
+#include "ANibblerGui.hpp"
+// #include "NibblerSDL.hpp"
+// #include "NibblerSFML.hpp"
 
 class DynGuiManager {
 	public:
@@ -26,13 +28,14 @@ class DynGuiManager {
 				explicit DynGuiManagerException(const char* what_arg);
 		};
 
+		ANibblerGui	*nibblerGui;
+
 	private:
 		void	_quitGui();
 
 		uint8_t		_currentGuiID;
 		void		*_hndl;
-		ANibblerGui	*_nibblerGui;
-		static	std::map<uint8_t, char const *> const	_guiNames;
+		static	std::map<uint8_t, std::pair< std::string const, std::string const > > const	_guiNames;
 };
 
 #endif  // DYNGUIMANAGER_HPP_
