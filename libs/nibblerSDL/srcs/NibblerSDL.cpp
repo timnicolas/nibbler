@@ -41,13 +41,12 @@ bool NibblerSDL::init() {
     return true;
 }
 
+Input::eInput NibblerSDL::getInput() const {
+	return Input::QUIT;
+}
+
 bool NibblerSDL::draw() const {
-	std::cout << "  ###  " << std::endl;
-	std::cout << " #   # " << std::endl;
-	std::cout << "#     #" << std::endl;
-	std::cout << "#     #" << std::endl;
-	std::cout << " #   # " << std::endl;
-	std::cout << "  ###  " << std::endl;
+	std::cout << "draw" << std::endl;
 	return true;
 }
 

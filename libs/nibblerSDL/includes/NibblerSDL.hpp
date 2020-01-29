@@ -14,8 +14,9 @@ class NibblerSDL : public INibblerGui {
 		NibblerSDL(NibblerSDL const &src);
 		NibblerSDL &operator=(NibblerSDL const &rhs);
 
-		virtual bool	init();
-		virtual bool	draw() const;
+		virtual bool			init();
+		virtual Input::eInput	getInput() const;
+		virtual bool			draw() const;
 
 	private:
 		SDL_Window *	_win;
