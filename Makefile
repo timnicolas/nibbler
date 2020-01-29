@@ -143,6 +143,7 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
+	brew install sdl2
 fi
 
 exit 0
