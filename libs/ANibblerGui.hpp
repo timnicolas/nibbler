@@ -1,5 +1,5 @@
-#ifndef ANibblerGui_HPP_
-#define ANibblerGui_HPP_
+#ifndef ANIBBLERGUI_HPP_
+#define ANIBBLERGUI_HPP_
 
 #include <unistd.h>
 
@@ -31,4 +31,4 @@ class ANibblerGui {
 		Input input;
 };
 
-#endif  // ANibblerGui_HPP_
+#endif  // ANIBBLERGUI_HPP_
