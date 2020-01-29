@@ -104,6 +104,7 @@ LIBS_FLAGS_OSX		=
 LIBS_FLAGS_LINUX	=
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
+					  .. \
 
 ################################################################################
 # configure file

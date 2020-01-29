@@ -17,13 +17,18 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	return *this;
 }
 
-void NibblerSDL::draw() const {
+bool NibblerSDL::init() {
+	return true;
+}
+
+bool NibblerSDL::draw() const {
 	std::cout << "  ###  " << std::endl;
 	std::cout << " #   # " << std::endl;
 	std::cout << "#     #" << std::endl;
 	std::cout << "#     #" << std::endl;
 	std::cout << " #   # " << std::endl;
 	std::cout << "  ###  " << std::endl;
+	return true;
 }
 
 extern "C" {

@@ -4,7 +4,7 @@
 class INibblerGui {
 	public:
 		virtual	bool	init() = 0;
-		virtual	bool	draw() = 0;
+		virtual	bool	draw() const = 0;
 
 	private:
 };

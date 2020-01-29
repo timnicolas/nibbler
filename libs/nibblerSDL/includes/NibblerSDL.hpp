@@ -1,16 +1,17 @@
 #pragma once
 
 #include <iostream>
+#include "INibblerGui.hpp"
 
-
-class NibblerSDL {
+class NibblerSDL : public INibblerGui {
 	public:
 		NibblerSDL();
 		virtual ~NibblerSDL();
 		NibblerSDL(NibblerSDL const &src);
 		NibblerSDL &operator=(NibblerSDL const &rhs);
 
-		virtual void draw() const;
+		virtual bool	init();
+		virtual bool	draw() const;
 	private:
 };
 

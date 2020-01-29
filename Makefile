@@ -123,6 +123,7 @@ LIBS_FLAGS_OSX		=
 LIBS_FLAGS_LINUX	=
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
+					  libs \
 
 # libs created by user
 UNCOMPILED_LIBS		= libs/nibblerSDL \
