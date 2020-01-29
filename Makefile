@@ -95,12 +95,14 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	main.cpp \
 		nibbler.cpp \
+		DynGuiManager.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
 
 # INC_DIR/HEAD
 HEAD =	nibbler.hpp \
+		DynGuiManager.hpp \
 \
 		utils/Logging.hpp \
 		utils/Stats.hpp \

@@ -2,6 +2,8 @@
 #define ANIBBLERGUI_HPP_
 
 #include <unistd.h>
+#include <iostream>
+
 
 #define TITLE	"nibbler"
 #define WIDTH	800
@@ -23,7 +25,7 @@ class ANibblerGui {
 				MOVE_RIGHT,
 			};
 			eDirection	direction;
-			int			loadGuiID;
+			uint8_t		loadGuiID;
 
 			Input() : quit(false), direction(MOVE_UP), loadGuiID(0) {}
 		};

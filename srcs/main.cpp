@@ -5,6 +5,7 @@
 #include "Logging.hpp"
 #include "NibblerSDL.hpp"
 #include "NibblerSFML.hpp"
+#include "DynGuiManager.hpp"
 
 int main(int ac, char const **av) {
 	(void)ac;
@@ -14,48 +15,59 @@ int main(int ac, char const **av) {
 
 	initLogs();  // init logs functions
 
-	int lib = 2;
-	if (lib == 1) {
-		makerNibblerSDL		pMaker;
-		// load librairy
-		hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
-		if (hndl == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
-		}
+	 {
+		DynGuiManager	dynGuiManager;
 
-		void	*mkr = dlsym(hndl, "makeNibblerSDL");
-		if (mkr == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
+		try {
+			dynGuiManager.loadGui(1);
 		}
-		pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
-		nibblerGui = pMaker();
-	}
-	else {
-		makerNibblerSFML	pMaker;
-		// load librairy
-		hndl = dlopen("libNibblerSFML.so", RTLD_LAZY);
-		if (hndl == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
+		catch(const std::exception& e) {
+			logErr(e.what());
 		}
-
-		void	*mkr = dlsym(hndl, "makeNibblerSFML");
-		if (mkr == NULL) {
-			logErr(dlerror());
-			return EXIT_FAILURE;
-		}
-		pMaker = reinterpret_cast<makerNibblerSFML>(mkr);
-		nibblerGui = pMaker();
 	}
 
-	nibblerGui->init();
+	// int lib = 1;
+	// if (lib == 1) {
+	// 	makerNibblerSDL		pMaker;
+	// 	// load librairy
+	// 	hndl = dlopen("libNibblerSDL.so", RTLD_LAZY);
+	// 	if (hndl == NULL) {
+	// 		logErr(dlerror());
+	// 		return EXIT_FAILURE;
+	// 	}
 
-	gameLoop(nibblerGui);
+	// 	void	*mkr = dlsym(hndl, "makeNibblerSDL");
+	// 	if (mkr == NULL) {
+	// 		logErr(dlerror());
+	// 		return EXIT_FAILURE;
+	// 	}
+	// 	pMaker = reinterpret_cast<makerNibblerSDL>(mkr);
+	// 	nibblerGui = pMaker();
+	// }
+	// else {
+	// 	makerNibblerSFML	pMaker;
+	// 	// load librairy
+	// 	hndl = dlopen("libNibblerSFML.so", RTLD_LAZY);
+	// 	if (hndl == NULL) {
+	// 		logErr(dlerror());
+	// 		return EXIT_FAILURE;
+	// 	}
 
-	delete nibblerGui;
-	dlclose(hndl);
+	// 	void	*mkr = dlsym(hndl, "makeNibblerSFML");
+	// 	if (mkr == NULL) {
+	// 		logErr(dlerror());
+	// 		return EXIT_FAILURE;
+	// 	}
+	// 	pMaker = reinterpret_cast<makerNibblerSFML>(mkr);
+	// 	nibblerGui = pMaker();
+	// }
+
+	// nibblerGui->init();
+
+	// gameLoop(nibblerGui);
+
+	// delete nibblerGui;
+	// dlclose(hndl);
 
 	return EXIT_SUCCESS;
 }
