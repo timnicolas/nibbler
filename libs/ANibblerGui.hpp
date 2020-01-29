@@ -1,0 +1,30 @@
+#ifndef ANibblerGui_HPP_
+#define ANibblerGui_HPP_
+
+#include <unistd.h>
+
+class ANibblerGui {
+	public:
+		virtual ~ANibblerGui() {}
+		virtual	bool	init() = 0;
+		virtual void	updateInput() = 0;
+		virtual	bool	draw() const = 0;
+
+		struct Input {
+			bool		quit;
+			enum eDirection {
+				MOVE_UP,
+				MOVE_DOWN,
+				MOVE_LEFT,
+				MOVE_RIGHT,
+			};
+			eDirection	direction;
+			int			loadGuiID;
+
+			Input() : quit(false), direction(MOVE_UP), loadGuiID(0) {}
+		};
+
+		Input input;
+};
+
+#endif  // ANibblerGui_HPP_

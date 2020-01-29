@@ -42,12 +42,29 @@ bool NibblerSDL::init() {
     return true;
 }
 
-Input::eInput NibblerSDL::getInput() const {
-	SDL_PollEvent(_event);
+void NibblerSDL::updateInput() {
+	while (SDL_PollEvent(_event)) {
+		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
+			input.quit = true;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
+			input.quit = true;
 
-	if(_event->window.event == SDL_WINDOWEVENT_CLOSE)
-		return Input::QUIT;
-	return Input::NOTHING;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
+			input.direction = ANibblerGui::Input::MOVE_UP;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN)
+			input.direction = ANibblerGui::Input::MOVE_DOWN;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT)
+			input.direction = ANibblerGui::Input::MOVE_LEFT;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT)
+			input.direction = ANibblerGui::Input::MOVE_RIGHT;
+
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
+			input.loadGuiID = 1;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_2)
+			input.loadGuiID = 2;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_3)
+			input.loadGuiID = 3;
+	}
 }
 
 bool NibblerSDL::draw() const {

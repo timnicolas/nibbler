@@ -6,7 +6,7 @@
 #define DEBUG_FPS_LOW	DEBUG & true
 #define FPS 3
 
-#include "INibblerGui.hpp"
+#include "ANibblerGui.hpp"
 
 void	initLogs();
-void	gameLoop(INibblerGui * nibblerGui);
+void	gameLoop(ANibblerGui * nibblerGui);
