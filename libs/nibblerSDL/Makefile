@@ -97,7 +97,7 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			=
+LIBS_FLAGS			= -lSDL2
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		=
 # flags for libs on LINUX only
