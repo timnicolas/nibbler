@@ -2,9 +2,10 @@
 #define DYNGUIMANAGER_HPP_
 
 #define NO_GUI_LOADED 255
+#define NB_GUI 2
 
 #include <dlfcn.h>
-#include <map>
+#include <array>
 #include <utility>
 #include <stdexcept>
 
@@ -35,7 +36,7 @@ class DynGuiManager {
 
 		uint8_t		_currentGuiID;
 		void		*_hndl;
-		static	std::map<uint8_t, std::pair< std::string const, std::string const > > const	_guiNames;
+		static	std::array<std::pair< std::string const, std::string const >, NB_GUI> const	_guiInfos;
 };
 
 #endif  // DYNGUIMANAGER_HPP_

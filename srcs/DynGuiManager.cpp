@@ -1,9 +1,10 @@
 #include "DynGuiManager.hpp"
 
-std::map<uint8_t, std::pair< std::string const, std::string const > > const	DynGuiManager::_guiNames = {
-	{0, {"libNibblerSDL.so", "makeNibblerSDL"}},
-	{1, {"libNibblerSFML.so", "makeNibblerSFML"}}
-};
+// contain dynamic libs info
+std::array<std::pair< std::string const, std::string const >, NB_GUI> const	DynGuiManager::_guiInfos = {{
+	{"libNibblerSDL.so", "makeNibblerSDL"},
+	{"libNibblerSFML.so", "makeNibblerSFML"}
+}};
 
 DynGuiManager::DynGuiManager()
 : nibblerGui(nullptr),
@@ -42,13 +43,13 @@ void	DynGuiManager::loadGui(uint8_t id) {
 	}
 
 	// load librairy
-	_hndl = dlopen(_guiNames.at(id).first.c_str(), RTLD_LAZY);
+	_hndl = dlopen(_guiInfos[id].first.c_str(), RTLD_LAZY);
 	if (_hndl == NULL) {
 		throw DynGuiManagerException(dlerror());
 	}
 
 	// get the correct nibblerGuiCreator
-	void	*mkr = dlsym(_hndl, _guiNames.at(id).second.c_str());
+	void	*mkr = dlsym(_hndl, _guiInfos[id].second.c_str());
 	if (mkr == NULL) {
 		throw DynGuiManagerException(dlerror());
 	}

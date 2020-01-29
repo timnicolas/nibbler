@@ -42,7 +42,7 @@ void	gameLoop(DynGuiManager const &dynGuiManager) {
 
 		logDebug("moving direction " << nibblerGui->input.direction);
 		if (nibblerGui->input.loadGuiID > 0) {
-			logDebug("load GUI " << nibblerGui->input.loadGuiID);
+			logDebug("load GUI " << +nibblerGui->input.loadGuiID);
 			nibblerGui->input.loadGuiID = 0;
 		}
 
