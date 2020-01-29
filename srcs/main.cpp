@@ -10,8 +10,8 @@
 int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
-	void *			hndl = nullptr;
-	ANibblerGui	*	nibblerGui = nullptr;
+	// void *			hndl = nullptr;
+	// ANibblerGui	*	nibblerGui = nullptr;
 
 	initLogs();  // init logs functions
 
