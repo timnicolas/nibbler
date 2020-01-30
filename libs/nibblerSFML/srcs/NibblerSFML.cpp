@@ -33,7 +33,7 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 bool NibblerSFML::init() {
 	logInfo("loading SFML");
 
-	_win .create(sf::VideoMode(WIDTH, HEIGHT), TITLE);
+	_win.create(sf::VideoMode(WIDTH, HEIGHT), TITLE);
 
     return true;
 }
