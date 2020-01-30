@@ -13,7 +13,7 @@ DynGuiManager::DynGuiManager()
 }
 
 DynGuiManager::~DynGuiManager() {
-	if (_currentGuiID == NO_GUI_LOADED) {
+	if (_currentGuiID != NO_GUI_LOADED) {
 		_quitGui();
 	}
 }
