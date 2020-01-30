@@ -90,18 +90,50 @@ void NibblerSDL::updateInput() {
 }
 
 bool NibblerSDL::draw(std::deque<Snake> &snake) {
-	(void)snake;
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
 
-	// draw rect on the screen
+	// set the size of the square
+	float startX = BORDER_SIZE;
+	float startY = BORDER_SIZE;
+	float size = _gameInfo->height - (2 * BORDER_SIZE);
+	float step = size / _gameInfo->boardSize;
+
+	// border
 	SDL_Rect rect = {
-		100,
-		100,
-		10 + 100 * input.direction,
-		10 + 100 * (4 - input.direction),
+		static_cast<int>(startX - BORDER_SIZE),
+		static_cast<int>(startY - BORDER_SIZE),
+		static_cast<int>(size + (2 * BORDER_SIZE)),
+		static_cast<int>(size + (2 * BORDER_SIZE)),
 	};
-	SDL_FillRect(_surface, &rect, SDL_MapRGB(_surface->format, 255, 0, 0));
+	SDL_FillRect(_surface, &rect, BORDER_COLOR);
+
+
+	// draw board
+	for (int i = 0; i < _gameInfo->boardSize; i++) {
+		for (int j = 0; j < _gameInfo->boardSize; j++) {
+			SDL_Rect rect = {
+				static_cast<int>(startX + step * i),
+				static_cast<int>(startY + step * j),
+				static_cast<int>(step + 0.5),
+				static_cast<int>(step + 0.5),
+			};
+			uint32_t color = ((i + j) & 1) ? SQUARE_COLOR_1 : SQUARE_COLOR_2;
+			SDL_FillRect(_surface, &rect, color);
+		}
+	}
+	// draw snake
+	for (auto it = snake.begin(); it != snake.end(); it++) {
+		SDL_Rect rect = {
+			static_cast<int>(startX + step * it->x),
+			static_cast<int>(startY + step * it->y),
+			static_cast<int>(step + 0.5),
+			static_cast<int>(step + 0.5),
+		};
+		SDL_FillRect(_surface, &rect, SNAKE_COLOR);
+	}
+
+	// render on screen
 	SDL_UpdateWindowSurface(_win);
 	return true;
 }

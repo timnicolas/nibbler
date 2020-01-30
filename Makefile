@@ -97,6 +97,7 @@ SRC =	main.cpp \
 		nibbler.cpp \
 		DynGuiManager.cpp \
 		Game.cpp \
+		../libs/ANibblerGui.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
@@ -105,6 +106,7 @@ SRC =	main.cpp \
 HEAD =	nibbler.hpp \
 		DynGuiManager.hpp \
 		Game.hpp \
+		../libs/ANibblerGui.hpp \
 \
 		utils/Logging.hpp \
 		utils/Stats.hpp \
@@ -358,6 +360,8 @@ clean:
 	@rm -rf $(OBJS_DIR)
 	@rm -rf $(DEP_DIR)
 	@rm -rf $(DEBUG_DIR)
+	@rm -rf libs/ANibblerGui.o
+	@rm -rf libs/ANibblerGui.d
 	$(END)
 
 fclean:

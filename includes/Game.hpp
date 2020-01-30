@@ -23,4 +23,7 @@ class Game {
 		DynGuiManager		_dynGuiManager;
 		GameInfo *			_gameInfo;
 		std::deque<Snake>	_snake;
+		uint32_t			_speedMs;
+
+		void				_move(ANibblerGui::Input::eDirection direction);
 };

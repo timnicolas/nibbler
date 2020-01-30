@@ -1,7 +1,8 @@
 #include "ANibblerGui.hpp"
 
-ANibblerGui::ANibblerGui() {
-}
+ANibblerGui::ANibblerGui()
+: input(),
+  _gameInfo(nullptr) {}
 
 ANibblerGui::~ANibblerGui() {
 }
@@ -17,8 +18,12 @@ ANibblerGui &ANibblerGui::operator=(ANibblerGui const &rhs) {
 	return *this;
 }
 
-// -- Input --------------------------------------------------------------------
+// -- Snake ---------------------------------------------------------------------
 
+Snake::Snake() : x(0), y(0) {}
+Snake::Snake(int x_, int y_) : x(x_), y(y_) {}
+
+// -- Input --------------------------------------------------------------------
 
 ANibblerGui::Input::Input()
 : quit(false), direction(MOVE_UP), loadGuiID(NO_GUI_LOADED) {

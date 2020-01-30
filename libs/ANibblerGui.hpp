@@ -7,6 +7,12 @@
 #include <iostream>
 #include <deque>
 
+#define SQUARE_COLOR_1	0x323D4D
+#define SQUARE_COLOR_2	0x27313D
+#define SNAKE_COLOR		0x2D8BD3
+#define BORDER_COLOR	0xAAAAAA
+#define BORDER_SIZE		5
+
 struct GameInfo {
 	std::string	title;
 	uint16_t	width;
@@ -15,8 +21,11 @@ struct GameInfo {
 };
 
 struct Snake {  // the snake is a std::deque of struct Snake
-	uint8_t	x;
-	uint8_t	y;
+	int	x;
+	int	y;
+
+	Snake();
+	Snake(int x_, int y_);
 };
 
 class ANibblerGui {
