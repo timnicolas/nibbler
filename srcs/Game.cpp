@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Game.hpp"
 #include "nibbler.hpp"
 
@@ -29,9 +30,10 @@ bool Game::init(uint16_t width, uint16_t height, uint8_t boardSize) {
 void Game::restart() {
 	_gameInfo->restart();
 	_dynGuiManager.nibblerGui->input.reset();
+	_snake.clear();
+	_food.clear();
 	int startX = _gameInfo->boardSize / 2;
 	int startY = startX;
-	_snake.clear();
 	for (int y = 0; y < START_SIZE; y++) {
 		_snake.push_back({startX, startY + y});
 	}
@@ -66,8 +68,7 @@ void Game::run() {
 
 		// update game
 		_update();
-
-		_food();
+		_updateFood();
 
 		// move Vec2
 		uint32_t now = getMs().count();
@@ -77,7 +78,7 @@ void Game::run() {
 		}
 
 		// draw on screen
-		_dynGuiManager.nibblerGui->draw(_snake);
+		_dynGuiManager.nibblerGui->draw(_snake, _food);
 
 		// fps
 		std::chrono::milliseconds time_loop = getMs() - time_start;
@@ -96,8 +97,28 @@ void Game::run() {
 	}
 }
 
-void Game::_food() {
-	logWarn("food TODO");
+void Game::_updateFood() {
+	// check snake eating
+	auto it = std::find(_food.begin(), _food.end(), _snake[0]);
+	if (it != _food.end()) {  // if snake is eating
+		_needExtend++;
+		_food.erase(it);
+	}
+
+	// add food
+	if (_food.size() == 0) {
+		for (int i = 0; i < 100; i++) {
+			Vec2 newFood = {
+				static_cast<int>(rand() % _gameInfo->boardSize),
+				static_cast<int>(rand() % _gameInfo->boardSize),
+			};
+			auto it = std::find(_snake.begin(), _snake.end(), newFood);
+			if (it == _snake.end()) {  // if food is not on the snake
+				_food.push_back(newFood);
+				break;
+			}
+		}
+	}
 }
 
 void Game::_move(Direction::Enum direction) {
@@ -121,7 +142,10 @@ void Game::_move(Direction::Enum direction) {
 			else if (newVec2.y >= _gameInfo->boardSize) newVec2.y = 0;
 		}
 		_snake.push_front(newVec2);
-		_snake.pop_back();
+		if (_needExtend > 0)
+			_needExtend--;
+		else
+			_snake.pop_back();
 	}
 }
 

@@ -80,8 +80,9 @@ void NibblerSFML::updateInput() {
 	}
 }
 
-bool NibblerSFML::draw(std::deque<Vec2> &Vec2) {
-	(void)Vec2;
+bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
+	(void)snake;
+	(void)food;
 	_win.clear();
 
 	sf::RectangleShape rect(sf::Vector2f(10 + 100 * input.direction, 10 + 100 * (4 - input.direction)));

@@ -24,9 +24,11 @@ class Game {
 		DynGuiManager		_dynGuiManager;
 		GameInfo *			_gameInfo;
 		std::deque<Vec2>	_snake;
+		std::deque<Vec2>	_food;
 		uint32_t			_speedMs;
+		uint8_t				_needExtend;
 
 		void				_move(Direction::Enum direction);
-		void				_food();
+		void				_updateFood();
 		void				_update();
 };

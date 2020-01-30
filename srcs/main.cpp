@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <time.h>
 #include <dlfcn.h>
 #include <iostream>
 
@@ -10,6 +12,7 @@ int main(int ac, char const **av) {
 	(void)av;
 	Game	game;
 
+	srand(time(NULL));
 	initLogs();  // init logs functions
 
 	if (game.init(WIDTH, HEIGHT, BOARD_SIZE) == false)

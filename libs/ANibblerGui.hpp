@@ -9,7 +9,8 @@
 
 #define SQUARE_COLOR_1	0x323D4D
 #define SQUARE_COLOR_2	0x27313D
-#define Vec2_COLOR		0x2D8BD3
+#define SNAKE_COLOR		0x2D8BD3
+#define FOOD_COLOR		0xFF0000
 #define BORDER_COLOR	0xAAAAAA
 #define BORDER_SIZE		5
 
@@ -60,7 +61,7 @@ class ANibblerGui {
 
 		virtual	bool	init(GameInfo *gameInfo);
 		virtual void	updateInput() = 0;
-		virtual	bool	draw(std::deque<Vec2> &Vec2) = 0;
+		virtual	bool	draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) = 0;
 
 		struct Input {
 			bool		quit;

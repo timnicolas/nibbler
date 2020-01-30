@@ -14,7 +14,7 @@ class NibblerSDL : public ANibblerGui {
 		NibblerSDL &operator=(NibblerSDL const &rhs);
 
 		virtual void	updateInput();
-		virtual bool	draw(std::deque<Vec2> &Vec2);
+		virtual bool	draw(std::deque<Vec2> & snake, std::deque<Vec2> & food);
 
 	private:
 		SDL_Window *	_win;

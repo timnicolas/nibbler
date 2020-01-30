@@ -92,7 +92,7 @@ void NibblerSDL::updateInput() {
 	}
 }
 
-bool NibblerSDL::draw(std::deque<Vec2> &Vec2) {
+bool NibblerSDL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
 
@@ -125,15 +125,25 @@ bool NibblerSDL::draw(std::deque<Vec2> &Vec2) {
 			SDL_FillRect(_surface, &rect, color);
 		}
 	}
-	// draw Vec2
-	for (auto it = Vec2.begin(); it != Vec2.end(); it++) {
+	// draw snake
+	for (auto it = snake.begin(); it != snake.end(); it++) {
 		SDL_Rect rect = {
 			static_cast<int>(startX + step * it->x),
 			static_cast<int>(startY + step * it->y),
 			static_cast<int>(step + 0.5),
 			static_cast<int>(step + 0.5),
 		};
-		SDL_FillRect(_surface, &rect, Vec2_COLOR);
+		SDL_FillRect(_surface, &rect, it == snake.begin() ? 0xFFFF00 : SNAKE_COLOR);
+	}
+	// draw food
+	for (auto it = food.begin(); it != food.end(); it++) {
+		SDL_Rect rect = {
+			static_cast<int>(startX + step * it->x),
+			static_cast<int>(startY + step * it->y),
+			static_cast<int>(step + 0.5),
+			static_cast<int>(step + 0.5),
+		};
+		SDL_FillRect(_surface, &rect, FOOD_COLOR);
 	}
 
 	// render on screen
