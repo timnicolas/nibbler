@@ -6,6 +6,7 @@ NibblerSDL::NibblerSDL() :
 
 NibblerSDL::~NibblerSDL() {
 	std::cout << "[INFO]: exit SDL" << std::endl;
+	delete _event;
 	SDL_DestroyWindow(_win);
     SDL_Quit();
 }
