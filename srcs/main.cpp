@@ -3,22 +3,20 @@
 
 #include "nibbler.hpp"
 #include "Logging.hpp"
-#include "DynGuiManager.hpp"
+#include "Game.hpp"
 
 int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
-	uint8_t			guiId = 0;
-	DynGuiManager	dynGuiManager;
+	Game	game;
 
 	initLogs();  // init logs functions
 
-	// load the defaut gui
-	try {
-		dynGuiManager.loadGui(guiId);
-		dynGuiManager.nibblerGui->init();
+	if (game.init() == false)
+		return EXIT_FAILURE;
 
-		gameLoop(dynGuiManager);
+	try {
+		game.run();
 	}
 	catch(const std::exception& e) {
 		logErr(e.what());

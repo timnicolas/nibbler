@@ -8,5 +8,5 @@
 
 #include "DynGuiManager.hpp"
 
-void	initLogs();
-void	gameLoop(DynGuiManager &dynGuiManager);
+void						initLogs();
+std::chrono::milliseconds	getMs();
