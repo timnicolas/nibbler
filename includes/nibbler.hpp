@@ -9,6 +9,7 @@
 #define WIDTH		800
 #define HEIGHT		600
 #define BOARD_SIZE	20
+#define START_SIZE	4
 #define SPEED		100  // time to go to the next block
 
 #include "DynGuiManager.hpp"

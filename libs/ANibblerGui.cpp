@@ -34,12 +34,16 @@ GameInfo::GameInfo()
   width(800),
   height(600),
   boardSize(20),
-  rules(),
-  direction(Direction::MOVE_UP),
-  paused(false),
-  win(false),
-  gameOver(false) {
+  rules() {
 	rules.canExitBorder = true;
+	restart();
+}
+
+void GameInfo::restart() {
+	direction = Direction::MOVE_UP;
+	paused = false;
+	win = false;
+	gameOver = false;
 }
 
 // -- Snake ---------------------------------------------------------------------
@@ -56,7 +60,8 @@ ANibblerGui::Input::Input()
 : quit(false),
   paused(false),
   direction(Direction::MOVE_UP),
-  loadGuiID(NO_GUI_LOADED) {
+  loadGuiID(NO_GUI_LOADED),
+  restart(false) {
 }
 
 ANibblerGui::Input::Input(ANibblerGui::Input const &src) {

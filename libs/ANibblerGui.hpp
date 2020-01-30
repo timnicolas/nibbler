@@ -39,6 +39,7 @@ struct GameInfo {
 	bool		gameOver;
 
 	GameInfo();
+	void restart();
 };
 
 struct Snake {  // the snake is a std::deque of struct Snake
@@ -64,6 +65,7 @@ class ANibblerGui {
 		struct Input {
 			bool		quit;
 			bool		paused;
+			bool		restart;
 			Direction::Enum	direction;
 			uint8_t		loadGuiID;
 

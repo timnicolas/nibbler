@@ -71,6 +71,8 @@ void NibblerSDL::updateInput() {
 
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_SPACE)
 			input.paused = !input.paused;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_r)
+			input.restart = true;
 
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
 			input.direction = Direction::MOVE_UP;

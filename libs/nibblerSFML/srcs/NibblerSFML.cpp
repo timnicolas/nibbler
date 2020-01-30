@@ -53,6 +53,8 @@ void NibblerSFML::updateInput() {
 
 				else if (_event.key.code == sf::Keyboard::Space)
 					input.paused = !input.paused;
+				else if (_event.key.code == sf::Keyboard::R)
+					input.restart = true;
 
 				else if (_event.key.code == sf::Keyboard::Up)
 					input.direction = Direction::MOVE_UP;

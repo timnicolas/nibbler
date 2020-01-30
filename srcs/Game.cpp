@@ -22,22 +22,18 @@ bool Game::init(uint16_t width, uint16_t height, uint8_t boardSize) {
 		return false;
 	}
 
-	_snake.push_back({3, 5});
-	_snake.push_back({3, 6});
-	_snake.push_back({3, 7});
-	_snake.push_back({3, 8});
-	_snake.push_back({3, 9});
-	_snake.push_back({3, 10});
-	_snake.push_back({3, 11});
-	_snake.push_back({3, 12});
-	_snake.push_back({3, 13});
-	_snake.push_back({3, 14});
-	_snake.push_back({3, 15});
-	_snake.push_back({3, 16});
-	_snake.push_back({3, 17});
-	_snake.push_back({3, 18});
-	_snake.push_back({3, 19});
+	restart();
 	return true;
+}
+
+void Game::restart() {
+	_gameInfo->restart();
+	int startX = _gameInfo->boardSize / 2;
+	int startY = startX;
+	_snake.clear();
+	for (int y = 0; y < START_SIZE; y++) {
+		_snake.push_back({startX, startY + y});
+	}
 }
 
 Game::Game(Game const &src) {
@@ -123,6 +119,13 @@ void Game::_move(Direction::Enum direction) {
 }
 
 void Game::_update() {
+	// restart
+	if (_dynGuiManager.nibblerGui->input.restart == true) {
+		_dynGuiManager.nibblerGui->input.restart = false;
+		restart();
+		return;
+	}
+
 	// change GUI
 	if (_dynGuiManager.nibblerGui->input.loadGuiID < NB_GUI && \
 	_dynGuiManager.nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
@@ -144,6 +147,10 @@ void Game::_update() {
 	}
 	else if (_snake[0].x < 0 || _snake[0].x >= _gameInfo->boardSize
 	|| _snake[0].y < 0 || _snake[0].y >= _gameInfo->boardSize) {
+		_gameInfo->gameOver = true;
+	}
+	auto it = std::find(++_snake.begin(), _snake.end(), _snake[0]);
+	if (it != _snake.end()) {
 		_gameInfo->gameOver = true;
 	}
 
