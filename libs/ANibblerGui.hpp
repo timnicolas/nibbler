@@ -9,7 +9,7 @@
 
 #define SQUARE_COLOR_1	0x323D4D
 #define SQUARE_COLOR_2	0x27313D
-#define SNAKE_COLOR		0x2D8BD3
+#define Vec2_COLOR		0x2D8BD3
 #define BORDER_COLOR	0xAAAAAA
 #define BORDER_SIZE		5
 
@@ -42,13 +42,13 @@ struct GameInfo {
 	void restart();
 };
 
-struct Snake {  // the snake is a std::deque of struct Snake
+struct Vec2 {  // the Vec2 is a std::deque of struct Vec2
 	int	x;
 	int	y;
 
-	Snake();
-	Snake(int x_, int y_);
-	bool operator==(Snake const & other) const;
+	Vec2();
+	Vec2(int x_, int y_);
+	bool operator==(Vec2 const & other) const;
 };
 
 class ANibblerGui {
@@ -60,7 +60,7 @@ class ANibblerGui {
 
 		virtual	bool	init(GameInfo *gameInfo);
 		virtual void	updateInput() = 0;
-		virtual	bool	draw(std::deque<Snake> &snake) = 0;
+		virtual	bool	draw(std::deque<Vec2> &Vec2) = 0;
 
 		struct Input {
 			bool		quit;
@@ -72,6 +72,7 @@ class ANibblerGui {
 			Input();
 			Input(Input const &src);
 			Input &operator=(Input const &rhs);
+			void reset();
 		};
 
 		Input input;

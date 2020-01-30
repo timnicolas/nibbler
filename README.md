@@ -1,2 +1,2 @@
 # nibbler
-A snake implementation with multiples graphical interfaces
+A Vec2 implementation with multiples graphical interfaces

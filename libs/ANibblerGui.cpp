@@ -46,22 +46,18 @@ void GameInfo::restart() {
 	gameOver = false;
 }
 
-// -- Snake ---------------------------------------------------------------------
+// -- Vec2 ---------------------------------------------------------------------
 
-Snake::Snake() : x(0), y(0) {}
-Snake::Snake(int x_, int y_) : x(x_), y(y_) {}
-bool Snake::operator==(Snake const & other) const {
+Vec2::Vec2() : x(0), y(0) {}
+Vec2::Vec2(int x_, int y_) : x(x_), y(y_) {}
+bool Vec2::operator==(Vec2 const & other) const {
 	return x == other.x && y == other.y;
 }
 
 // -- Input --------------------------------------------------------------------
 
-ANibblerGui::Input::Input()
-: quit(false),
-  paused(false),
-  direction(Direction::MOVE_UP),
-  loadGuiID(NO_GUI_LOADED),
-  restart(false) {
+ANibblerGui::Input::Input() {
+	reset();
 }
 
 ANibblerGui::Input::Input(ANibblerGui::Input const &src) {
@@ -74,4 +70,12 @@ ANibblerGui::Input &ANibblerGui::Input::operator=(ANibblerGui::Input const &rhs)
 		loadGuiID = rhs.loadGuiID;
 	}
 	return *this;
+}
+
+void ANibblerGui::Input::reset() {
+	quit = false;
+	paused = false;
+	restart = false;
+	direction = Direction::MOVE_UP;
+	loadGuiID = NO_GUI_LOADED;
 }
