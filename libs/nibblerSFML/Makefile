@@ -80,10 +80,12 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	NibblerSFML.cpp \
 		Logging.cpp \
+		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	NibblerSFML.hpp \
 		Logging.hpp \
+		../../ANibblerGui.hpp
 
 
 ################################################################################
@@ -276,6 +278,7 @@ clean:
 	@rm -rf $(OBJS_DIR)
 	@rm -rf $(DEP_DIR)
 	@rm -rf $(DEBUG_DIR)
+	@rm -rf ../ANibblerGui.[od]
 	$(END)
 
 fclean: clean

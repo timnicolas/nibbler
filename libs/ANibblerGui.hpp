@@ -12,7 +12,11 @@
 
 class ANibblerGui {
 	public:
-		virtual ~ANibblerGui() {}
+		ANibblerGui();
+		virtual ~ANibblerGui();
+		ANibblerGui(ANibblerGui const &src);
+		ANibblerGui &operator=(ANibblerGui const &rhs);
+
 		virtual	bool	init() = 0;
 		virtual void	updateInput() = 0;
 		virtual	bool	draw() = 0;
@@ -28,7 +32,9 @@ class ANibblerGui {
 			eDirection	direction;
 			uint8_t		loadGuiID;
 
-			Input() : quit(false), direction(MOVE_UP), loadGuiID(NO_GUI_LOADED) {}
+			Input();
+			Input(Input const &src);
+			Input &operator=(Input const &rhs);
 		};
 
 		Input input;
