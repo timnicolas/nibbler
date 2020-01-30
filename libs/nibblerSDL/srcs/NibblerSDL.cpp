@@ -28,7 +28,7 @@ bool NibblerSDL::init() {
 	std::cout << "[INFO]: loading SDL" << std::endl;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << "[ERROR]: while loading SDL" << SDL_GetError() << std::endl;
+        std::cout << "[ERROR]: while loading SDL: " << SDL_GetError() << std::endl;
         SDL_Quit();
 		return false;
     }
@@ -36,14 +36,14 @@ bool NibblerSDL::init() {
 	_win = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
 	if (_win == nullptr) {
-        std::cout << "[ERROR]: while loading SDL" << SDL_GetError() << std::endl;
+        std::cout << "[ERROR]: while loading SDL: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return false;
 	}
 
 	_surface = SDL_GetWindowSurface(_win);
 	if (_surface == nullptr) {
-        std::cout << "[ERROR]: while loading SDL" << SDL_GetError() << std::endl;
+        std::cout << "[ERROR]: while loading SDL: " << SDL_GetError() << std::endl;
 		SDL_Quit();
 		return false;
 	}
