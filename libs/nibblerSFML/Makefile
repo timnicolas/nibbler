@@ -80,10 +80,12 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	NibblerSFML.cpp \
 		Logging.cpp \
+		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	NibblerSFML.hpp \
 		Logging.hpp \
+		../../ANibblerGui.hpp
 
 
 ################################################################################
