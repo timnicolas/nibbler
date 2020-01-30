@@ -1,11 +1,22 @@
 #include "NibblerSDL.hpp"
+#include "Logging.hpp"
 
 NibblerSDL::NibblerSDL() :
   _win(nullptr),
-  _event(new SDL_Event()) {}
+  _event(new SDL_Event()) {
+	// init logging
+	#if DEBUG
+		logging.setLoglevel(LOGDEBUG);
+		logging.setPrintFileLine(LOGWARN, true);
+		logging.setPrintFileLine(LOGERROR, true);
+		logging.setPrintFileLine(LOGFATAL, true);
+	#else
+		logging.setLoglevel(LOGINFO);
+	#endif
+}
 
 NibblerSDL::~NibblerSDL() {
-	std::cout << "[INFO]: exit SDL" << std::endl;
+	logInfo("exit SDL");
 	delete _event;
 	SDL_DestroyWindow(_win);
     SDL_Quit();
@@ -25,10 +36,10 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 }
 
 bool NibblerSDL::init() {
-	std::cout << "[INFO]: loading SDL" << std::endl;
+	logInfo("loading SDL");
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cout << "[ERROR]: while loading SDL: " << SDL_GetError() << std::endl;
+        logErr("while loading SDL: " << SDL_GetError());
         SDL_Quit();
 		return false;
     }
@@ -36,14 +47,14 @@ bool NibblerSDL::init() {
 	_win = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
 	if (_win == nullptr) {
-        std::cout << "[ERROR]: while loading SDL: " << SDL_GetError() << std::endl;
+        logErr("while loading SDL: " << SDL_GetError());
 		SDL_Quit();
 		return false;
 	}
 
 	_surface = SDL_GetWindowSurface(_win);
 	if (_surface == nullptr) {
-        std::cout << "[ERROR]: while loading SDL: " << SDL_GetError() << std::endl;
+        logErr("while loading SDL: " << SDL_GetError());
 		SDL_Quit();
 		return false;
 	}

@@ -78,10 +78,12 @@ DEP_DIR		= .dep
 DEBUG_DIR	= $(DEP_DIR)
 
 # SRCS_DIR/SRC
-SRC =	NibblerSDL.cpp
+SRC =	NibblerSDL.cpp \
+		Logging.cpp \
 
 # INC_DIR/HEAD
-HEAD =	NibblerSDL.hpp
+HEAD =	NibblerSDL.hpp \
+		Logging.hpp \
 
 
 ################################################################################
