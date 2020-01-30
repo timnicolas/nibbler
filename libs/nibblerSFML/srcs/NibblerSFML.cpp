@@ -1,10 +1,21 @@
 #include "NibblerSFML.hpp"
+#include "Logging.hpp"
 
 NibblerSFML::NibblerSFML() :
-  _win() {}
+  _win() {
+	// init logging
+	#if DEBUG
+		logging.setLoglevel(LOGDEBUG);
+		logging.setPrintFileLine(LOGWARN, true);
+		logging.setPrintFileLine(LOGERROR, true);
+		logging.setPrintFileLine(LOGFATAL, true);
+	#else
+		logging.setLoglevel(LOGINFO);
+	#endif
+}
 
 NibblerSFML::~NibblerSFML() {
-	std::cout << "[INFO]: exit SFML" << std::endl;
+	logInfo("exit SFML");
 	_win.close();
 }
 
@@ -14,13 +25,13 @@ NibblerSFML::NibblerSFML(NibblerSFML const &src) {
 
 NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	if (this != &rhs) {
-		std::cout << "[ERROR]: unable to copy NibblerSFML" << std::endl;
+		logErr("unable to copy NibblerSFML");
 	}
 	return *this;
 }
 
 bool NibblerSFML::init(GameInfo *gameInfo) {
-	std::cout << "[INFO]: loading SFML" << std::endl;
+	logInfo("loading SFML");
 
 	_gameInfo = gameInfo;
 
