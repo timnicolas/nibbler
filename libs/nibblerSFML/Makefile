@@ -278,7 +278,8 @@ clean:
 	@rm -rf $(OBJS_DIR)
 	@rm -rf $(DEP_DIR)
 	@rm -rf $(DEBUG_DIR)
-	@rm -rf ../ANibblerGui.[od]
+	@rm -rf ../ANibblerGui.o
+	@rm -rf ../ANibblerGui.d
 	$(END)
 
 fclean: clean
