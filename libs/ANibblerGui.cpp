@@ -18,15 +18,35 @@ ANibblerGui &ANibblerGui::operator=(ANibblerGui const &rhs) {
 	return *this;
 }
 
+// -- GameInfo ------------------------------------------------------------------
+
+GameInfo::GameInfo()
+: title("nibbler"),
+  width(800),
+  height(600),
+  boardSize(20),
+  rules(),
+  paused(false),
+  win(false),
+  gameOver(false) {
+	rules.canExitBorder = true;
+}
+
 // -- Snake ---------------------------------------------------------------------
 
 Snake::Snake() : x(0), y(0) {}
 Snake::Snake(int x_, int y_) : x(x_), y(y_) {}
+bool Snake::operator==(Snake const & other) const {
+	return x == other.x && y == other.y;
+}
 
 // -- Input --------------------------------------------------------------------
 
 ANibblerGui::Input::Input()
-: quit(false), direction(MOVE_UP), loadGuiID(NO_GUI_LOADED) {
+: quit(false),
+  paused(false),
+  direction(Direction::MOVE_UP),
+  loadGuiID(NO_GUI_LOADED) {
 }
 
 ANibblerGui::Input::Input(ANibblerGui::Input const &src) {

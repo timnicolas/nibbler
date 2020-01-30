@@ -12,7 +12,7 @@ int main(int ac, char const **av) {
 
 	initLogs();  // init logs functions
 
-	if (game.init(TITLE, WIDTH, HEIGHT, BOARD_SIZE) == false)
+	if (game.init(WIDTH, HEIGHT, BOARD_SIZE) == false)
 		return EXIT_FAILURE;
 
 	try {

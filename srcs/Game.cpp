@@ -7,12 +7,12 @@ Game::Game() :
   _snake(),
   _speedMs(SPEED) {}
 
-bool Game::init(std::string title, uint16_t width, uint16_t height, uint8_t boardSize) {
+bool Game::init(uint16_t width, uint16_t height, uint8_t boardSize) {
 	_gameInfo = new GameInfo();
-	_gameInfo->title = title;
 	_gameInfo->width = width;
 	_gameInfo->height = height;
 	_gameInfo->boardSize = boardSize;
+	_gameInfo->rules.canExitBorder = true;
 	try {
 		_dynGuiManager.loadGui(0);
 		_dynGuiManager.nibblerGui->init(_gameInfo);
@@ -70,6 +70,9 @@ void Game::run() {
 
 		nibblerGui->updateInput();
 
+		// update game
+		_update();
+
 		// verify id viability
 		if (nibblerGui->input.loadGuiID < NB_GUI && \
 		nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
@@ -83,8 +86,8 @@ void Game::run() {
 
 		// move snake
 		uint32_t now = getMs().count();
-		if (now - lastMoveTime > _speedMs) {
-			_move(_dynGuiManager.nibblerGui->input.direction);
+		if (_gameInfo->paused == false && now - lastMoveTime > _speedMs) {
+			_move(_gameInfo->direction);
 			lastMoveTime = now;
 		}
 
@@ -108,21 +111,74 @@ void Game::run() {
 	}
 }
 
-void Game::_move(ANibblerGui::Input::eDirection direction) {
+void Game::_move(Direction::Enum direction) {
 	int addX = 0;
 	int addY = 0;
-	if (direction == ANibblerGui::Input::eDirection::MOVE_UP)
+	if (direction == Direction::MOVE_UP)
 		addY--;
-	else if (direction == ANibblerGui::Input::eDirection::MOVE_DOWN)
+	else if (direction == Direction::MOVE_DOWN)
 		addY++;
-	else if (direction == ANibblerGui::Input::eDirection::MOVE_LEFT)
+	else if (direction == Direction::MOVE_LEFT)
 		addX--;
-	else if (direction == ANibblerGui::Input::eDirection::MOVE_RIGHT)
+	else if (direction == Direction::MOVE_RIGHT)
 		addX++;
 
 	if (_snake.size() > 0) {
-		_snake.push_front({_snake[0].x + addX, _snake[0].y + addY});
+		Snake newSnake(_snake[0].x + addX, _snake[0].y + addY);
+		if (_gameInfo->rules.canExitBorder) {
+			if (newSnake.x < 0) newSnake.x = _gameInfo->boardSize - 1;
+			else if (newSnake.x >= _gameInfo->boardSize) newSnake.x = 0;
+			if (newSnake.y < 0) newSnake.y = _gameInfo->boardSize - 1;
+			else if (newSnake.y >= _gameInfo->boardSize) newSnake.y = 0;
+		}
+		_snake.push_front(newSnake);
 		_snake.pop_back();
+	}
+}
+
+void Game::_update() {
+	// update win
+	if (_snake.size() >= _gameInfo->boardSize * _gameInfo->boardSize) {
+		_gameInfo->win = true;
+	}
+	// update gameOver
+	if (_snake.size() == 0) {
+		_gameInfo->gameOver = true;
+	}
+	else if (_snake[0].x < 0 || _snake[0].x >= _gameInfo->boardSize
+	|| _snake[0].y < 0 || _snake[0].y >= _gameInfo->boardSize) {
+		_gameInfo->gameOver = true;
+	}
+
+	// update paused mode
+	if (_gameInfo->win || _gameInfo->gameOver) {
+		_gameInfo->paused = true;
+	}
+	else {
+		_gameInfo->paused = _dynGuiManager.nibblerGui->input.paused;
+	}
+
+	// update direction
+	if (_gameInfo->direction != _dynGuiManager.nibblerGui->input.direction) {
+		if (_snake.size() <= 1) {
+			_gameInfo->direction = _dynGuiManager.nibblerGui->input.direction;
+		}
+		else {
+			Snake direction(_snake[0].x - _snake[1].x, _snake[0].y - _snake[1].y);
+			if (direction.x > 1) direction.x = -1;
+			else if (direction.x < -1) direction.x = 1;
+			if (direction.y > 1) direction.y = -1;
+			else if (direction.y < -1) direction.y = 1;
+
+			if (_dynGuiManager.nibblerGui->input.direction == Direction::MOVE_UP && direction.y != 1)
+				_gameInfo->direction = _dynGuiManager.nibblerGui->input.direction;
+			else if (_dynGuiManager.nibblerGui->input.direction == Direction::MOVE_DOWN && direction.y != -1)
+				_gameInfo->direction = _dynGuiManager.nibblerGui->input.direction;
+			else if (_dynGuiManager.nibblerGui->input.direction == Direction::MOVE_LEFT && direction.x != 1)
+				_gameInfo->direction = _dynGuiManager.nibblerGui->input.direction;
+			else if (_dynGuiManager.nibblerGui->input.direction == Direction::MOVE_RIGHT && direction.x != -1)
+				_gameInfo->direction = _dynGuiManager.nibblerGui->input.direction;
+		}
 	}
 }
 

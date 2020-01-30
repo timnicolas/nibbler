@@ -71,18 +71,17 @@ void NibblerSDL::updateInput() {
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
 			input.quit = true;
 
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP
-		&& input.direction != ANibblerGui::Input::MOVE_DOWN)
-			input.direction = ANibblerGui::Input::MOVE_UP;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN
-		&& input.direction != ANibblerGui::Input::MOVE_UP)
-			input.direction = ANibblerGui::Input::MOVE_DOWN;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT
-		&& input.direction != ANibblerGui::Input::MOVE_RIGHT)
-			input.direction = ANibblerGui::Input::MOVE_LEFT;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT
-		&& input.direction != ANibblerGui::Input::MOVE_LEFT)
-			input.direction = ANibblerGui::Input::MOVE_RIGHT;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_SPACE)
+			input.paused = !input.paused;
+
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
+			input.direction = Direction::MOVE_UP;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN)
+			input.direction = Direction::MOVE_DOWN;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT)
+			input.direction = Direction::MOVE_LEFT;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT)
+			input.direction = Direction::MOVE_RIGHT;
 
 		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
 			input.loadGuiID = 0;

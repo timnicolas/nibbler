@@ -13,11 +13,32 @@
 #define BORDER_COLOR	0xAAAAAA
 #define BORDER_SIZE		5
 
+namespace Direction {
+	enum Enum {
+		MOVE_UP,
+		MOVE_DOWN,
+		MOVE_LEFT,
+		MOVE_RIGHT,
+	};
+}
+
 struct GameInfo {
 	std::string	title;
 	uint16_t	width;
 	uint16_t	height;
 	uint8_t		boardSize;
+	struct Rules {
+		bool	canExitBorder;
+	};
+	Rules rules;
+
+	Direction::Enum	direction;
+
+	bool		paused;
+	bool		win;
+	bool		gameOver;
+
+	GameInfo();
 };
 
 struct Snake {  // the snake is a std::deque of struct Snake
@@ -26,6 +47,7 @@ struct Snake {  // the snake is a std::deque of struct Snake
 
 	Snake();
 	Snake(int x_, int y_);
+	bool operator==(Snake const & other) const;
 };
 
 class ANibblerGui {
@@ -41,13 +63,8 @@ class ANibblerGui {
 
 		struct Input {
 			bool		quit;
-			enum eDirection {
-				MOVE_UP,
-				MOVE_DOWN,
-				MOVE_LEFT,
-				MOVE_RIGHT,
-			};
-			eDirection	direction;
+			bool		paused;
+			Direction::Enum	direction;
 			uint8_t		loadGuiID;
 
 			Input();
