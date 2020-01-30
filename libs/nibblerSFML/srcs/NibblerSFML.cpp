@@ -30,10 +30,8 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	return *this;
 }
 
-bool NibblerSFML::init(GameInfo *gameInfo) {
+bool NibblerSFML::_init() {
 	logInfo("loading SFML");
-
-	_gameInfo = gameInfo;
 
 	_win.create(sf::VideoMode(_gameInfo->width, _gameInfo->height), _gameInfo->title);
 

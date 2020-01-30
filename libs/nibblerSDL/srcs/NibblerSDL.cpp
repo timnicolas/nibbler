@@ -35,10 +35,8 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	return *this;
 }
 
-bool NibblerSDL::init(GameInfo *gameInfo) {
+bool NibblerSDL::_init() {
 	logInfo("loading SDL");
-
-	_gameInfo = gameInfo;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         logErr("while loading SDL: " << SDL_GetError());

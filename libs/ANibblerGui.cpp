@@ -18,6 +18,15 @@ ANibblerGui &ANibblerGui::operator=(ANibblerGui const &rhs) {
 	return *this;
 }
 
+bool ANibblerGui::init(GameInfo * gameInfo) {
+	_gameInfo = gameInfo;
+
+	input.paused = _gameInfo->paused;
+	input.direction = _gameInfo->direction;
+
+	return _init();
+}
+
 // -- GameInfo ------------------------------------------------------------------
 
 GameInfo::GameInfo()
@@ -26,6 +35,7 @@ GameInfo::GameInfo()
   height(600),
   boardSize(20),
   rules(),
+  direction(Direction::MOVE_UP),
   paused(false),
   win(false),
   gameOver(false) {

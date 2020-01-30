@@ -57,7 +57,7 @@ class ANibblerGui {
 		ANibblerGui(ANibblerGui const &src);
 		ANibblerGui &operator=(ANibblerGui const &rhs);
 
-		virtual	bool	init(GameInfo *gameInfo) = 0;
+		virtual	bool	init(GameInfo *gameInfo);
 		virtual void	updateInput() = 0;
 		virtual	bool	draw(std::deque<Snake> &snake) = 0;
 
@@ -77,6 +77,8 @@ class ANibblerGui {
 
 	protected:
 		GameInfo *_gameInfo;
+
+		virtual	bool	_init() = 0;
 };
 
 typedef ANibblerGui *(*nibblerGuiCreator)();

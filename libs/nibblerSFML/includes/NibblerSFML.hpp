@@ -15,11 +15,12 @@ class NibblerSFML : public ANibblerGui {
 		NibblerSFML(NibblerSFML const &src);
 		NibblerSFML &operator=(NibblerSFML const &rhs);
 
-		virtual bool	init(GameInfo *gameInfo);
 		virtual void	updateInput();
 		virtual bool	draw(std::deque<Snake> &snake);
 
 	private:
 		sf::RenderWindow	_win;
 		sf::Event			_event;
+
+		virtual bool	_init();
 };

@@ -58,31 +58,17 @@ void Game::run() {
 	float						loopTime = 1000 / FPS;
 	std::chrono::milliseconds	time_start;
 	uint32_t					lastMoveTime = 0;
-	ANibblerGui					*nibblerGui = nullptr;
 	#if DEBUG_FPS_LOW == true
 		bool firstLoop = true;
 	#endif
 
-	nibblerGui = _dynGuiManager.nibblerGui;
-
-	while (nibblerGui->input.quit == false) {
+	while (_dynGuiManager.nibblerGui->input.quit == false) {
 		time_start = getMs();
 
-		nibblerGui->updateInput();
+		_dynGuiManager.nibblerGui->updateInput();
 
 		// update game
 		_update();
-
-		// verify id viability
-		if (nibblerGui->input.loadGuiID < NB_GUI && \
-		nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
-			// change Gui
-			_dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
-			nibblerGui = _dynGuiManager.nibblerGui;
-			nibblerGui->init(_gameInfo);
-
-			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
-		}
 
 		// move snake
 		uint32_t now = getMs().count();
@@ -92,7 +78,7 @@ void Game::run() {
 		}
 
 		// draw on screen
-		nibblerGui->draw(_snake);
+		_dynGuiManager.nibblerGui->draw(_snake);
 
 		// fps
 		std::chrono::milliseconds time_loop = getMs() - time_start;
@@ -137,6 +123,17 @@ void Game::_move(Direction::Enum direction) {
 }
 
 void Game::_update() {
+	// change GUI
+	if (_dynGuiManager.nibblerGui->input.loadGuiID < NB_GUI && \
+	_dynGuiManager.nibblerGui->input.loadGuiID != _dynGuiManager.getCurrentGuiID()) {
+		// change Gui
+		_gameInfo->paused = true;
+		_dynGuiManager.loadGui(_dynGuiManager.nibblerGui->input.loadGuiID);
+		_dynGuiManager.nibblerGui->init(_gameInfo);
+
+		_dynGuiManager.nibblerGui->input.loadGuiID = NO_GUI_LOADED;
+	}
+
 	// update win
 	if (_snake.size() >= _gameInfo->boardSize * _gameInfo->boardSize) {
 		_gameInfo->win = true;
