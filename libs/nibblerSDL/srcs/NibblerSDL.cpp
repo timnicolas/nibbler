@@ -77,7 +77,8 @@ void NibblerSDL::updateInput() {
 	}
 }
 
-bool NibblerSDL::draw() {
+bool NibblerSDL::draw(std::deque<Snake> &snake) {
+	(void)snake;
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
 

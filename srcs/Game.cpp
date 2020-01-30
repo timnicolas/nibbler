@@ -3,7 +3,8 @@
 
 Game::Game() :
   _dynGuiManager(),
-  _gameInfo(nullptr) {}
+  _gameInfo(nullptr),
+  _snake() {}
 
 bool Game::init(std::string title, uint16_t width, uint16_t height, uint8_t boardSize) {
 	_gameInfo = new GameInfo();
@@ -64,7 +65,7 @@ void Game::run() {
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
 		}
 
-		nibblerGui->draw();
+		nibblerGui->draw(_snake);
 
 		// fps
 		std::chrono::milliseconds time_loop = getMs() - time_start;

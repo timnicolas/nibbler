@@ -14,7 +14,7 @@ class NibblerSDL : public ANibblerGui {
 
 		virtual bool	init(GameInfo *gameInfo);
 		virtual void	updateInput();
-		virtual bool	draw();
+		virtual bool	draw(std::deque<Snake> &snake);
 
 	private:
 		SDL_Window *	_win;

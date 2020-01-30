@@ -5,6 +5,7 @@
 
 #include <unistd.h>
 #include <iostream>
+#include <deque>
 
 struct GameInfo {
 	std::string	title;
@@ -13,12 +14,17 @@ struct GameInfo {
 	uint8_t		boardSize;
 };
 
+struct Snake {  // the snake is a std::deque of struct Snake
+	uint8_t	x;
+	uint8_t	y;
+};
+
 class ANibblerGui {
 	public:
 		virtual ~ANibblerGui() {}
 		virtual	bool	init(GameInfo *gameInfo) = 0;
 		virtual void	updateInput() = 0;
-		virtual	bool	draw() = 0;
+		virtual	bool	draw(std::deque<Snake> &snake) = 0;
 
 		struct Input {
 			bool		quit;

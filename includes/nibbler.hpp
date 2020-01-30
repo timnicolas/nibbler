@@ -4,7 +4,7 @@
 	#define DEBUG false
 #endif
 #define DEBUG_FPS_LOW	DEBUG & true
-#define FPS 3
+#define FPS 30
 
 #define TITLE		"nibbler"
 #define WIDTH		800

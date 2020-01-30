@@ -20,6 +20,7 @@ class Game {
 		};
 	protected:
 	private:
-		DynGuiManager	_dynGuiManager;
-		GameInfo *		_gameInfo;
+		DynGuiManager		_dynGuiManager;
+		GameInfo *			_gameInfo;
+		std::deque<Snake>	_snake;
 };

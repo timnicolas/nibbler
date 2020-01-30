@@ -17,7 +17,7 @@ class NibblerSFML : public ANibblerGui {
 
 		virtual bool	init(GameInfo *gameInfo);
 		virtual void	updateInput();
-		virtual bool	draw();
+		virtual bool	draw(std::deque<Snake> &snake);
 
 	private:
 		sf::RenderWindow	_win;
