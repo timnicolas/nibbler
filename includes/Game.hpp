@@ -10,9 +10,16 @@ class Game {
 
 		Game &operator=(Game const &rhs);
 
-		bool	init();
+		bool	init(std::string title, uint16_t width, uint16_t height, uint8_t boardSize);
 		void	run();
+
+		class GameException : public std::runtime_error {
+			public:
+				GameException();
+				explicit GameException(const char* what_arg);
+		};
 	protected:
 	private:
 		DynGuiManager	_dynGuiManager;
+		GameInfo *		_gameInfo;
 };

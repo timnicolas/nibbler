@@ -2,14 +2,20 @@
 #include "nibbler.hpp"
 
 Game::Game() :
-  _dynGuiManager() {}
+  _dynGuiManager(),
+  _gameInfo(nullptr) {}
 
-bool Game::init() {
+bool Game::init(std::string title, uint16_t width, uint16_t height, uint8_t boardSize) {
+	_gameInfo = new GameInfo();
+	_gameInfo->title = title;
+	_gameInfo->width = width;
+	_gameInfo->height = height;
+	_gameInfo->boardSize = boardSize;
 	try {
 		_dynGuiManager.loadGui(0);
-		_dynGuiManager.nibblerGui->init();
+		_dynGuiManager.nibblerGui->init(_gameInfo);
 	}
-	catch(const std::exception& e) {
+	catch(DynGuiManager::DynGuiManagerException const & e) {
 		logErr(e.what());
 		return false;
 	}
@@ -21,6 +27,7 @@ Game::Game(Game const &src) {
 }
 
 Game::~Game() {
+	delete _gameInfo;
 }
 
 Game &Game::operator=(Game const &rhs) {
@@ -52,7 +59,7 @@ void Game::run() {
 			// change Gui
 			_dynGuiManager.loadGui(nibblerGui->input.loadGuiID);
 			nibblerGui = _dynGuiManager.nibblerGui;
-			nibblerGui->init();
+			nibblerGui->init(_gameInfo);
 
 			nibblerGui->input.loadGuiID = NO_GUI_LOADED;
 		}
@@ -75,3 +82,10 @@ void Game::run() {
 		#endif
 	}
 }
+
+// -- Exceptions errors --------------------------------------------------------
+Game::GameException::GameException()
+: std::runtime_error("[GameException]") {}
+
+Game::GameException::GameException(const char* what_arg)
+: std::runtime_error(std::string(std::string("[GameException] ") + what_arg).c_str()) {}

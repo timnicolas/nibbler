@@ -23,8 +23,10 @@ NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	return *this;
 }
 
-bool NibblerSDL::init() {
+bool NibblerSDL::init(GameInfo *gameInfo) {
 	std::cout << "[INFO]: loading SDL" << std::endl;
+
+	_gameInfo = gameInfo;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         std::cout << "[ERROR]: while loading SDL" << SDL_GetError() << std::endl;
@@ -32,8 +34,8 @@ bool NibblerSDL::init() {
 		return false;
     }
 
-	_win = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+	_win = SDL_CreateWindow(_gameInfo->title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		_gameInfo->width, _gameInfo->height, SDL_WINDOW_SHOWN);
 	if (_win == nullptr) {
         std::cout << "[ERROR]: while loading SDL" << SDL_GetError() << std::endl;
 		SDL_Quit();

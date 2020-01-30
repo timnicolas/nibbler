@@ -19,10 +19,12 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	return *this;
 }
 
-bool NibblerSFML::init() {
+bool NibblerSFML::init(GameInfo *gameInfo) {
 	std::cout << "[INFO]: loading SFML" << std::endl;
 
-	_win .create(sf::VideoMode(WIDTH, HEIGHT), TITLE);
+	_gameInfo = gameInfo;
+
+	_win.create(sf::VideoMode(_gameInfo->width, _gameInfo->height), _gameInfo->title);
 
     return true;
 }

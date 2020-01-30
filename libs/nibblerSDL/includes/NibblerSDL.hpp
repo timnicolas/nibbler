@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <SDL2/SDL.h>
@@ -11,7 +12,7 @@ class NibblerSDL : public ANibblerGui {
 		NibblerSDL(NibblerSDL const &src);
 		NibblerSDL &operator=(NibblerSDL const &rhs);
 
-		virtual bool	init();
+		virtual bool	init(GameInfo *gameInfo);
 		virtual void	updateInput();
 		virtual bool	draw();
 

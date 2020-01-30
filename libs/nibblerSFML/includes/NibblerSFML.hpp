@@ -15,7 +15,7 @@ class NibblerSFML : public ANibblerGui {
 		NibblerSFML(NibblerSFML const &src);
 		NibblerSFML &operator=(NibblerSFML const &rhs);
 
-		virtual bool	init();
+		virtual bool	init(GameInfo *gameInfo);
 		virtual void	updateInput();
 		virtual bool	draw();
 

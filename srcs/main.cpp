@@ -12,13 +12,13 @@ int main(int ac, char const **av) {
 
 	initLogs();  // init logs functions
 
-	if (game.init() == false)
+	if (game.init(TITLE, WIDTH, HEIGHT, BOARD_SIZE) == false)
 		return EXIT_FAILURE;
 
 	try {
 		game.run();
 	}
-	catch(const std::exception& e) {
+	catch(std::exception const & e) {
 		logErr(e.what());
 		return EXIT_FAILURE;
 	}
