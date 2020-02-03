@@ -26,6 +26,11 @@ class JsonObj {
 		JsonObj<T> &	setMin(T value) { _hasMin = true; _min = value; return *this; }
 		JsonObj<T> &	setMax(T value) { _hasMax = true; _max = value; return *this; }
 
+		friend std::ostream & operator<<(std::ostream & out, const JsonObj & jsonObj) {
+			out << jsonObj.get();
+			return out;
+		}
+
 	protected:
 		bool	_hasMin;
 		T		_min;
@@ -46,24 +51,36 @@ class SettingsJson {
 		JsonObj<int64_t> &	addi(std::string name);
 		JsonObj<int64_t> &	updatei(std::string name);
 		int64_t				geti(std::string name) const;
+		int64_t				i(std::string name) const;
+		// uint
+		JsonObj<uint64_t> &	addu(std::string name);
+		JsonObj<uint64_t> &	updateu(std::string name);
+		uint64_t			getu(std::string name) const;
+		uint64_t			u(std::string name) const;
 		// double
 		JsonObj<double> &	addf(std::string name);
 		JsonObj<double> &	updatef(std::string name);
 		double				getf(std::string name) const;
+		double				f(std::string name) const;
 		// bool
 		JsonObj<bool> &	addb(std::string name);
 		JsonObj<bool> &	updateb(std::string name);
 		bool			getb(std::string name) const;
+		bool			b(std::string name) const;
 		// string
 		JsonObj<std::string> &	adds(std::string name);
 		JsonObj<std::string> &	updates(std::string name);
 		std::string const &		gets(std::string name) const;
 		std::string &			gets(std::string name);
+		std::string const &		s(std::string name) const;
+		std::string &			s(std::string name);
 		// json
-		JsonObj<SettingsJson> &	addj(std::string name);
-		JsonObj<SettingsJson> &	updatej(std::string name);
+		SettingsJson &			addj(std::string name);
+		SettingsJson &			updatej(std::string name);
 		SettingsJson const &	getj(std::string name) const;
 		SettingsJson &			getj(std::string name);
+		SettingsJson const &	j(std::string name) const;
+		SettingsJson &			j(std::string name);
 
 		class SettingsException : public std::runtime_error {
 			public:
@@ -72,10 +89,13 @@ class SettingsJson {
 				explicit SettingsException(const std::string what_arg);
 		};
 
-	private:
+	// private:
+		std::map<std::string, JsonObj<uint64_t>>		_uintMap;  // u
 		std::map<std::string, JsonObj<int64_t>>			_intMap;  // i
 		std::map<std::string, JsonObj<double>>			_doubleMap;  // f
 		std::map<std::string, JsonObj<bool>>			_boolMap;  // b
 		std::map<std::string, JsonObj<std::string>>		_stringMap;  // s
 		std::map<std::string, JsonObj<SettingsJson>>	_jsonMap;  // j
 };
+
+std::ostream & operator<<(std::ostream & o, const SettingsJson & s);

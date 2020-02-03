@@ -15,11 +15,11 @@ int main(int ac, char const **av) {
 
 	SettingsJson settings;
 
-	settings.addi("width")
+	settings.addu("width")
 		.setMin(5)
 		.setMax(20)
 		.setValue(12);
-	settings.addi("height")
+	settings.addu("height")
 		.setMin(5)
 		.setMax(20)
 		.setValue(20);
@@ -27,8 +27,22 @@ int main(int ac, char const **av) {
 	settings.adds("name")
 		.setValue("nibbler");
 
-	std::cout << settings.gets("name") << " "
-	<< settings.geti("width") << "*"<< settings.geti("height") << std::endl;
+    settings.addj("test1").addu("okok");
+
+    settings.addj("global");
+    settings.j("global").addi("fps")
+        .setValue(56);
+    settings.j("global").adds("test");
+
+    settings.j("global").addj("testJson");
+	settings.j("global").j("testJson").addi("le int");
+
+	std::cout << settings.s("name") << " "
+	<< settings.u("width") << "*"<< settings.u("height") << " fps: "
+    << settings.j("global").i("fps")
+    << std::endl;
+
+	std::cout << "\"settings.json\": " << settings;
 
 	// srand(time(NULL));
 	// initLogs();  // init logs functions
