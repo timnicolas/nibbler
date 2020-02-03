@@ -92,6 +92,37 @@ void NibblerSDL::updateInput() {
 	}
 }
 
+uint32_t mixColor(uint32_t c1, uint32_t c2, float factor) {
+	uint8_t cMin;
+	uint8_t cMax;
+
+	cMin = ((c1 >> 16) & 0xFF);
+	cMax = ((c2 >> 16) & 0xFF);
+	uint8_t r;
+	if (cMin < cMax)
+		r = cMin + (cMax - cMin) * factor;
+	else
+		r = cMin - (cMin - cMax) * factor;
+
+	cMin = ((c1 >> 8) & 0xFF);
+	cMax = ((c2 >> 8) & 0xFF);
+	uint8_t g;
+	if (cMin < cMax)
+		g = cMin + (cMax - cMin) * factor;
+	else
+		g = cMin - (cMin - cMax) * factor;
+
+	cMin = ((c1 >> 0) & 0xFF);
+	cMax = ((c2 >> 0) & 0xFF);
+	uint8_t b;
+	if (cMin < cMax)
+		b = cMin + (cMax - cMin) * factor;
+	else
+		b = cMin - (cMin - cMax) * factor;
+
+	return (r << 16) + (g << 8) + (b << 0);
+}
+
 bool NibblerSDL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
@@ -126,6 +157,8 @@ bool NibblerSDL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		}
 	}
 	// draw snake
+	int		i = 0;
+	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
 	for (auto it = snake.begin(); it != snake.end(); it++) {
 		SDL_Rect rect = {
 			static_cast<int>(startX + step * it->x),
@@ -133,7 +166,9 @@ bool NibblerSDL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 			static_cast<int>(step + 0.5),
 			static_cast<int>(step + 0.5),
 		};
-		SDL_FillRect(_surface, &rect, it == snake.begin() ? 0xFFFF00 : SNAKE_COLOR);
+		uint32_t	color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
+		SDL_FillRect(_surface, &rect, color);
+		i++;
 	}
 	// draw food
 	for (auto it = food.begin(); it != food.end(); it++) {
