@@ -36,4 +36,5 @@
 *.vim
 *.swp
 .dep
+libs/*
 nibbler

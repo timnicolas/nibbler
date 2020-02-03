@@ -10,8 +10,6 @@
 
 #include "Logging.hpp"
 #include "ANibblerGui.hpp"
-// #include "NibblerSDL.hpp"
-// #include "NibblerSFML.hpp"
 
 class DynGuiManager {
 	public:

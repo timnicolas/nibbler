@@ -97,7 +97,7 @@ SRC =	main.cpp \
 		nibbler.cpp \
 		DynGuiManager.cpp \
 		Game.cpp \
-		../libs/ANibblerGui.cpp \
+		../libsGui/ANibblerGui.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
@@ -106,7 +106,7 @@ SRC =	main.cpp \
 HEAD =	nibbler.hpp \
 		DynGuiManager.hpp \
 		Game.hpp \
-		../libs/ANibblerGui.hpp \
+		../libsGui/ANibblerGui.hpp \
 \
 		utils/Logging.hpp \
 		utils/Stats.hpp \
@@ -132,11 +132,12 @@ LIBS_FLAGS_OSX		=
 LIBS_FLAGS_LINUX	=
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
-					  libs \
+					  $(LIBS_DIR) \
+					  libsGui \
 
 # libs created by user
-UNCOMPILED_LIBS		= libs/nibblerSDL \
-					  libs/nibblerSFML \
+UNCOMPILED_LIBS		= libsGui/nibblerSDL \
+					  libsGui/nibblerSFML \
 # libs that need to be maked
 NEED_MAKE			= $(UNCOMPILED_LIBS)
 
@@ -153,6 +154,9 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
+	mkdir -p $(LIBS_DIR)
+	# json lib
+	wget -O $(LIBS_DIR)/json.hpp https://raw.githubusercontent.com/nlohmann/json/develop/include/nlohmann/json.hpp
 fi
 
 exit 0
