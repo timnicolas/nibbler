@@ -5,6 +5,9 @@
 #include "json.hpp"
 #include "Logging.hpp"
 
+// TODO(tnicolas42) add lists in json loading
+// TODO(tnicolas42) add saving mode
+
 template<class T>
 class JsonObj {
 	public:
@@ -84,21 +87,29 @@ class SettingsJson {
 		JsonObj<int64_t> &	updatei(std::string name);
 		int64_t				geti(std::string name) const;
 		int64_t				i(std::string name) const;
+		int64_t &			geti(std::string name);
+		int64_t &			i(std::string name);
 		// uint
 		JsonObj<uint64_t> &	addu(std::string name, uint64_t val = 0);
 		JsonObj<uint64_t> &	updateu(std::string name);
 		uint64_t			getu(std::string name) const;
 		uint64_t			u(std::string name) const;
+		uint64_t &			getu(std::string name);
+		uint64_t &			u(std::string name);
 		// double
 		JsonObj<double> &	addf(std::string name, double val = 0.0);
 		JsonObj<double> &	updatef(std::string name);
 		double				getf(std::string name) const;
 		double				f(std::string name) const;
+		double &			getf(std::string name);
+		double &			f(std::string name);
 		// bool
 		JsonObj<bool> &	addb(std::string name, bool val = false);
 		JsonObj<bool> &	updateb(std::string name);
 		bool			getb(std::string name) const;
 		bool			b(std::string name) const;
+		bool &			getb(std::string name);
+		bool &			b(std::string name);
 		// string
 		JsonObj<std::string> &	adds(std::string name, std::string const & val = "");
 		JsonObj<std::string> &	updates(std::string name);

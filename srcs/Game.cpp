@@ -34,6 +34,9 @@ void Game::restart() {
 	_food.clear();
 	int startX = _gameInfo->boardSize / 2;
 	int startY = startX;
+	if (s.u("snakeSize") > userData.u("highScore")) {
+		userData.u("highScore") = s.u("snakeSize");
+	}
 	for (int y = 0; y < static_cast<int>(s.u("snakeSize")); y++) {
 		_snake.push_back({startX, startY + y});
 	}
@@ -146,6 +149,9 @@ void Game::_move(Direction::Enum direction) {
 		_snake.push_front(newVec2);
 		if (_needExtend > 0) {
 			_needExtend--;
+			if (_snake.size() > userData.u("highScore")) {
+				userData.u("highScore") = _snake.size();
+			}
 		}
 		else {
 			_lastDeletedSnake = _snake.back();

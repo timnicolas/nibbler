@@ -108,6 +108,12 @@ int64_t SettingsJson::geti(std::string name) const {
 		return intMap.at(name).get();
 	throw SettingsException("undefined setting " + name);
 }
+int64_t & SettingsJson::i(std::string name) { return geti(name); }
+int64_t & SettingsJson::geti(std::string name) {
+	if (intMap.find(name) != intMap.end())
+		return intMap.at(name).get();
+	throw SettingsException("undefined setting " + name);
+}
 // uint
 JsonObj<uint64_t> &	SettingsJson::addu(std::string name, uint64_t val) {
 	if (uintMap.find(name) != uintMap.end()) {
@@ -125,6 +131,12 @@ JsonObj<uint64_t> &	SettingsJson::updateu(std::string name) {
 }
 uint64_t SettingsJson::u(std::string name) const { return getu(name); }
 uint64_t SettingsJson::getu(std::string name) const {
+	if (uintMap.find(name) != uintMap.end())
+		return uintMap.at(name).get();
+	throw SettingsException("undefined setting " + name);
+}
+uint64_t & SettingsJson::u(std::string name) { return getu(name); }
+uint64_t & SettingsJson::getu(std::string name) {
 	if (uintMap.find(name) != uintMap.end())
 		return uintMap.at(name).get();
 	throw SettingsException("undefined setting " + name);
@@ -150,6 +162,12 @@ double SettingsJson::getf(std::string name) const {
 		return doubleMap.at(name).get();
 	throw SettingsException("undefined setting " + name);
 }
+double & SettingsJson::f(std::string name) { return getf(name); }
+double & SettingsJson::getf(std::string name) {
+	if (doubleMap.find(name) != doubleMap.end())
+		return doubleMap.at(name).get();
+	throw SettingsException("undefined setting " + name);
+}
 // bool
 JsonObj<bool> &	SettingsJson::addb(std::string name, bool val) {
 	if (boolMap.find(name) != boolMap.end()) {
@@ -167,6 +185,12 @@ JsonObj<bool> &	SettingsJson::updateb(std::string name) {
 }
 bool SettingsJson::b(std::string name) const { return getb(name); }
 bool SettingsJson::getb(std::string name) const {
+	if (boolMap.find(name) != boolMap.end())
+		return boolMap.at(name).get();
+	throw SettingsException("undefined setting " + name);
+}
+bool & SettingsJson::b(std::string name) { return getb(name); }
+bool & SettingsJson::getb(std::string name) {
 	if (boolMap.find(name) != boolMap.end())
 		return boolMap.at(name).get();
 	throw SettingsException("undefined setting " + name);

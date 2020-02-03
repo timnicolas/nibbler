@@ -12,15 +12,8 @@ int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
 	initLogs();  // init logs functions
-	initSettings();
-	try {
-		if (s.loadFile("assets/settings.json") == false) {
-			// warning when loading settings
-		}
-	}
-	catch(SettingsJson::SettingsException const & e) {
-		logErr(e.what());
-	}
+	initSettings("assets/settings.json");
+	initUserData("assets/userData.json");
 
 	srand(time(NULL));
 	Game	game;
@@ -35,6 +28,8 @@ int main(int ac, char const **av) {
 		logErr(e.what());
 		return EXIT_FAILURE;
 	}
+
+	std::cout << userData;
 
 	return EXIT_SUCCESS;
 }

@@ -37,4 +37,5 @@
 *.swp
 .dep
 libs/*
+assets/userData.json
 nibbler
