@@ -24,6 +24,7 @@ class Game {
 		DynGuiManager		_dynGuiManager;
 		GameInfo *			_gameInfo;
 		std::deque<Vec2>	_snake;
+		Vec2				_lastDeletedSnake;
 		std::deque<Vec2>	_food;
 		uint32_t			_speedMs;
 		uint8_t				_needExtend;

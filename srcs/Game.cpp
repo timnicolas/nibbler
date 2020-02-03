@@ -66,16 +66,17 @@ void Game::run() {
 
 		_dynGuiManager.nibblerGui->updateInput();
 
-		// update game
-		_update();
-		_updateFood();
 
-		// move Vec2
+		// move snake
 		uint32_t now = getMs().count();
 		if (_gameInfo->paused == false && now - lastMoveTime > _speedMs) {
 			_move(_gameInfo->direction);
 			lastMoveTime = now;
 		}
+
+		// update game
+		_updateFood();
+		_update();
 
 		// draw on screen
 		_dynGuiManager.nibblerGui->draw(_snake, _food);
@@ -142,10 +143,13 @@ void Game::_move(Direction::Enum direction) {
 			else if (newVec2.y >= _gameInfo->boardSize) newVec2.y = 0;
 		}
 		_snake.push_front(newVec2);
-		if (_needExtend > 0)
+		if (_needExtend > 0) {
 			_needExtend--;
-		else
+		}
+		else {
+			_lastDeletedSnake = _snake.back();
 			_snake.pop_back();
+		}
 	}
 }
 
@@ -173,17 +177,24 @@ void Game::_update() {
 		_gameInfo->win = true;
 	}
 	// update gameOver
-	if (_snake.size() == 0) {
-		_gameInfo->gameOver = true;
+	if (_gameInfo->gameOver == false) {
+		if (_snake.size() == 0) {
+			_gameInfo->gameOver = true;
+		}
+		else if (_snake[0].x < 0 || _snake[0].x >= _gameInfo->boardSize
+		|| _snake[0].y < 0 || _snake[0].y >= _gameInfo->boardSize) {
+			_gameInfo->gameOver = true;
+		}
+		auto it = std::find(++_snake.begin(), _snake.end(), _snake[0]);
+		if (it != _snake.end()) {
+			_gameInfo->gameOver = true;
+		}
+		if (_gameInfo->gameOver) {
+			_snake.push_back(_lastDeletedSnake);
+			_snake.pop_front();
+		}
 	}
-	else if (_snake[0].x < 0 || _snake[0].x >= _gameInfo->boardSize
-	|| _snake[0].y < 0 || _snake[0].y >= _gameInfo->boardSize) {
-		_gameInfo->gameOver = true;
-	}
-	auto it = std::find(++_snake.begin(), _snake.end(), _snake[0]);
-	if (it != _snake.end()) {
-		_gameInfo->gameOver = true;
-	}
+
 
 	// update paused mode
 	if (_gameInfo->win || _gameInfo->gameOver) {
