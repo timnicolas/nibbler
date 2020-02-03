@@ -101,6 +101,7 @@ SRC =	main.cpp \
 \
 		utils/Logging.cpp \
 		utils/Stats.cpp \
+		utils/SettingsJson.cpp \
 
 # INC_DIR/HEAD
 HEAD =	nibbler.hpp \
@@ -110,6 +111,7 @@ HEAD =	nibbler.hpp \
 \
 		utils/Logging.hpp \
 		utils/Stats.hpp \
+		utils/SettingsJson.hpp \
 
 
 ################################################################################
