@@ -6,14 +6,14 @@ Game::Game() :
   _dynGuiManager(),
   _gameInfo(nullptr),
   _snake(),
-  _speedMs(SPEED) {}
+  _speedMs(s.u("speedMs")) {}
 
-bool Game::init(uint16_t width, uint16_t height, uint8_t boardSize) {
+bool Game::init() {
 	_gameInfo = new GameInfo();
-	_gameInfo->width = width;
-	_gameInfo->height = height;
-	_gameInfo->boardSize = boardSize;
-	_gameInfo->rules.canExitBorder = true;
+	_gameInfo->width = s.j("screen").u("width");
+	_gameInfo->height = s.j("screen").u("height");
+	_gameInfo->boardSize = s.u("boardSize");
+	_gameInfo->rules.canExitBorder = s.b("canExitBorder");
 	try {
 		_dynGuiManager.loadGui(0);
 		_dynGuiManager.nibblerGui->init(_gameInfo);
@@ -34,7 +34,7 @@ void Game::restart() {
 	_food.clear();
 	int startX = _gameInfo->boardSize / 2;
 	int startY = startX;
-	for (int y = 0; y < START_SIZE; y++) {
+	for (int y = 0; y < static_cast<int>(s.u("snakeSize")); y++) {
 		_snake.push_back({startX, startY + y});
 	}
 }
@@ -54,7 +54,7 @@ Game &Game::operator=(Game const &rhs) {
 }
 
 void Game::run() {
-	float						loopTime = 1000 / FPS;
+	float						loopTime = 1000 / s.j("screen").u("fps");
 	std::chrono::milliseconds	time_start;
 	uint32_t					lastMoveTime = 0;
 	#if DEBUG_FPS_LOW == true
@@ -86,7 +86,8 @@ void Game::run() {
 		if (time_loop.count() > loopTime) {
 			#if DEBUG_FPS_LOW == true
 				if (!firstLoop)
-					logDebug("update loop slow -> " << time_loop.count() << "ms / " << loopTime << "ms (" << FPS << "fps)");
+					logDebug("update loop slow -> " << time_loop.count() << "ms / " << loopTime << "ms ("
+					<< s.j("screen").u("fps") << "fps)");
 			#endif
 		}
 		else {

@@ -10,7 +10,7 @@ class Game {
 
 		Game &operator=(Game const &rhs);
 
-		bool	init(uint16_t width, uint16_t height, uint8_t boardSize);
+		bool	init();
 		void	run();
 		void	restart();
 

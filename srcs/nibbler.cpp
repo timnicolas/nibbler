@@ -22,8 +22,13 @@ void	initLogs() {
 
 void	initSettings() {
 	s.addj("screen");
-
-	s.j("screen").addi("width", 1200).setMin(400).setMax(4000);
+		s.j("screen").addu("width", 1200).setMin(400).setMax(4000);
+		s.j("screen").addu("height", 800).setMin(400).setMax(4000);
+		s.j("screen").addu("fps", 30).setMin(30).setMax(120);
+	s.addu("boardSize", 20).setMin(5).setMax(50);
+	s.addu("snakeSize", 4).setMin(1).setMax(40);
+	s.addu("speedMs", 100).setMin(30).setMax(1000);
+	s.addb("canExitBorder", false);
 }
 
 std::chrono::milliseconds getMs() {

@@ -11,33 +11,30 @@
 int main(int ac, char const **av) {
 	(void)ac;
 	(void)av;
-	Game	game;
-
+	initLogs();  // init logs functions
 	initSettings();
 	try {
 		if (s.loadFile("assets/settings.json") == false) {
-			logErr("warnings when loading settings");
+			// warning when loading settings
 		}
 	}
 	catch(SettingsJson::SettingsException const & e) {
 		logErr(e.what());
 	}
 
-	std::cout << "\"settings\": " << s;
+	srand(time(NULL));
+	Game	game;
 
-	// srand(time(NULL));
-	// initLogs();  // init logs functions
+	if (game.init() == false)
+		return EXIT_FAILURE;
 
-	// if (game.init(WIDTH, HEIGHT, BOARD_SIZE) == false)
-	// 	return EXIT_FAILURE;
-
-	// try {
-	// 	game.run();
-	// }
-	// catch(std::exception const & e) {
-	// 	logErr(e.what());
-	// 	return EXIT_FAILURE;
-	// }
+	try {
+		game.run();
+	}
+	catch(std::exception const & e) {
+		logErr(e.what());
+		return EXIT_FAILURE;
+	}
 
 	return EXIT_SUCCESS;
 }
