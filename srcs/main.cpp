@@ -29,7 +29,12 @@ int main(int ac, char const **av) {
 		return EXIT_FAILURE;
 	}
 
-	std::cout << userData;
+	std::cout << s.toString();
+	std::cout << userData.toString();
+
+	SettingsJson ss;
+	ss.addj("a");  // .addj("a");
+	std::cout << ss;
 
 	return EXIT_SUCCESS;
 }

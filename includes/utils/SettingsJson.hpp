@@ -79,8 +79,9 @@ class SettingsJson {
 
 		SettingsJson &operator=(SettingsJson const &rhs);
 
-		bool	loadFile(std::string const & filename);
-		bool	loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp);
+		bool		loadFile(std::string const & filename);
+		bool		loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp);
+		std::string	toString() const;
 
 		// int
 		JsonObj<int64_t> &	addi(std::string name, int64_t val = 0);

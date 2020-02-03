@@ -87,6 +87,12 @@ bool SettingsJson::loadFile(std::string const &filename) {
 	return true;
 }
 
+std::string SettingsJson::toString() const {
+	std::ostringstream out;
+	out << *this;
+	return out.str();
+}
+
 // int
 JsonObj<int64_t> &	SettingsJson::addi(std::string name, int64_t val) {
 	if (intMap.find(name) != intMap.end()) {
@@ -252,41 +258,61 @@ SettingsJson & SettingsJson::getj(std::string name) {
 
 // -- cout --------------------------------------------------------
 template<class T>
-void jsonString(std::ostream & out, T const & map, int nbTab,
+int jsonString(std::ostream & out, T const & map, int nbTab,
 std::string const & before = "", std::string const & after = "") {
+	int i = 0;
 	for (auto it = map.begin(); it != map.end(); it++) {
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
 		out << '"' << it->first << "\": " << before << it->second.get() << after << "," << std::endl;
+		i++;
 	}
+	return i;
 }
 
-void jsonStringRecursiv(std::ostream & out, std::map<std::string, JsonObj<SettingsJson>> const & map, int nbTab) {
+int jsonStringRecursiv(std::ostream & out, std::map<std::string, JsonObj<SettingsJson>> const & map, int nbTab) {
+	int nbJson = 0;
 	for (auto it = map.begin(); it != map.end(); it++) {
+		int i = 0;
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
 		out << '"' <<  it->first << "\": {" << std::endl;
-		jsonString<std::map<std::string, JsonObj<std::string>>>(out, it->second.get().stringMap, nbTab + 1, "\"", "\"");
-		jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, it->second.get().uintMap, nbTab + 1);
-		jsonString<std::map<std::string, JsonObj<int64_t>>>(out, it->second.get().intMap, nbTab + 1);
-		jsonString<std::map<std::string, JsonObj<double>>>(out, it->second.get().doubleMap, nbTab + 1);
-		jsonString<std::map<std::string, JsonObj<bool>>>(out, it->second.get().boolMap, nbTab + 1);
-		jsonStringRecursiv(out, it->second.get().jsonMap, nbTab + 1);
+		i += jsonString<std::map<std::string, JsonObj<std::string>>>(out, it->second.get().stringMap, nbTab + 1, "\"", "\"");
+		i += jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, it->second.get().uintMap, nbTab + 1);
+		i += jsonString<std::map<std::string, JsonObj<int64_t>>>(out, it->second.get().intMap, nbTab + 1);
+		i += jsonString<std::map<std::string, JsonObj<double>>>(out, it->second.get().doubleMap, nbTab + 1);
+		i += jsonString<std::map<std::string, JsonObj<bool>>>(out, it->second.get().boolMap, nbTab + 1);
+		i += jsonStringRecursiv(out, it->second.get().jsonMap, nbTab + 1);
+		// if (i > 0) {
+		// 	out.seekp(static_cast<long>(out.tellp()) - 2);
+		// 	out << " " << std::endl;
+		// }
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
 		out << "}," << std::endl;
+		nbJson += 1;
 	}
+	// if (nbJson > 0) {
+	// 	out.seekp(static_cast<long>(out.tellp()) - 2);
+	// 	out << " " << std::endl;
+	// }
+	return nbJson;
 }
 
 std::ostream & operator<<(std::ostream & out, const SettingsJson & s) {
 	out << "{" << std::endl;
 	int nbTab = 0;
-	jsonString<std::map<std::string, JsonObj<std::string>>>(out, s.stringMap, nbTab + 1, "\"", "\"");
-	jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, s.uintMap, nbTab + 1);
-	jsonString<std::map<std::string, JsonObj<int64_t>>>(out, s.intMap, nbTab + 1);
-	jsonString<std::map<std::string, JsonObj<double>>>(out, s.doubleMap, nbTab + 1);
-	jsonString<std::map<std::string, JsonObj<bool>>>(out, s.boolMap, nbTab + 1);
-	jsonStringRecursiv(out, s.jsonMap, 1);
+	int i = 0;
+	i += jsonString<std::map<std::string, JsonObj<std::string>>>(out, s.stringMap, nbTab + 1, "\"", "\"");
+	i += jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, s.uintMap, nbTab + 1);
+	i += jsonString<std::map<std::string, JsonObj<int64_t>>>(out, s.intMap, nbTab + 1);
+	i += jsonString<std::map<std::string, JsonObj<double>>>(out, s.doubleMap, nbTab + 1);
+	i += jsonString<std::map<std::string, JsonObj<bool>>>(out, s.boolMap, nbTab + 1);
+	i += jsonStringRecursiv(out, s.jsonMap, 1);
+	// if (i > 0) {
+	// 	out.seekp(static_cast<int>(out.tellp()) - 2);
+	// 	out << " " << std::endl;
+	// }
 	for (int i = 0; i < nbTab; i++)
 		out << "\t";
 	out << "}" << std::endl;
