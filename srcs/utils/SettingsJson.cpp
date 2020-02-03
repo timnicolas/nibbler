@@ -1,5 +1,4 @@
 #include "SettingsJson.hpp"
-#include "Logging.hpp"
 
 SettingsJson::SettingsJson() {
 }
@@ -23,13 +22,78 @@ SettingsJson &SettingsJson::operator=(SettingsJson const &rhs) {
 	return *this;
 }
 
+bool SettingsJson::loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp) {
+	bool ret = true;
+	for (auto it = json.begin(); it != json.end(); ++it) {
+		if (it->is_object()) {
+			auto newJsonObj = jsonObjTmp.jsonMap.find(it.key());
+			if (newJsonObj != jsonObjTmp.jsonMap.end()) {
+				ret &= loadJson(*it, newJsonObj->second.get());
+			}
+			else {
+				logWarn("invalid setting: " << it.key());
+				ret = false;
+			}
+		}
+		else {
+			if (it->is_number_integer() && jsonObjTmp.intMap.find(it.key()) != jsonObjTmp.intMap.end()) {
+				ret &= jsonObjTmp.updatei(it.key()).checkValue(it->get<int64_t>());
+				jsonObjTmp.updatei(it.key()).setValue(it->get<int64_t>());
+			}
+			else if (it->is_number_unsigned() && jsonObjTmp.uintMap.find(it.key()) != jsonObjTmp.uintMap.end()) {
+				ret &= jsonObjTmp.updateu(it.key()).checkValue(it->get<uint64_t>());
+				jsonObjTmp.updateu(it.key()).setValue(it->get<uint64_t>());
+			}
+			else if (it->is_number_float() && jsonObjTmp.doubleMap.find(it.key()) != jsonObjTmp.doubleMap.end()) {
+				ret &= jsonObjTmp.updatef(it.key()).checkValue(it->get<double>());
+				jsonObjTmp.updatef(it.key()).setValue(it->get<double>());
+			}
+			else if (it->is_boolean() && jsonObjTmp.boolMap.find(it.key()) != jsonObjTmp.boolMap.end()) {
+				ret &= jsonObjTmp.updateb(it.key()).checkValue(it->get<bool>());
+				jsonObjTmp.updateb(it.key()).setValue(it->get<bool>());
+			}
+			else if (it->is_string() && jsonObjTmp.stringMap.find(it.key()) != jsonObjTmp.stringMap.end()) {
+				ret &= jsonObjTmp.updates(it.key()).checkValue(it->get<std::string>());
+				jsonObjTmp.updates(it.key()).setValue(it->get<std::string>());
+			}
+			else {
+				ret = false;
+				logWarn("invalid setting type or name: " << it.key());
+			}
+		}
+	}
+	return ret;
+}
+
+bool SettingsJson::loadFile(std::string const &filename) {
+	try {
+		std::ifstream fileStream(filename, std::ifstream::in);
+
+		nlohmann::json	data;
+		if (fileStream.is_open()) {
+			fileStream >> data;
+		}
+		else {
+			throw SettingsException("invalid file format: " + filename);
+		}
+		return loadJson(data, *this);
+	}
+	catch (const nlohmann::json::parse_error& e) {
+		throw SettingsException("invalid file format: " + filename);
+	}
+	catch (std::exception &e) {
+		throw SettingsException("unable to open file: " + filename);
+	}
+	return true;
+}
+
 // int
 JsonObj<int64_t> &	SettingsJson::addi(std::string name) {
 	if (intMap.find(name) != intMap.end()) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return intMap[name];
 	}
-	intMap.insert(std::pair<std::string, JsonObj<int64_t>>(name, JsonObj<int64_t>()));
+	intMap.insert(std::pair<std::string, JsonObj<int64_t>>(name, JsonObj<int64_t>(name)));
 	return intMap[name];
 }
 JsonObj<int64_t> &	SettingsJson::updatei(std::string name) {
@@ -50,7 +114,7 @@ JsonObj<uint64_t> &	SettingsJson::addu(std::string name) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return uintMap[name];
 	}
-	uintMap.insert(std::pair<std::string, JsonObj<uint64_t>>(name, JsonObj<uint64_t>()));
+	uintMap.insert(std::pair<std::string, JsonObj<uint64_t>>(name, JsonObj<uint64_t>(name)));
 	return uintMap[name];
 }
 JsonObj<uint64_t> &	SettingsJson::updateu(std::string name) {
@@ -71,7 +135,7 @@ JsonObj<double> &	SettingsJson::addf(std::string name) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return doubleMap[name];
 	}
-	doubleMap.insert(std::pair<std::string, JsonObj<double>>(name, JsonObj<double>()));
+	doubleMap.insert(std::pair<std::string, JsonObj<double>>(name, JsonObj<double>(name)));
 	return doubleMap[name];
 }
 JsonObj<double> &	SettingsJson::updatef(std::string name) {
@@ -92,7 +156,7 @@ JsonObj<bool> &	SettingsJson::addb(std::string name) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return boolMap[name];
 	}
-	boolMap.insert(std::pair<std::string, JsonObj<bool>>(name, JsonObj<bool>()));
+	boolMap.insert(std::pair<std::string, JsonObj<bool>>(name, JsonObj<bool>(name)));
 	return boolMap[name];
 }
 JsonObj<bool> &	SettingsJson::updateb(std::string name) {
@@ -113,7 +177,7 @@ JsonObj<std::string> &	SettingsJson::adds(std::string name) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return stringMap[name];
 	}
-	stringMap.insert(std::pair<std::string, JsonObj<std::string>>(name, JsonObj<std::string>()));
+	stringMap.insert(std::pair<std::string, JsonObj<std::string>>(name, JsonObj<std::string>(name)));
 	return stringMap[name];
 }
 JsonObj<std::string> &	SettingsJson::updates(std::string name) {
@@ -140,7 +204,7 @@ SettingsJson &	SettingsJson::addj(std::string name) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return jsonMap[name].get();
 	}
-	jsonMap.insert(std::pair<std::string, JsonObj<SettingsJson>>(name, JsonObj<SettingsJson>()));
+	jsonMap.insert(std::pair<std::string, JsonObj<SettingsJson>>(name, JsonObj<SettingsJson>(name)));
 	return jsonMap[name].get();
 }
 SettingsJson &	SettingsJson::updatej(std::string name) {

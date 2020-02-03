@@ -27,22 +27,27 @@ int main(int ac, char const **av) {
 	settings.adds("name")
 		.setValue("nibbler");
 
-    settings.addj("test1").addu("okok");
+    settings.addj("test1").addu("okok").setValue(0);
 
     settings.addj("global");
     settings.j("global").addi("fps")
-        .setValue(56);
+		.setMax(40)
+        .setValue(30);
     settings.j("global").adds("test");
 
     settings.j("global").addj("testJson");
 	settings.j("global").j("testJson").addi("le int");
 
-	std::cout << settings.s("name") << " "
-	<< settings.u("width") << "*"<< settings.u("height") << " fps: "
-    << settings.j("global").i("fps")
-    << std::endl;
+	try {
+		if (settings.loadFile("assets/settings.json") == false) {
+			logErr("warnings when loading settings");
+		}
+	}
+	catch(SettingsJson::SettingsException const & e) {
+		logErr(e.what());
+	}
 
-	std::cout << "\"settings.json\": " << settings;
+	std::cout << "\"settings\": " << settings;
 
 	// srand(time(NULL));
 	// initLogs();  // init logs functions

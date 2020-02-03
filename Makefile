@@ -158,7 +158,7 @@ elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
 	mkdir -p $(LIBS_DIR)
 	# json lib
-	wget -O $(LIBS_DIR)/json.hpp https://raw.githubusercontent.com/nlohmann/json/develop/include/nlohmann/json.hpp
+	wget -O $(LIBS_DIR)/json.hpp https://raw.githubusercontent.com/nlohmann/json/8d92ca8/single_include/nlohmann/json.hpp
 fi
 
 exit 0

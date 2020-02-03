@@ -2,15 +2,19 @@
 
 #include <map>
 #include <string>
+#include "json.hpp"
+#include "Logging.hpp"
 
 template<class T>
 class JsonObj {
 	public:
-		JsonObj() : _hasMin(false), _hasMax(false) {}
+		JsonObj() : _name(""), _hasMin(false), _hasMax(false) {}
+		explicit JsonObj(std::string const & name) : _name(name), _hasMin(false), _hasMax(false) {}
 		virtual ~JsonObj() {}
 		JsonObj(JsonObj const & src) { *this = src; }
 		JsonObj & operator=(JsonObj const & rhs) {
 			if (this != &rhs) {
+				_name = rhs._name;
 				_hasMin = rhs._hasMin;
 				_min = rhs._min;
 				_hasMax = rhs._hasMax;
@@ -24,18 +28,30 @@ class JsonObj {
 		T &				get() { return _value; }
 		JsonObj<T> &	setValue(T value) {
 			if (_hasMin && value < _min) {
-				logWarn("unable to set arg (" << value << " < " << _min << ")");
+				logWarn("unable to set arg " << _name << ": " << value << " is less than min value (" << _min << ")");
 				return *this;
 			}
 			if (_hasMax && value > _max) {
-				logWarn("unable to set arg (" << value << " > " << _max << ")");
+				logWarn("unable to set arg " << _name << ": " << value << " is greater than max value (" << _max << ")");
 				return *this;
 			}
 			_value = value;
 			return *this;
 		}
-		JsonObj<T> &	setMin(T value) { _hasMin = true; _min = value; return *this; }
-		JsonObj<T> &	setMax(T value) { _hasMax = true; _max = value; return *this; }
+		bool			checkValue(T value) const {
+			if (_hasMin && value < _min) {
+				return false;
+			}
+			if (_hasMax && value > _max) {
+				return false;
+			}
+			return true;
+		}
+		JsonObj<T> &		setMin(T value) { _hasMin = true; _min = value; return *this; }
+		JsonObj<T> &		setMax(T value) { _hasMax = true; _max = value; return *this; }
+		void				setName(std::string const & name) { _name = name; }
+		std::string	&		getName() { return _name; }
+		std::string	const &	getName() const { return _name; }
 
 		friend std::ostream & operator<<(std::ostream & out, const JsonObj & jsonObj) {
 			out << jsonObj.get();
@@ -43,11 +59,12 @@ class JsonObj {
 		}
 
 	protected:
-		bool	_hasMin;
-		T		_min;
-		bool	_hasMax;
-		T		_max;
-		T		_value;
+		std::string _name;
+		bool		_hasMin;
+		T			_min;
+		bool		_hasMax;
+		T			_max;
+		T			_value;
 };
 
 class SettingsJson {
@@ -57,6 +74,9 @@ class SettingsJson {
 		virtual ~SettingsJson();
 
 		SettingsJson &operator=(SettingsJson const &rhs);
+
+		bool	loadFile(std::string const & filename);
+		bool	loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp);
 
 		// int
 		JsonObj<int64_t> &	addi(std::string name);
