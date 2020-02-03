@@ -1,6 +1,10 @@
 {
-	"width": 20,
-	"global": {
+	"screen": {
+		"width": 1200,
+		"height": 800,
 		"fps": 30
-	}
+	},
+	"boardSize": 20,
+	"canExitBorder": false,
+	"snakeSize": 4
 }

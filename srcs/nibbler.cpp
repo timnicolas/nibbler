@@ -5,6 +5,7 @@
 #include "Logging.hpp"
 #include "ANibblerGui.hpp"
 
+SettingsJson s;
 
 void	initLogs() {
 	// init logging
@@ -17,6 +18,12 @@ void	initLogs() {
 		logging.setLoglevel(LOGINFO);
 	#endif
 	logDebug("using debug mode");
+}
+
+void	initSettings() {
+	s.addj("screen");
+
+	s.j("screen").addi("width", 1200).setMin(400).setMax(4000);
 }
 
 std::chrono::milliseconds getMs() {

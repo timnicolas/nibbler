@@ -88,12 +88,12 @@ bool SettingsJson::loadFile(std::string const &filename) {
 }
 
 // int
-JsonObj<int64_t> &	SettingsJson::addi(std::string name) {
+JsonObj<int64_t> &	SettingsJson::addi(std::string name, int64_t val) {
 	if (intMap.find(name) != intMap.end()) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return intMap[name];
 	}
-	intMap.insert(std::pair<std::string, JsonObj<int64_t>>(name, JsonObj<int64_t>(name)));
+	intMap.insert(std::pair<std::string, JsonObj<int64_t>>(name, JsonObj<int64_t>(name, val)));
 	return intMap[name];
 }
 JsonObj<int64_t> &	SettingsJson::updatei(std::string name) {
@@ -109,12 +109,12 @@ int64_t SettingsJson::geti(std::string name) const {
 	throw SettingsException("undefined setting " + name);
 }
 // uint
-JsonObj<uint64_t> &	SettingsJson::addu(std::string name) {
+JsonObj<uint64_t> &	SettingsJson::addu(std::string name, uint64_t val) {
 	if (uintMap.find(name) != uintMap.end()) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return uintMap[name];
 	}
-	uintMap.insert(std::pair<std::string, JsonObj<uint64_t>>(name, JsonObj<uint64_t>(name)));
+	uintMap.insert(std::pair<std::string, JsonObj<uint64_t>>(name, JsonObj<uint64_t>(name, val)));
 	return uintMap[name];
 }
 JsonObj<uint64_t> &	SettingsJson::updateu(std::string name) {
@@ -130,12 +130,12 @@ uint64_t SettingsJson::getu(std::string name) const {
 	throw SettingsException("undefined setting " + name);
 }
 // double
-JsonObj<double> &	SettingsJson::addf(std::string name) {
+JsonObj<double> &	SettingsJson::addf(std::string name, double val) {
 	if (doubleMap.find(name) != doubleMap.end()) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return doubleMap[name];
 	}
-	doubleMap.insert(std::pair<std::string, JsonObj<double>>(name, JsonObj<double>(name)));
+	doubleMap.insert(std::pair<std::string, JsonObj<double>>(name, JsonObj<double>(name, val)));
 	return doubleMap[name];
 }
 JsonObj<double> &	SettingsJson::updatef(std::string name) {
@@ -151,12 +151,12 @@ double SettingsJson::getf(std::string name) const {
 	throw SettingsException("undefined setting " + name);
 }
 // bool
-JsonObj<bool> &	SettingsJson::addb(std::string name) {
+JsonObj<bool> &	SettingsJson::addb(std::string name, bool val) {
 	if (boolMap.find(name) != boolMap.end()) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return boolMap[name];
 	}
-	boolMap.insert(std::pair<std::string, JsonObj<bool>>(name, JsonObj<bool>(name)));
+	boolMap.insert(std::pair<std::string, JsonObj<bool>>(name, JsonObj<bool>(name, val)));
 	return boolMap[name];
 }
 JsonObj<bool> &	SettingsJson::updateb(std::string name) {
@@ -172,12 +172,12 @@ bool SettingsJson::getb(std::string name) const {
 	throw SettingsException("undefined setting " + name);
 }
 // string
-JsonObj<std::string> &	SettingsJson::adds(std::string name) {
+JsonObj<std::string> &	SettingsJson::adds(std::string name, std::string const & val) {
 	if (stringMap.find(name) != stringMap.end()) {
 		logWarn("cannot add setting " << name << ": setting already exist");
 		return stringMap[name];
 	}
-	stringMap.insert(std::pair<std::string, JsonObj<std::string>>(name, JsonObj<std::string>(name)));
+	stringMap.insert(std::pair<std::string, JsonObj<std::string>>(name, JsonObj<std::string>(name, val)));
 	return stringMap[name];
 }
 JsonObj<std::string> &	SettingsJson::updates(std::string name) {

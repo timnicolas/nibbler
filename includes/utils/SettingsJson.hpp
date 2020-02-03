@@ -10,6 +10,7 @@ class JsonObj {
 	public:
 		JsonObj() : _name(""), _hasMin(false), _hasMax(false) {}
 		explicit JsonObj(std::string const & name) : _name(name), _hasMin(false), _hasMax(false) {}
+		JsonObj(std::string const & name, T val) : _name(name), _value(val), _hasMin(false), _hasMax(false) {}
 		virtual ~JsonObj() {}
 		JsonObj(JsonObj const & src) { *this = src; }
 		JsonObj & operator=(JsonObj const & rhs) {
@@ -60,11 +61,11 @@ class JsonObj {
 
 	protected:
 		std::string _name;
+		T			_value;
 		bool		_hasMin;
 		T			_min;
 		bool		_hasMax;
 		T			_max;
-		T			_value;
 };
 
 class SettingsJson {
@@ -79,27 +80,27 @@ class SettingsJson {
 		bool	loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp);
 
 		// int
-		JsonObj<int64_t> &	addi(std::string name);
+		JsonObj<int64_t> &	addi(std::string name, int64_t val = 0);
 		JsonObj<int64_t> &	updatei(std::string name);
 		int64_t				geti(std::string name) const;
 		int64_t				i(std::string name) const;
 		// uint
-		JsonObj<uint64_t> &	addu(std::string name);
+		JsonObj<uint64_t> &	addu(std::string name, uint64_t val = 0);
 		JsonObj<uint64_t> &	updateu(std::string name);
 		uint64_t			getu(std::string name) const;
 		uint64_t			u(std::string name) const;
 		// double
-		JsonObj<double> &	addf(std::string name);
+		JsonObj<double> &	addf(std::string name, double val = 0.0);
 		JsonObj<double> &	updatef(std::string name);
 		double				getf(std::string name) const;
 		double				f(std::string name) const;
 		// bool
-		JsonObj<bool> &	addb(std::string name);
+		JsonObj<bool> &	addb(std::string name, bool val = false);
 		JsonObj<bool> &	updateb(std::string name);
 		bool			getb(std::string name) const;
 		bool			b(std::string name) const;
 		// string
-		JsonObj<std::string> &	adds(std::string name);
+		JsonObj<std::string> &	adds(std::string name, std::string const & val = "");
 		JsonObj<std::string> &	updates(std::string name);
 		std::string const &		gets(std::string name) const;
 		std::string &			gets(std::string name);

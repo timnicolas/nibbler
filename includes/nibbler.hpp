@@ -13,6 +13,10 @@
 #define SPEED		100  // time to go to the next block
 
 #include "DynGuiManager.hpp"
+#include "SettingsJson.hpp"
 
 void						initLogs();
+void						initSettings();
 std::chrono::milliseconds	getMs();
+
+extern SettingsJson s;

@@ -13,33 +13,9 @@ int main(int ac, char const **av) {
 	(void)av;
 	Game	game;
 
-	SettingsJson settings;
-
-	settings.addu("width")
-		.setMin(5)
-		.setMax(20)
-		.setValue(12);
-	settings.addu("height")
-		.setMin(5)
-		.setMax(20)
-		.setValue(20);
-
-	settings.adds("name")
-		.setValue("nibbler");
-
-    settings.addj("test1").addu("okok").setValue(0);
-
-    settings.addj("global");
-    settings.j("global").addi("fps")
-		.setMax(40)
-        .setValue(30);
-    settings.j("global").adds("test");
-
-    settings.j("global").addj("testJson");
-	settings.j("global").j("testJson").addi("le int");
-
+	initSettings();
 	try {
-		if (settings.loadFile("assets/settings.json") == false) {
+		if (s.loadFile("assets/settings.json") == false) {
 			logErr("warnings when loading settings");
 		}
 	}
@@ -47,7 +23,7 @@ int main(int ac, char const **av) {
 		logErr(e.what());
 	}
 
-	std::cout << "\"settings\": " << settings;
+	std::cout << "\"settings\": " << s;
 
 	// srand(time(NULL));
 	// initLogs();  // init logs functions
