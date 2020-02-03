@@ -8,6 +8,17 @@ class JsonObj {
 	public:
 		JsonObj() : _hasMin(false), _hasMax(false) {}
 		virtual ~JsonObj() {}
+		JsonObj(JsonObj const & src) { *this = src; }
+		JsonObj & operator=(JsonObj const & rhs) {
+			if (this != &rhs) {
+				_hasMin = rhs._hasMin;
+				_min = rhs._min;
+				_hasMax = rhs._hasMax;
+				_max = rhs._max;
+				_value = rhs._value;
+			}
+			return *this;
+		}
 
 		T const &		get() const { return _value; }
 		T &				get() { return _value; }
@@ -89,8 +100,8 @@ class SettingsJson {
 				explicit SettingsException(const std::string what_arg);
 		};
 
-		std::map<std::string, JsonObj<uint64_t>>		uintMap;  // u
 		std::map<std::string, JsonObj<int64_t>>			intMap;  // i
+		std::map<std::string, JsonObj<uint64_t>>		uintMap;  // u
 		std::map<std::string, JsonObj<double>>			doubleMap;  // f
 		std::map<std::string, JsonObj<bool>>			boolMap;  // b
 		std::map<std::string, JsonObj<std::string>>		stringMap;  // s

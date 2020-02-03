@@ -12,8 +12,14 @@ SettingsJson::~SettingsJson() {
 }
 
 SettingsJson &SettingsJson::operator=(SettingsJson const &rhs) {
-	(void)rhs;
-	// if (this != &rhs) {}
+	if (this != &rhs) {
+		intMap = rhs.intMap;
+		uintMap = rhs.uintMap;
+		doubleMap = rhs.doubleMap;
+		boolMap = rhs.boolMap;
+		stringMap = rhs.stringMap;
+		jsonMap = rhs.jsonMap;
+	}
 	return *this;
 }
 
