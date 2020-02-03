@@ -89,13 +89,12 @@ class SettingsJson {
 				explicit SettingsException(const std::string what_arg);
 		};
 
-	// private:
-		std::map<std::string, JsonObj<uint64_t>>		_uintMap;  // u
-		std::map<std::string, JsonObj<int64_t>>			_intMap;  // i
-		std::map<std::string, JsonObj<double>>			_doubleMap;  // f
-		std::map<std::string, JsonObj<bool>>			_boolMap;  // b
-		std::map<std::string, JsonObj<std::string>>		_stringMap;  // s
-		std::map<std::string, JsonObj<SettingsJson>>	_jsonMap;  // j
+		std::map<std::string, JsonObj<uint64_t>>		uintMap;  // u
+		std::map<std::string, JsonObj<int64_t>>			intMap;  // i
+		std::map<std::string, JsonObj<double>>			doubleMap;  // f
+		std::map<std::string, JsonObj<bool>>			boolMap;  // b
+		std::map<std::string, JsonObj<std::string>>		stringMap;  // s
+		std::map<std::string, JsonObj<SettingsJson>>	jsonMap;  // j
 };
 
 std::ostream & operator<<(std::ostream & o, const SettingsJson & s);
