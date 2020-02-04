@@ -9,8 +9,9 @@
 #include "SettingsJson.hpp"
 
 void						initLogs();
-void						initSettings(std::string const & filename);
-void						initUserData(std::string const & filename);
+bool						initSettings(std::string const & filename);
+bool						initUserData(std::string const & filename);
+bool						saveUserData(std::string const & filename);
 std::chrono::milliseconds	getMs();
 
 extern SettingsJson s;

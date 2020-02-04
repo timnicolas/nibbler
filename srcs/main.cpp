@@ -13,7 +13,7 @@ int main(int ac, char const **av) {
 	(void)av;
 	initLogs();  // init logs functions
 	initSettings("assets/settings.json");
-	initUserData("assets/userData.json");
+	initUserData(s.s("userDataFilename"));
 
 	srand(time(NULL));
 	Game	game;
@@ -29,12 +29,6 @@ int main(int ac, char const **av) {
 		return EXIT_FAILURE;
 	}
 
-	std::cout << s.toString();
-	std::cout << userData.toString();
-
-	SettingsJson ss;
-	ss.addj("a");  // .addj("a");
-	std::cout << ss;
-
+	saveUserData(s.s("userDataFilename"));
 	return EXIT_SUCCESS;
 }

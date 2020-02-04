@@ -58,7 +58,7 @@ class JsonObj {
 		std::string	const &	getName() const { return _name; }
 
 		friend std::ostream & operator<<(std::ostream & out, const JsonObj & jsonObj) {
-			out << jsonObj.get();
+			out << std::boolalpha << jsonObj.get();
 			return out;
 		}
 
@@ -81,6 +81,7 @@ class SettingsJson {
 
 		bool		loadFile(std::string const & filename);
 		bool		loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp);
+		void		saveToFile(std::string const & filename);
 		std::string	toString() const;
 
 		// int

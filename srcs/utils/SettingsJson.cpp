@@ -87,6 +87,18 @@ bool SettingsJson::loadFile(std::string const &filename) {
 	return true;
 }
 
+void SettingsJson::saveToFile(std::string const & filename) {
+	std::ofstream settingsFile(filename);
+	if (settingsFile.fail()) {
+		throw SettingsException("unable to save settings file " + filename + ": " + strerror(errno));
+	}
+	settingsFile << toString();
+	if (settingsFile.fail()) {
+		throw SettingsException("unable to save settings file " + filename + ": " + strerror(errno));
+	}
+	settingsFile.close();
+}
+
 std::string SettingsJson::toString() const {
 	std::ostringstream out;
 	out << *this;
@@ -258,64 +270,57 @@ SettingsJson & SettingsJson::getj(std::string name) {
 
 // -- cout --------------------------------------------------------
 template<class T>
-int jsonString(std::ostream & out, T const & map, int nbTab,
+int jsonString(std::ostream & out, T const & map, int nbTab, int nbElemRemain,
 std::string const & before = "", std::string const & after = "") {
-	int i = 0;
 	for (auto it = map.begin(); it != map.end(); it++) {
+		nbElemRemain--;
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
-		out << '"' << it->first << "\": " << before << it->second.get() << after << "," << std::endl;
-		i++;
+		out << '"' << it->first << "\": " << before << it->second << after;
+		if (nbElemRemain > 0)
+			out << ",";
+		out << std::endl;
 	}
-	return i;
+	return map.size();
 }
 
 int jsonStringRecursiv(std::ostream & out, std::map<std::string, JsonObj<SettingsJson>> const & map, int nbTab) {
-	int nbJson = 0;
+	int nbRem = map.size();
 	for (auto it = map.begin(); it != map.end(); it++) {
-		int i = 0;
+		nbRem--;
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
-		out << '"' <<  it->first << "\": {" << std::endl;
-		i += jsonString<std::map<std::string, JsonObj<std::string>>>(out, it->second.get().stringMap, nbTab + 1, "\"", "\"");
-		i += jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, it->second.get().uintMap, nbTab + 1);
-		i += jsonString<std::map<std::string, JsonObj<int64_t>>>(out, it->second.get().intMap, nbTab + 1);
-		i += jsonString<std::map<std::string, JsonObj<double>>>(out, it->second.get().doubleMap, nbTab + 1);
-		i += jsonString<std::map<std::string, JsonObj<bool>>>(out, it->second.get().boolMap, nbTab + 1);
-		i += jsonStringRecursiv(out, it->second.get().jsonMap, nbTab + 1);
-		// if (i > 0) {
-		// 	out.seekp(static_cast<long>(out.tellp()) - 2);
-		// 	out << " " << std::endl;
-		// }
+		if (it->first == "")
+			out << "{" << std::endl;
+		else
+			out << '"' <<  it->first << "\": {" << std::endl;
+		int nbElem = it->second.get().stringMap.size()
+					+ it->second.get().uintMap.size()
+					+ it->second.get().intMap.size()
+					+ it->second.get().doubleMap.size()
+					+ it->second.get().boolMap.size()
+					+ it->second.get().jsonMap.size();
+		nbElem -= jsonString<std::map<std::string, JsonObj<std::string>>>(out, it->second.get().stringMap, nbTab + 1,
+																			nbElem, "\"", "\"");
+		nbElem -= jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, it->second.get().uintMap, nbTab + 1, nbElem);
+		nbElem -= jsonString<std::map<std::string, JsonObj<int64_t>>>(out, it->second.get().intMap, nbTab + 1, nbElem);
+		nbElem -= jsonString<std::map<std::string, JsonObj<double>>>(out, it->second.get().doubleMap, nbTab + 1, nbElem);
+		nbElem -= jsonString<std::map<std::string, JsonObj<bool>>>(out, it->second.get().boolMap, nbTab + 1, nbElem);
+		nbElem -= jsonStringRecursiv(out, it->second.get().jsonMap, nbTab + 1);
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
-		out << "}," << std::endl;
-		nbJson += 1;
+		out << "}";
+		if (nbRem > 0)
+			out << ",";
+		out << std::endl;
 	}
-	// if (nbJson > 0) {
-	// 	out.seekp(static_cast<long>(out.tellp()) - 2);
-	// 	out << " " << std::endl;
-	// }
-	return nbJson;
+	return map.size();
 }
 
 std::ostream & operator<<(std::ostream & out, const SettingsJson & s) {
-	out << "{" << std::endl;
-	int nbTab = 0;
-	int i = 0;
-	i += jsonString<std::map<std::string, JsonObj<std::string>>>(out, s.stringMap, nbTab + 1, "\"", "\"");
-	i += jsonString<std::map<std::string, JsonObj<uint64_t>>>(out, s.uintMap, nbTab + 1);
-	i += jsonString<std::map<std::string, JsonObj<int64_t>>>(out, s.intMap, nbTab + 1);
-	i += jsonString<std::map<std::string, JsonObj<double>>>(out, s.doubleMap, nbTab + 1);
-	i += jsonString<std::map<std::string, JsonObj<bool>>>(out, s.boolMap, nbTab + 1);
-	i += jsonStringRecursiv(out, s.jsonMap, 1);
-	// if (i > 0) {
-	// 	out.seekp(static_cast<int>(out.tellp()) - 2);
-	// 	out << " " << std::endl;
-	// }
-	for (int i = 0; i < nbTab; i++)
-		out << "\t";
-	out << "}" << std::endl;
+	std::map<std::string, JsonObj<SettingsJson>> map;
+	map.insert(std::pair<std::string, JsonObj<SettingsJson>>("", JsonObj<SettingsJson>("", s)));
+	jsonStringRecursiv(out, map, 0);
 	return out;
 }
 

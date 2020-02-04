@@ -1,11 +1,13 @@
 {
-	"screen": {
-		"width": 400,
-		"height": 400,
-		"fps": 60
-	},
+	"userDataFilename": "assets/userData.json",
 	"boardSize": 20,
-	"canExitBorder": true,
 	"snakeSize": 4,
-	"speedMs": 100
+	"speedMs": 100,
+	"canExitBorder": true,
+	"screen": {
+		"name": "nibbler",
+		"fps": 60,
+		"height": 400,
+		"width": 400
+	}
 }
