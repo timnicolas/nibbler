@@ -150,6 +150,21 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		text.setString("Best: " + std::to_string(_gameInfo->bestScore));
 		text.setPosition(textX, textY);
 		_win.draw(text);
+
+		textY += textLnStep;
+		textY += textLnStep;
+		text.setString("space: pause");
+		text.setPosition(textX, textY);
+		_win.draw(text);
+		textY += textLnStep;
+		text.setString("arrow: turn");
+		text.setPosition(textX, textY);
+		_win.draw(text);
+		textY += textLnStep;
+		text.setString("r: restart");
+		text.setPosition(textX, textY);
+		_win.draw(text);
+		textY += textLnStep;
 	}
 
 	if (_gameInfo->win || _gameInfo->gameOver || _gameInfo->paused) {

@@ -31,9 +31,9 @@ bool	initSettings(std::string const & filename) {
 		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120).setDescription("framerate");
 	s.add<std::string>("userDataFilename", "assets/userData.json").disableInFile(true);
 	s.add<std::string>("font", "assets/fonts/Pacifico.json").setDescription("main font ttf file");
-	s.add<uint64_t>("boardSize", 20).setMin(5).setMax(50).setDescription("size of the snake board");
+	s.add<uint64_t>("boardSize", 20).setMin(8).setMax(50).setDescription("size of the snake board");
 	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
-	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(40).setDescription("starting size of the snake");
+	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");
 	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");
 	s.add<bool>("canExitBorder", false).setDescription("if true, the cannot die in front of the borders");
 

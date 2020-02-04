@@ -8,7 +8,7 @@
 #include "SettingsJson.hpp"
 #include "Game.hpp"
 
-int main(int ac, char const **av) {
+int start(int ac, char const **av) {
 	(void)ac;
 	(void)av;
 	initLogs();  // init logs functions
@@ -41,6 +41,11 @@ int main(int ac, char const **av) {
 	}
 
 	saveUserData(s.s("userDataFilename"));
-
 	return EXIT_SUCCESS;
+}
+
+int main(int ac, char const **av) {
+	int ret = start(ac, av);
+
+	return ret;
 }
