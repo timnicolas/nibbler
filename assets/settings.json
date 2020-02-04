@@ -3,7 +3,7 @@
 	"font": "assets/fonts/Pacifico.ttf",
 	"boardSize": 20,
 	"startGui": 1,
-	"snakeSize": 40,
+	"snakeSize": 4,
 	"speedMs": 100,
 	"canExitBorder": true,
 	"screen": {

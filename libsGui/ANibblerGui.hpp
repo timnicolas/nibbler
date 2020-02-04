@@ -7,13 +7,15 @@
 #include <iostream>
 #include <deque>
 
-#define SQUARE_COLOR_1	0x323D4D
-#define SQUARE_COLOR_2	0x27313D
-#define SNAKE_COLOR_1	0x024fd6
-#define SNAKE_COLOR_2	0x4C90FF
-#define FOOD_COLOR		0xFF0000
-#define BORDER_COLOR	0xAAAAAA
-#define TEXT_COLOR		0xAAAAAA
+#define SQUARE_COLOR_1		0x323D4D
+#define SQUARE_COLOR_2		0x27313D
+#define SNAKE_COLOR_1		0x024fd6
+#define SNAKE_COLOR_2		0x4C90FF
+#define FOOD_COLOR			0xFF0000
+#define BORDER_COLOR		0xAAAAAA
+#define TEXT_COLOR			0xAAAAAA
+#define TEXT_WIN_COLOR		0x00FF00
+#define TEXT_GAMEOVER_COLOR	0xFF0000
 
 #define GET_R(color) ((color >> 16) & 0xFF)
 #define GET_G(color) ((color >>  8) & 0xFF)

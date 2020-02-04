@@ -131,23 +131,50 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		_win.draw(rect);
 	}
 
-	sf::Text text;
-	float textSize = _gameInfo->width / 35.0;
-	float textX = size + 2 * BORDER_SIZE + 10;
-	float textY = 5;
-	float textLnStep = textSize * 1.2;
-	text.setFont(_font);
-	text.setCharacterSize(textSize);
-	text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
+    {
+		// right band information
+		sf::Text text;
+		float textSize = _gameInfo->width / 35.0;
+		float textX = size + 2 * BORDER_SIZE + 10;
+		float textY = 5;
+		float textLnStep = textSize * 1.2;
+		text.setFont(_font);
+		text.setCharacterSize(textSize);
+		text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
 
-	text.setString("Score: " + std::to_string(snake.size()));
-	text.setPosition(textX, textY);
-	_win.draw(text);
+		text.setString("Score: " + std::to_string(snake.size()));
+		text.setPosition(textX, textY);
+		_win.draw(text);
 
-	textY += textLnStep;
-	text.setString("Best: " + std::to_string(_gameInfo->bestScore));
-	text.setPosition(textX, textY);
-	_win.draw(text);
+		textY += textLnStep;
+		text.setString("Best: " + std::to_string(_gameInfo->bestScore));
+		text.setPosition(textX, textY);
+		_win.draw(text);
+	}
+
+	if (_gameInfo->win || _gameInfo->gameOver || _gameInfo->paused) {
+		sf::Text text;
+		float textSize = _gameInfo->width / 10.0;
+		float textX = size / 3;
+		float textY = _gameInfo->height / 2 - textSize;
+		text.setFont(_font);
+		text.setCharacterSize(textSize);
+		text.setPosition(textX, textY);
+
+		if (_gameInfo->win) {
+			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_WIN_COLOR)));
+			text.setString("You win !");
+		}
+		else if (_gameInfo->gameOver) {
+			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_GAMEOVER_COLOR)));
+			text.setString("Game over");
+		}
+		else if (_gameInfo->paused) {
+			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
+			text.setString("Pause");
+		}
+		_win.draw(text);
+	}
 
 	_win.display();
 	return true;
