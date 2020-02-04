@@ -44,24 +44,54 @@ bool SettingsJson::loadJson(nlohmann::json const & json, SettingsJson & jsonObjT
 		}
 		else {
 			if (it->is_number_integer() && jsonObjTmp.intMap.find(it.key()) != jsonObjTmp.intMap.end()) {
-				ret &= jsonObjTmp.update<int64_t>(it.key()).checkValue(it->get<int64_t>());
-				jsonObjTmp.update<int64_t>(it.key()).setValue(it->get<int64_t>());
+				if (jsonObjTmp.update<int64_t>(it.key()).isDisabledInFile()) {
+					logWarn("you can't set " << it.key() << " in setting file");
+					ret = false;
+				}
+				else {
+					ret &= jsonObjTmp.update<int64_t>(it.key()).checkValue(it->get<int64_t>());
+					jsonObjTmp.update<int64_t>(it.key()).setValue(it->get<int64_t>());
+				}
 			}
 			else if (it->is_number_unsigned() && jsonObjTmp.uintMap.find(it.key()) != jsonObjTmp.uintMap.end()) {
-				ret &= jsonObjTmp.update<uint64_t>(it.key()).checkValue(it->get<uint64_t>());
-				jsonObjTmp.update<uint64_t>(it.key()).setValue(it->get<uint64_t>());
+				if (jsonObjTmp.update<uint64_t>(it.key()).isDisabledInFile()) {
+					logWarn("you can't set " << it.key() << " in setting file");
+					ret = false;
+				}
+				else {
+					ret &= jsonObjTmp.update<uint64_t>(it.key()).checkValue(it->get<uint64_t>());
+					jsonObjTmp.update<uint64_t>(it.key()).setValue(it->get<uint64_t>());
+				}
 			}
 			else if (it->is_number_float() && jsonObjTmp.doubleMap.find(it.key()) != jsonObjTmp.doubleMap.end()) {
-				ret &= jsonObjTmp.update<float>(it.key()).checkValue(it->get<double>());
-				jsonObjTmp.update<float>(it.key()).setValue(it->get<double>());
+				if (jsonObjTmp.update<double>(it.key()).isDisabledInFile()) {
+					logWarn("you can't set " << it.key() << " in setting file");
+					ret = false;
+				}
+				else {
+					ret &= jsonObjTmp.update<double>(it.key()).checkValue(it->get<double>());
+					jsonObjTmp.update<double>(it.key()).setValue(it->get<double>());
+				}
 			}
 			else if (it->is_boolean() && jsonObjTmp.boolMap.find(it.key()) != jsonObjTmp.boolMap.end()) {
-				ret &= jsonObjTmp.update<bool>(it.key()).checkValue(it->get<bool>());
-				jsonObjTmp.update<bool>(it.key()).setValue(it->get<bool>());
+				if (jsonObjTmp.update<bool>(it.key()).isDisabledInFile()) {
+					logWarn("you can't set " << it.key() << " in setting file");
+					ret = false;
+				}
+				else {
+					ret &= jsonObjTmp.update<bool>(it.key()).checkValue(it->get<bool>());
+					jsonObjTmp.update<bool>(it.key()).setValue(it->get<bool>());
+				}
 			}
 			else if (it->is_string() && jsonObjTmp.stringMap.find(it.key()) != jsonObjTmp.stringMap.end()) {
-				ret &= jsonObjTmp.update<std::string>(it.key()).checkValue(it->get<std::string>());
-				jsonObjTmp.update<std::string>(it.key()).setValue(it->get<std::string>());
+				if (jsonObjTmp.update<std::string>(it.key()).isDisabledInFile()) {
+					logWarn("you can't set " << it.key() << " in setting file");
+					ret = false;
+				}
+				else {
+					ret &= jsonObjTmp.update<std::string>(it.key()).checkValue(it->get<std::string>());
+					jsonObjTmp.update<std::string>(it.key()).setValue(it->get<std::string>());
+				}
 			}
 			else {
 				ret = false;

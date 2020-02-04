@@ -10,9 +10,9 @@
 template<class T>
 class JsonObj {
 	public:
-		JsonObj() : _name(""), _hasMin(false), _hasMax(false) {}
-		explicit JsonObj(std::string const & name) : _name(name), _hasMin(false), _hasMax(false) {}
-		JsonObj(std::string const & name, T const & val) : _name(name), _value(val), _hasMin(false), _hasMax(false) {}
+		JsonObj() { init(); }
+		explicit JsonObj(std::string const & name) { init(name); }
+		JsonObj(std::string const & name, T const & val) : _value(val) { init(name); }
 		virtual ~JsonObj() {}
 		JsonObj(JsonObj const & src) { *this = src; }
 		JsonObj & operator=(JsonObj const & rhs) {
@@ -26,6 +26,12 @@ class JsonObj {
 				_value = rhs._value;
 			}
 			return *this;
+		}
+		void init(std::string const & name = "") {
+			_name = name;
+			_hasMin = false;
+			_hasMax = false;
+			_disableInFile = false;
 		}
 
 		T const &		get() const { return _value; }
@@ -53,6 +59,8 @@ class JsonObj {
 		}
 		JsonObj<T> &		setMin(T value) { _hasMin = true; _min = value; return *this; }
 		JsonObj<T> &		setMax(T value) { _hasMax = true; _max = value; return *this; }
+		JsonObj<T> &		disableInFile(bool disable) { _disableInFile = disable; return *this; }
+		bool				isDisabledInFile() { return _disableInFile; }
 		void				setName(std::string const & name) { _name = name; }
 		std::string	&		getName() { return _name; }
 		std::string	const &	getName() const { return _name; }
@@ -69,6 +77,7 @@ class JsonObj {
 		T			_min;
 		bool		_hasMax;
 		T			_max;
+		bool		_disableInFile;
 };
 
 class SettingsJson {

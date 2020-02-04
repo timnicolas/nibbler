@@ -25,7 +25,7 @@ bool	initSettings(std::string const & filename) {
 	s.add<SettingsJson>("screen");
 		s.j("screen").add<std::string>("name", "nibbler");
 		s.j("screen").add<uint64_t>("width", 1200).setMin(400).setMax(4000);
-		s.j("screen").add<uint64_t>("height", 800).setMin(400).setMax(4000);
+		s.j("screen").add<uint64_t>("height", 800).setMin(400).setMax(4000).disableInFile(true);
 		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120);
 	s.add<std::string>("userDataFilename", "assets/userData.json");
 	s.add<std::string>("font", "assets/fonts/Pacifico.json");
