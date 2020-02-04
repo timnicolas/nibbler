@@ -101,7 +101,7 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l sfml-graphics -l sfml-window -l sfml-system
+LIBS_FLAGS			= -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		=
 # flags for libs on LINUX only
@@ -123,7 +123,7 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
-	brew install sfml
+	brew install sdl2 sdl2_ttf sdl2_image SDL2_gfx
 fi
 
 exit 0

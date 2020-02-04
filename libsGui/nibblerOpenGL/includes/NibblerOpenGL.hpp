@@ -1,14 +1,9 @@
 #pragma once
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
 #include "ANibblerGui.hpp"
-
-#define WIDTH 800
-#define HEIGHT 600
-
-#define TO_OPENGL_COLOR(color) ((GET_R(color) << 24) + (GET_G(color) << 16) + (GET_B(color) << 8) + 0xFF)
 
 class NibblerOpenGL : public ANibblerGui {
 	public:
@@ -21,9 +16,9 @@ class NibblerOpenGL : public ANibblerGui {
 		virtual bool	draw(std::deque<Vec2> & snake, std::deque<Vec2> & food);
 
 	private:
-		sf::RenderWindow	_win;
-		sf::Event			_event;
-		sf::Font			_font;
+		SDL_Window *	_win;
+		SDL_Surface *	_surface;
+		SDL_Event *		_event;
 
 		virtual bool	_init();
 };

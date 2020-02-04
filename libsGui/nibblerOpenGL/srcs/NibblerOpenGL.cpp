@@ -2,7 +2,8 @@
 #include "Logging.hpp"
 
 NibblerOpenGL::NibblerOpenGL() :
-  _win() {
+  _win(nullptr),
+  _event(new SDL_Event()) {
 	// init logging
 	#if DEBUG
 		logging.setLoglevel(LOGDEBUG);
@@ -16,7 +17,9 @@ NibblerOpenGL::NibblerOpenGL() :
 
 NibblerOpenGL::~NibblerOpenGL() {
 	logInfo("exit OpenGL");
-	_win.close();
+	delete _event;
+	SDL_DestroyWindow(_win);
+    SDL_Quit();
 }
 
 NibblerOpenGL::NibblerOpenGL(NibblerOpenGL const &src) {
@@ -25,7 +28,9 @@ NibblerOpenGL::NibblerOpenGL(NibblerOpenGL const &src) {
 
 NibblerOpenGL &NibblerOpenGL::operator=(NibblerOpenGL const &rhs) {
 	if (this != &rhs) {
-		logErr("unable to copy NibblerOpenGL");
+		_win = rhs._win;
+		_surface = rhs._surface;
+		_event = rhs._event;
 	}
 	return *this;
 }
@@ -33,10 +38,24 @@ NibblerOpenGL &NibblerOpenGL::operator=(NibblerOpenGL const &rhs) {
 bool NibblerOpenGL::_init() {
 	logInfo("loading OpenGL");
 
-	_win.create(sf::VideoMode(_gameInfo->width, _gameInfo->height), _gameInfo->title + " OpenGL");
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        logErr("while loading OpenGL: " << SDL_GetError());
+        SDL_Quit();
+		return false;
+    }
 
-	if (!_font.loadFromFile(_gameInfo->font)) {
-    	logErr("unable to load font " << _gameInfo->font);
+	_win = SDL_CreateWindow((_gameInfo->title + " OpenGL").c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		_gameInfo->width, _gameInfo->height, SDL_WINDOW_SHOWN);
+	if (_win == nullptr) {
+        logErr("while loading OpenGL: " << SDL_GetError());
+		SDL_Quit();
+		return false;
+	}
+
+	_surface = SDL_GetWindowSurface(_win);
+	if (_surface == nullptr) {
+        logErr("while loading OpenGL: " << SDL_GetError());
+		SDL_Quit();
 		return false;
 	}
 
@@ -44,50 +63,38 @@ bool NibblerOpenGL::_init() {
 }
 
 void NibblerOpenGL::updateInput() {
-	while (_win.pollEvent(_event)) {
-		switch (_event.type) {
-			// window closed
-			case sf::Event::Closed:
-				input.quit = true;
-				break;
+	while (SDL_PollEvent(_event)) {
+		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
+			input.quit = true;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
+			input.quit = true;
 
-			// key pressed
-			case sf::Event::KeyPressed:
-				if (_event.key.code == sf::Keyboard::Escape)
-					input.quit = true;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_SPACE)
+			input.paused = !input.paused;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_r)
+			input.restart = true;
 
-				else if (_event.key.code == sf::Keyboard::Space)
-					input.paused = !input.paused;
-				else if (_event.key.code == sf::Keyboard::R)
-					input.restart = true;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
+			input.direction = Direction::MOVE_UP;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN)
+			input.direction = Direction::MOVE_DOWN;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT)
+			input.direction = Direction::MOVE_LEFT;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT)
+			input.direction = Direction::MOVE_RIGHT;
 
-				else if (_event.key.code == sf::Keyboard::Up)
-					input.direction = Direction::MOVE_UP;
-				else if (_event.key.code == sf::Keyboard::Down)
-					input.direction = Direction::MOVE_DOWN;
-				else if (_event.key.code == sf::Keyboard::Left)
-					input.direction = Direction::MOVE_LEFT;
-				else if (_event.key.code == sf::Keyboard::Right)
-					input.direction = Direction::MOVE_RIGHT;
-
-
-				else if (_event.key.code == sf::Keyboard::Num1)
-					input.loadGuiID = 0;
-				else if (_event.key.code == sf::Keyboard::Num2)
-					input.loadGuiID = 1;
-				else if (_event.key.code == sf::Keyboard::Num3)
-					input.loadGuiID = 2;
-				break;
-
-			default:
-				break;
-		}
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
+			input.loadGuiID = 0;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_2)
+			input.loadGuiID = 1;
+		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_3)
+			input.loadGuiID = 2;
 	}
 }
 
 bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	// clear screen
-	_win.clear();
+	SDL_FillRect(_surface, NULL, 0x000000);
 
 	// set the size of the square
 	float startX = BORDER_SIZE;
@@ -96,102 +103,55 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	float step = size / _gameInfo->boardSize;
 
 	// border
-	sf::RectangleShape rect(sf::Vector2f(size + (2 * BORDER_SIZE), size + (2 * BORDER_SIZE)));
-	rect.setPosition(startX - BORDER_SIZE, startY - BORDER_SIZE);
-	rect.setFillColor(sf::Color(TO_OPENGL_COLOR(BORDER_COLOR)));
-	_win.draw(rect);
+	SDL_Rect rect = {
+		static_cast<int>(startX - BORDER_SIZE),
+		static_cast<int>(startY - BORDER_SIZE),
+		static_cast<int>(size + (2 * BORDER_SIZE)),
+		static_cast<int>(size + (2 * BORDER_SIZE)),
+	};
+	SDL_FillRect(_surface, &rect, BORDER_COLOR);
 
 
 	// draw board
 	for (int i = 0; i < _gameInfo->boardSize; i++) {
 		for (int j = 0; j < _gameInfo->boardSize; j++) {
-			sf::RectangleShape rect(sf::Vector2f(step, step));
-			rect.setPosition(startX + step * i, startY + step * j);
+			SDL_Rect rect = {
+				static_cast<int>(startX + step * i),
+				static_cast<int>(startY + step * j),
+				static_cast<int>(step + 0.5),
+				static_cast<int>(step + 0.5),
+			};
 			uint32_t color = ((i + j) & 1) ? SQUARE_COLOR_1 : SQUARE_COLOR_2;
-			rect.setFillColor(sf::Color(TO_OPENGL_COLOR(color)));
-			_win.draw(rect);
+			SDL_FillRect(_surface, &rect, color);
 		}
 	}
 	// draw snake
 	int		i = 0;
 	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
 	for (auto it = snake.begin(); it != snake.end(); it++) {
-		sf::RectangleShape rect(sf::Vector2f(step, step));
-		rect.setPosition(startX + step * it->x, startY + step * it->y);
-		uint32_t color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
-		rect.setFillColor(sf::Color(TO_OPENGL_COLOR(color)));
-		_win.draw(rect);
+		SDL_Rect rect = {
+			static_cast<int>(startX + step * it->x),
+			static_cast<int>(startY + step * it->y),
+			static_cast<int>(step + 0.5),
+			static_cast<int>(step + 0.5),
+		};
+		uint32_t	color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
+		SDL_FillRect(_surface, &rect, color);
 		i++;
 	}
 	// draw food
 	for (auto it = food.begin(); it != food.end(); it++) {
-		sf::RectangleShape rect(sf::Vector2f(step, step));
-		rect.setPosition(startX + step * it->x, startY + step * it->y);
-		rect.setFillColor(sf::Color(TO_OPENGL_COLOR(FOOD_COLOR)));
-		_win.draw(rect);
+		SDL_Rect rect = {
+			static_cast<int>(startX + step * it->x),
+			static_cast<int>(startY + step * it->y),
+			static_cast<int>(step + 0.5),
+			static_cast<int>(step + 0.5),
+		};
+		SDL_FillRect(_surface, &rect, FOOD_COLOR);
 	}
 
-    {
-		// right band information
-		sf::Text text;
-		float textSize = _gameInfo->width / 35.0;
-		float textX = size + 2 * BORDER_SIZE + 10;
-		float textY = 5;
-		float textLnStep = textSize * 1.2;
-		text.setFont(_font);
-		text.setCharacterSize(textSize);
-		text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_COLOR)));
-
-		text.setString("Score: " + std::to_string(snake.size()));
-		text.setPosition(textX, textY);
-		_win.draw(text);
-
-		textY += textLnStep;
-		text.setString("Best: " + std::to_string(_gameInfo->bestScore));
-		text.setPosition(textX, textY);
-		_win.draw(text);
-
-		textY += textLnStep;
-		textY += textLnStep;
-		text.setString("space: pause");
-		text.setPosition(textX, textY);
-		_win.draw(text);
-		textY += textLnStep;
-		text.setString("arrow: turn");
-		text.setPosition(textX, textY);
-		_win.draw(text);
-		textY += textLnStep;
-		text.setString("r: restart");
-		text.setPosition(textX, textY);
-		_win.draw(text);
-		textY += textLnStep;
-	}
-
-	if (_gameInfo->win || _gameInfo->gameOver || _gameInfo->paused) {
-		sf::Text text;
-		float textSize = _gameInfo->width / 10.0;
-		float textX = size / 3;
-		float textY = _gameInfo->height / 2 - textSize;
-		text.setFont(_font);
-		text.setCharacterSize(textSize);
-		text.setPosition(textX, textY);
-
-		if (_gameInfo->win) {
-			text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_WIN_COLOR)));
-			text.setString("You win !");
-		}
-		else if (_gameInfo->gameOver) {
-			text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_GAMEOVER_COLOR)));
-			text.setString("Game over");
-		}
-		else if (_gameInfo->paused) {
-			text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_COLOR)));
-			text.setString("Pause");
-		}
-		_win.draw(text);
-	}
-
-	_win.display();
+	// render on screen
+	SDL_UpdateWindowSurface(_win);
 	return true;
 }
 
