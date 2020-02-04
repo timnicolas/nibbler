@@ -7,6 +7,15 @@
 
 // TODO(tnicolas42) add lists in json loading
 
+namespace JsonOpt {
+	enum Enum {
+		NO_OPT = 0,
+		DISCARD_DISABLED = 1,
+		VERBOSE = 2,
+		COLOR = 4,
+	};
+}
+
 template<class T>
 class JsonObj {
 	public:
@@ -29,6 +38,7 @@ class JsonObj {
 		}
 		void init(std::string const & name = "") {
 			_name = name;
+			_description = "";
 			_hasMin = false;
 			_hasMax = false;
 			_disableInFile = false;
@@ -59,11 +69,36 @@ class JsonObj {
 		}
 		JsonObj<T> &		setMin(T value) { _hasMin = true; _min = value; return *this; }
 		JsonObj<T> &		setMax(T value) { _hasMax = true; _max = value; return *this; }
-		JsonObj<T> &		disableInFile(bool disable) { _disableInFile = disable; return *this; }
+		JsonObj<T> &		setDescription(std::string const & desc) { _description = desc; return *this; }
+		JsonObj<T> &		disableInFile(bool disable = true) { _disableInFile = disable; return *this; }
 		bool				isDisabledInFile() { return _disableInFile; }
 		void				setName(std::string const & name) { _name = name; }
 		std::string	&		getName() { return _name; }
 		std::string	const &	getName() const { return _name; }
+		std::string			getInfo() const {
+			std::ostringstream out;
+			out << "  // " << _description;
+			out << "<";
+			if (typeid(T) == typeid(std::string)) out << "string";
+			else if (typeid(T) == typeid(int64_t)) out << "int64";
+			else if (typeid(T) == typeid(uint64_t)) out << "uint64";
+			else if (typeid(T) == typeid(double)) out << "double";
+			else if (typeid(T) == typeid(bool)) out << "bool";
+			if (_hasMin || _hasMax) {
+				out << " range=[";
+				if (_hasMin)
+					out << _min;
+				out << ":";
+				if (_hasMax)
+					out << _max;
+				out << "]";
+			}
+			if (_disableInFile) {
+				out << " [disabled in file]";
+			}
+			out << ">";
+			return out.str();
+		}
 
 		friend std::ostream & operator<<(std::ostream & out, const JsonObj & jsonObj) {
 			out << std::boolalpha << jsonObj.get();
@@ -72,6 +107,7 @@ class JsonObj {
 
 	protected:
 		std::string _name;
+		std::string _description;
 		T			_value;
 		bool		_hasMin;
 		T			_min;
@@ -88,10 +124,13 @@ class SettingsJson {
 
 		SettingsJson &operator=(SettingsJson const &rhs);
 
+		SettingsJson &	name(std::string const & name);
+		SettingsJson &	description(std::string const & description);
+
 		bool		loadFile(std::string const & filename);
 		bool		loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp);
 		void		saveToFile(std::string const & filename);
-		std::string	toString() const;
+		std::string	toString(uint32_t opt = JsonOpt::NO_OPT) const;
 
 		template<class T>
 		JsonObj<T> &	add(std::string const & name) {
@@ -163,6 +202,9 @@ class SettingsJson {
 		std::map<std::string, JsonObj<SettingsJson> *>	jsonMap;  // j
 
 	private:
+		std::string _name;
+		std::string _description;
+
 		template<class T>
 		std::map<std::string, JsonObj<T> *> const & _getMap() const {
 			if (typeid(T) == typeid(int64_t))

@@ -23,9 +23,10 @@
 #define COLOR_F_WHITE	"\x1B[47m"
 #define COLOR_CLEAR		"\033[H\033[2J"
 #define COLOR_BOLD		"\e[1m"
-#define COLOR_LIGHT		"\e[2m"
+#define COLOR_DIM		"\e[2m"
 #define COLOR_ITALIC	"\e[3m"
 #define COLOR_ULINE		"\e[4m"
+#define COLOR_ULINE_R	"\e[24m"
 
 enum	eLoglevel {
 	LOGDEBUG, LOGINFO, LOGSUCCESS, LOGWARN, LOGERROR, LOGFATAL, NBLOG

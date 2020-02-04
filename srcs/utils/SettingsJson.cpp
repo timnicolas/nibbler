@@ -29,13 +29,28 @@ SettingsJson &SettingsJson::operator=(SettingsJson const &rhs) {
 	return *this;
 }
 
+SettingsJson & SettingsJson::name(std::string const & name) {
+	_name = name;
+	return *this;
+}
+SettingsJson & SettingsJson::description(std::string const & description) {
+	_description = description;
+	return *this;
+}
+
 bool SettingsJson::loadJson(nlohmann::json const & json, SettingsJson & jsonObjTmp) {
 	bool ret = true;
 	for (auto it = json.begin(); it != json.end(); ++it) {
 		if (it->is_object()) {
 			auto newJsonObj = jsonObjTmp.jsonMap.find(it.key());
 			if (newJsonObj != jsonObjTmp.jsonMap.end()) {
-				ret &= loadJson(*it, newJsonObj->second->get());
+				if (jsonObjTmp.update<SettingsJson>(it.key()).isDisabledInFile()) {
+					logWarn("you can't set " << it.key() << " in setting file");
+					ret = false;
+				}
+				else {
+					ret &= loadJson(*it, newJsonObj->second->get());
+				}
 			}
 			else {
 				logWarn("invalid setting: " << it.key());
@@ -129,58 +144,84 @@ void SettingsJson::saveToFile(std::string const & filename) {
 	if (settingsFile.fail()) {
 		throw SettingsException("unable to save settings file " + filename + ": " + strerror(errno));
 	}
-	settingsFile << toString();
+	settingsFile << toString(JsonOpt::DISCARD_DISABLED);
 	if (settingsFile.fail()) {
 		throw SettingsException("unable to save settings file " + filename + ": " + strerror(errno));
 	}
 	settingsFile.close();
 }
 
-std::string SettingsJson::toString() const {
-	std::ostringstream out;
-	out << *this;
-	return out.str();
+template<class T>
+int getSize(std::map<std::string, JsonObj<T> *> const & map, uint32_t opt) {
+	int size = 0;
+	for (auto it = map.begin(); it != map.end(); it++) {
+		if (opt & JsonOpt::DISCARD_DISABLED && it->second->isDisabledInFile())
+			continue;
+		size++;
+	}
+	return size;
 }
 
-// -- cout --------------------------------------------------------
 template<class T>
-int jsonString(std::ostream & out, T const & map, int nbTab, int nbElemRemain,
-std::string const & before = "", std::string const & after = "") {
+int jsonString(std::ostream & out, std::map<std::string, JsonObj<T> *> const & map, uint32_t opt, int nbTab,
+int nbElemRemain, std::string const & before = "", std::string const & after = "") {
 	for (auto it = map.begin(); it != map.end(); it++) {
+		if (opt & JsonOpt::DISCARD_DISABLED && it->second->isDisabledInFile())
+			continue;
 		nbElemRemain--;
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
-		out << '"' << it->first << "\": " << before << *(it->second) << after;
+		out << '"';
+		if (opt & JsonOpt::COLOR) out << COLOR_BOLD;
+		out << it->first;
+		if (opt & JsonOpt::COLOR) out << COLOR_EOC;
+		out << "\": " << before;
+		out << *(it->second);
+		out << after;
 		if (nbElemRemain > 0)
 			out << ",";
+		if (opt & JsonOpt::VERBOSE) {
+			if (opt & JsonOpt::COLOR) out << COLOR_DIM;
+			out << it->second->getInfo();
+			if (opt & JsonOpt::COLOR) out << COLOR_EOC;
+		}
 		out << std::endl;
 	}
-	return map.size();
+	return getSize<T>(map, opt);
 }
 
-int jsonStringRecursiv(std::ostream & out, std::map<std::string, JsonObj<SettingsJson> *> const & map, int nbTab) {
-	int nbRem = map.size();
+int jsonStringRecursiv(std::ostream & out, std::map<std::string, JsonObj<SettingsJson> *> const & map,
+uint32_t opt, int nbTab) {
+	int nbRem = getSize<SettingsJson>(map, opt);
 	for (auto it = map.begin(); it != map.end(); it++) {
+		if (opt & JsonOpt::DISCARD_DISABLED && it->second->isDisabledInFile())
+			continue;
 		nbRem--;
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
-		if (it->first == "")
+		if (it->first == "") {
 			out << "{" << std::endl;
-		else
-			out << '"' <<  it->first << "\": {" << std::endl;
-		int nbElem = it->second->get().stringMap.size()
-					+ it->second->get().uintMap.size()
-					+ it->second->get().intMap.size()
-					+ it->second->get().doubleMap.size()
-					+ it->second->get().boolMap.size()
-					+ it->second->get().jsonMap.size();
-		nbElem -= jsonString<std::map<std::string, JsonObj<std::string> *>>(out, it->second->get().stringMap, nbTab + 1,
+		}
+		else {
+			out << '"';
+			if (opt & JsonOpt::COLOR) out << COLOR_BOLD;
+			out << it->first;
+			if (opt & JsonOpt::COLOR) out << COLOR_EOC;
+			out << "\": {" << std::endl;
+		}
+		int nbElem = getSize<std::string>(it->second->get().stringMap, opt)
+					+ getSize<uint64_t>(it->second->get().uintMap, opt)
+					+ getSize<int64_t>(it->second->get().intMap, opt)
+					+ getSize<double>(it->second->get().doubleMap, opt)
+					+ getSize<bool>(it->second->get().boolMap, opt)
+					+ getSize<SettingsJson>(it->second->get().jsonMap, opt);
+		nbElem -= jsonString<std::string>(out, it->second->get().stringMap, opt, nbTab + 1,
 																			nbElem, "\"", "\"");
-		nbElem -= jsonString<std::map<std::string, JsonObj<uint64_t> *>>(out, it->second->get().uintMap, nbTab + 1, nbElem);
-		nbElem -= jsonString<std::map<std::string, JsonObj<int64_t> *>>(out, it->second->get().intMap, nbTab + 1, nbElem);
-		nbElem -= jsonString<std::map<std::string, JsonObj<double> *>>(out, it->second->get().doubleMap, nbTab + 1, nbElem);
-		nbElem -= jsonString<std::map<std::string, JsonObj<bool> *>>(out, it->second->get().boolMap, nbTab + 1, nbElem);
-		nbElem -= jsonStringRecursiv(out, it->second->get().jsonMap, nbTab + 1);
+		nbElem -= jsonString<uint64_t>(out, it->second->get().uintMap, opt, nbTab + 1, nbElem);
+		nbElem -= jsonString<int64_t>(out, it->second->get().intMap, opt, nbTab + 1, nbElem);
+		nbElem -= jsonString<double>(out, it->second->get().doubleMap, opt, nbTab + 1, nbElem);
+		nbElem -= jsonString<bool>(out, it->second->get().boolMap, opt, nbTab + 1, nbElem);
+		nbElem -= jsonStringRecursiv(out, it->second->get().jsonMap, opt, nbTab + 1);
 		for (int i = 0; i < nbTab; i++)
 			out << "\t";
 		out << "}";
@@ -188,24 +229,44 @@ int jsonStringRecursiv(std::ostream & out, std::map<std::string, JsonObj<Setting
 			out << ",";
 		out << std::endl;
 	}
-	return map.size();
+	return getSize<SettingsJson>(map, opt);
 }
 
-std::ostream & operator<<(std::ostream & out, SettingsJson const & s) {
-	out << "{" << std::endl;
-	int nbElem = s.stringMap.size()
-				+ s.uintMap.size()
-				+ s.intMap.size()
-				+ s.doubleMap.size()
-				+ s.boolMap.size()
-				+ s.jsonMap.size();
-	nbElem -= jsonString<std::map<std::string, JsonObj<std::string> *>>(out, s.stringMap, 1, nbElem, "\"", "\"");
-	nbElem -= jsonString<std::map<std::string, JsonObj<uint64_t> *>>(out, s.uintMap, 1, nbElem);
-	nbElem -= jsonString<std::map<std::string, JsonObj<int64_t> *>>(out, s.intMap, 1, nbElem);
-	nbElem -= jsonString<std::map<std::string, JsonObj<double> *>>(out, s.doubleMap, 1, nbElem);
-	nbElem -= jsonString<std::map<std::string, JsonObj<bool> *>>(out, s.boolMap, 1, nbElem);
-	nbElem -= jsonStringRecursiv(out, s.jsonMap, 1);
+std::string SettingsJson::toString(uint32_t opt) const {
+	std::ostringstream out;
+	if (opt & JsonOpt::VERBOSE) {
+		out << "\"";
+		if (opt & JsonOpt::COLOR) out << COLOR_BOLD;
+		out << _name;
+		if (opt & JsonOpt::COLOR) out << COLOR_EOC;
+		out << "\": ";
+	}
+	out << "{";
+	if (opt & JsonOpt::VERBOSE) {
+		if (opt & JsonOpt::COLOR) out << COLOR_DIM;
+		out << "  // " << _description;
+		if (opt & JsonOpt::COLOR) out << COLOR_EOC;
+	}
+	out << std::endl;
+	int nbElem = getSize<std::string>(stringMap, opt)
+				+ getSize<uint64_t>(uintMap, opt)
+				+ getSize<int64_t>(intMap, opt)
+				+ getSize<double>(doubleMap, opt)
+				+ getSize<bool>(boolMap, opt)
+				+ getSize<SettingsJson>(jsonMap, opt);
+	nbElem -= jsonString<std::string>(out, stringMap, opt, 1, nbElem, "\"", "\"");
+	nbElem -= jsonString<uint64_t>(out, uintMap, opt, 1, nbElem);
+	nbElem -= jsonString<int64_t>(out, intMap, opt, 1, nbElem);
+	nbElem -= jsonString<double>(out, doubleMap, opt, 1, nbElem);
+	nbElem -= jsonString<bool>(out, boolMap, opt, 1, nbElem);
+	nbElem -= jsonStringRecursiv(out, jsonMap, opt, 1);
 	out << "}" << std::endl;
+	return out.str();
+}
+
+// -- cout --------------------------------------------------------
+std::ostream & operator<<(std::ostream & out, SettingsJson const & s) {
+	out << s.toString();
 	return out;
 }
 

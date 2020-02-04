@@ -22,18 +22,20 @@ void	initLogs() {
 }
 
 bool	initSettings(std::string const & filename) {
+	s.name("settings").description("main settings");
 	s.add<SettingsJson>("screen");
-		s.j("screen").add<std::string>("name", "nibbler");
-		s.j("screen").add<uint64_t>("width", 1200).setMin(400).setMax(4000);
-		s.j("screen").add<uint64_t>("height", 800).setMin(400).setMax(4000).disableInFile(true);
-		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120);
-	s.add<std::string>("userDataFilename", "assets/userData.json");
-	s.add<std::string>("font", "assets/fonts/Pacifico.json");
-	s.add<uint64_t>("boardSize", 20).setMin(5).setMax(50);
-	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2);
-	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(40);
-	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000);
-	s.add<bool>("canExitBorder", false);
+		s.j("screen").add<std::string>("name", "nibbler").setDescription("name of the game");
+		s.j("screen").add<uint64_t>("width", 1200).setMin(400).setMax(4000).setDescription("width of the screen");
+		s.j("screen").add<uint64_t>("height", 800).setMin(400).setMax(4000).disableInFile(true)
+			.setDescription("height of the screen /!\\ automatically calculed");
+		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120).setDescription("framerate");
+	s.add<std::string>("userDataFilename", "assets/userData.json").disableInFile(true);
+	s.add<std::string>("font", "assets/fonts/Pacifico.json").setDescription("main font ttf file");
+	s.add<uint64_t>("boardSize", 20).setMin(5).setMax(50).setDescription("size of the snake board");
+	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
+	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(40).setDescription("starting size of the snake");
+	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");
+	s.add<bool>("canExitBorder", false).setDescription("if true, the cannot die in front of the borders");
 
 	try {
 		if (s.loadFile(filename) == false) {
@@ -49,6 +51,7 @@ bool	initSettings(std::string const & filename) {
 }
 
 bool	initUserData(std::string const & filename) {
+	userData.name("userData").description("all informations about the player");
 	userData.add<uint64_t>("highScore", 0);
 
 	try {

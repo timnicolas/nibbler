@@ -21,6 +21,10 @@ int main(int ac, char const **av) {
 		logWarn("max size for snake is " << s.u("boardSize") / 2);
 		s.u("snakeSize") = s.u("boardSize") / 2;
 	}
+	#if DEBUG
+		std::cout << s.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);
+		std::cout << userData.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);
+	#endif
 
 	srand(time(NULL));
 	Game	game;
@@ -37,5 +41,6 @@ int main(int ac, char const **av) {
 	}
 
 	saveUserData(s.s("userDataFilename"));
+
 	return EXIT_SUCCESS;
 }
