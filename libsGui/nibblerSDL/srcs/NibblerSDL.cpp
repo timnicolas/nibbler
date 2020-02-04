@@ -44,7 +44,7 @@ bool NibblerSDL::_init() {
 		return false;
     }
 
-	_win = SDL_CreateWindow(_gameInfo->title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+	_win = SDL_CreateWindow((_gameInfo->title + " SDL").c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		_gameInfo->width, _gameInfo->height, SDL_WINDOW_SHOWN);
 	if (_win == nullptr) {
         logErr("while loading SDL: " << SDL_GetError());

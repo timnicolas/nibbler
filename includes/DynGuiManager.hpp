@@ -1,7 +1,7 @@
 #ifndef DYNGUIMANAGER_HPP_
 #define DYNGUIMANAGER_HPP_
 
-#define NB_GUI 2
+#define NB_GUI 3
 
 #include <dlfcn.h>
 #include <array>

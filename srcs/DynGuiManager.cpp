@@ -3,7 +3,8 @@
 // contain dynamic libs info
 std::array<std::pair< std::string const, std::string const >, NB_GUI> const	DynGuiManager::_guiInfos = {{
 	{"libNibblerSDL.so", "makeNibblerSDL"},
-	{"libNibblerSFML.so", "makeNibblerSFML"}
+	{"libNibblerSFML.so", "makeNibblerSFML"},
+	{"libNibblerOpenGL.so", "makeNibblerOpenGL"},
 }};
 
 DynGuiManager::DynGuiManager()
@@ -37,9 +38,6 @@ void	DynGuiManager::_quitGui() {
 }
 
 void	DynGuiManager::loadGui(uint8_t id) {
-	logInfo("_____________________");
-	logInfo("load GUI " << +id);
-
 	// quit current gui before loading a new one
 	if (_currentGuiID != NO_GUI_LOADED) {
 		_quitGui();

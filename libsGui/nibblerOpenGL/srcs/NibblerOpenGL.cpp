@@ -1,7 +1,7 @@
-#include "NibblerSFML.hpp"
+#include "NibblerOpenGL.hpp"
 #include "Logging.hpp"
 
-NibblerSFML::NibblerSFML() :
+NibblerOpenGL::NibblerOpenGL() :
   _win() {
 	// init logging
 	#if DEBUG
@@ -14,26 +14,26 @@ NibblerSFML::NibblerSFML() :
 	#endif
 }
 
-NibblerSFML::~NibblerSFML() {
-	logInfo("exit SFML");
+NibblerOpenGL::~NibblerOpenGL() {
+	logInfo("exit OpenGL");
 	_win.close();
 }
 
-NibblerSFML::NibblerSFML(NibblerSFML const &src) {
+NibblerOpenGL::NibblerOpenGL(NibblerOpenGL const &src) {
 	*this = src;
 }
 
-NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
+NibblerOpenGL &NibblerOpenGL::operator=(NibblerOpenGL const &rhs) {
 	if (this != &rhs) {
-		logErr("unable to copy NibblerSFML");
+		logErr("unable to copy NibblerOpenGL");
 	}
 	return *this;
 }
 
-bool NibblerSFML::_init() {
-	logInfo("loading SFML");
+bool NibblerOpenGL::_init() {
+	logInfo("loading OpenGL");
 
-	_win.create(sf::VideoMode(_gameInfo->width, _gameInfo->height), _gameInfo->title + " SFML");
+	_win.create(sf::VideoMode(_gameInfo->width, _gameInfo->height), _gameInfo->title + " OpenGL");
 
 	if (!_font.loadFromFile(_gameInfo->font)) {
     	logErr("unable to load font " << _gameInfo->font);
@@ -43,7 +43,7 @@ bool NibblerSFML::_init() {
     return true;
 }
 
-void NibblerSFML::updateInput() {
+void NibblerOpenGL::updateInput() {
 	while (_win.pollEvent(_event)) {
 		switch (_event.type) {
 			// window closed
@@ -85,7 +85,7 @@ void NibblerSFML::updateInput() {
 	}
 }
 
-bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
+bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	// clear screen
 	_win.clear();
 
@@ -98,7 +98,7 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	// border
 	sf::RectangleShape rect(sf::Vector2f(size + (2 * BORDER_SIZE), size + (2 * BORDER_SIZE)));
 	rect.setPosition(startX - BORDER_SIZE, startY - BORDER_SIZE);
-	rect.setFillColor(sf::Color(TO_SFML_COLOR(BORDER_COLOR)));
+	rect.setFillColor(sf::Color(TO_OPENGL_COLOR(BORDER_COLOR)));
 	_win.draw(rect);
 
 
@@ -108,7 +108,7 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 			sf::RectangleShape rect(sf::Vector2f(step, step));
 			rect.setPosition(startX + step * i, startY + step * j);
 			uint32_t color = ((i + j) & 1) ? SQUARE_COLOR_1 : SQUARE_COLOR_2;
-			rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
+			rect.setFillColor(sf::Color(TO_OPENGL_COLOR(color)));
 			_win.draw(rect);
 		}
 	}
@@ -119,7 +119,7 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		sf::RectangleShape rect(sf::Vector2f(step, step));
 		rect.setPosition(startX + step * it->x, startY + step * it->y);
 		uint32_t color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
-		rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
+		rect.setFillColor(sf::Color(TO_OPENGL_COLOR(color)));
 		_win.draw(rect);
 		i++;
 	}
@@ -127,7 +127,7 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	for (auto it = food.begin(); it != food.end(); it++) {
 		sf::RectangleShape rect(sf::Vector2f(step, step));
 		rect.setPosition(startX + step * it->x, startY + step * it->y);
-		rect.setFillColor(sf::Color(TO_SFML_COLOR(FOOD_COLOR)));
+		rect.setFillColor(sf::Color(TO_OPENGL_COLOR(FOOD_COLOR)));
 		_win.draw(rect);
 	}
 
@@ -140,7 +140,7 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		float textLnStep = textSize * 1.2;
 		text.setFont(_font);
 		text.setCharacterSize(textSize);
-		text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
+		text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_COLOR)));
 
 		text.setString("Score: " + std::to_string(snake.size()));
 		text.setPosition(textX, textY);
@@ -177,15 +177,15 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		text.setPosition(textX, textY);
 
 		if (_gameInfo->win) {
-			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_WIN_COLOR)));
+			text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_WIN_COLOR)));
 			text.setString("You win !");
 		}
 		else if (_gameInfo->gameOver) {
-			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_GAMEOVER_COLOR)));
+			text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_GAMEOVER_COLOR)));
 			text.setString("Game over");
 		}
 		else if (_gameInfo->paused) {
-			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
+			text.setFillColor(sf::Color(TO_OPENGL_COLOR(TEXT_COLOR)));
 			text.setString("Pause");
 		}
 		_win.draw(text);
@@ -196,7 +196,7 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 }
 
 extern "C" {
-	ANibblerGui *makeNibblerSFML() {
-		return new NibblerSFML();
+	ANibblerGui *makeNibblerOpenGL() {
+		return new NibblerOpenGL();
 	}
 }
