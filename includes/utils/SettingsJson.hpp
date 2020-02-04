@@ -12,11 +12,12 @@ class JsonObj {
 	public:
 		JsonObj() : _name(""), _hasMin(false), _hasMax(false) {}
 		explicit JsonObj(std::string const & name) : _name(name), _hasMin(false), _hasMax(false) {}
-		JsonObj(std::string const & name, T val) : _name(name), _value(val), _hasMin(false), _hasMax(false) {}
+		JsonObj(std::string const & name, T const & val) : _name(name), _value(val), _hasMin(false), _hasMax(false) {}
 		virtual ~JsonObj() {}
 		JsonObj(JsonObj const & src) { *this = src; }
 		JsonObj & operator=(JsonObj const & rhs) {
 			if (this != &rhs) {
+				logDebug("WARNING -> JsonObj object copied");
 				_name = rhs._name;
 				_hasMin = rhs._hasMin;
 				_min = rhs._min;
@@ -84,59 +85,59 @@ class SettingsJson {
 		std::string	toString() const;
 
 		template<class T>
-		JsonObj<T> &	add(std::string name) {
-			std::map<std::string, JsonObj<T>> & tmpMap = _getMap<T>();
+		JsonObj<T> &	add(std::string const & name) {
+			std::map<std::string, JsonObj<T> *> & tmpMap = _getMap<T>();
 			if (tmpMap.find(name) != tmpMap.end()) {
 				logWarn("cannot add setting " << name << ": setting already exist");
-				return tmpMap[name];
+				return *(tmpMap[name]);
 			}
-			tmpMap.insert(std::pair<std::string, JsonObj<T>>(name, JsonObj<T>(name)));
-			return tmpMap[name];
+			tmpMap.insert(std::pair<std::string, JsonObj<T> *>(name, new JsonObj<T>(name)));
+			return *(tmpMap[name]);
 		}
 		template<class T>
-		JsonObj<T> &	add(std::string name, T val) {
-			std::map<std::string, JsonObj<T>> & tmpMap = _getMap<T>();
+		JsonObj<T> &	add(std::string const & name, T val) {
+			std::map<std::string, JsonObj<T> *> & tmpMap = _getMap<T>();
 			if (tmpMap.find(name) != tmpMap.end()) {
 				logWarn("cannot add setting " << name << ": setting already exist");
-				return tmpMap[name];
+				return *(tmpMap[name]);
 			}
-			tmpMap.insert(std::pair<std::string, JsonObj<T>>(name, JsonObj<T>(name, val)));
-			return tmpMap[name];
+			tmpMap.insert(std::pair<std::string, JsonObj<T> *>(name, new JsonObj<T>(name, val)));
+			return *(tmpMap[name]);
 		}
 		template<class T>
-		JsonObj<T> &	update(std::string name)  {
-			std::map<std::string, JsonObj<T>> & tmpMap = _getMap<T>();
+		JsonObj<T> &	update(std::string const & name)  {
+			std::map<std::string, JsonObj<T> *> & tmpMap = _getMap<T>();
 			if (tmpMap.find(name) != tmpMap.end()) {
-				return tmpMap[name];
+				return *(tmpMap[name]);
 			}
 			throw SettingsException("undefined setting " + name);
 		}
 		template<class T>
-		T const &		get(std::string name) const {
-			std::map<std::string, JsonObj<T>> const & tmpMap = _getMap<T>();
+		T const &		get(std::string const & name) const {
+			std::map<std::string, JsonObj<T> *> const & tmpMap = _getMap<T>();
 			if (tmpMap.find(name) != tmpMap.end())
-				return tmpMap.at(name).get();
+				return tmpMap.at(name)->get();
 			throw SettingsException("undefined setting " + name);
 		}
 		template<class T>
-		T &				get(std::string name) {
-			std::map<std::string, JsonObj<T>> & tmpMap = _getMap<T>();
+		T &				get(std::string const & name) {
+			std::map<std::string, JsonObj<T> *> & tmpMap = _getMap<T>();
 			if (tmpMap.find(name) != tmpMap.end())
-				return tmpMap.at(name).get();
+				return tmpMap.at(name)->get();
 			throw SettingsException("undefined setting " + name);
 		}
-		std::string const &		s(std::string name) const { return get<std::string>(name); }
-		std::string &			s(std::string name)  { return get<std::string>(name); }
-		int64_t const &			i(std::string name) const { return get<int64_t>(name); }
-		int64_t &				i(std::string name)  { return get<int64_t>(name); }
-		uint64_t const &		u(std::string name) const { return get<uint64_t>(name); }
-		uint64_t &				u(std::string name)  { return get<uint64_t>(name); }
-		double const &			d(std::string name) const { return get<double>(name); }
-		double &				d(std::string name)  { return get<double>(name); }
-		bool const &			b(std::string name) const { return get<bool>(name); }
-		bool &					b(std::string name)  { return get<bool>(name); }
-		SettingsJson const &	j(std::string name) const { return get<SettingsJson>(name); }
-		SettingsJson &			j(std::string name)  { return get<SettingsJson>(name); }
+		std::string const &		s(std::string const & name) const { return get<std::string>(name); }
+		std::string &			s(std::string const & name)  { return get<std::string>(name); }
+		int64_t const &			i(std::string const & name) const { return get<int64_t>(name); }
+		int64_t &				i(std::string const & name)  { return get<int64_t>(name); }
+		uint64_t const &		u(std::string const & name) const { return get<uint64_t>(name); }
+		uint64_t &				u(std::string const & name)  { return get<uint64_t>(name); }
+		double const &			d(std::string const & name) const { return get<double>(name); }
+		double &				d(std::string const & name)  { return get<double>(name); }
+		bool const &			b(std::string const & name) const { return get<bool>(name); }
+		bool &					b(std::string const & name)  { return get<bool>(name); }
+		SettingsJson const &	j(std::string const & name) const { return get<SettingsJson>(name); }
+		SettingsJson &			j(std::string const & name)  { return get<SettingsJson>(name); }
 
 		class SettingsException : public std::runtime_error {
 			public:
@@ -145,73 +146,91 @@ class SettingsJson {
 				explicit SettingsException(const std::string what_arg);
 		};
 
-		std::map<std::string, JsonObj<std::string>>		stringMap;  // s
-		std::map<std::string, JsonObj<int64_t>>			intMap;  // i
-		std::map<std::string, JsonObj<uint64_t>>		uintMap;  // u
-		std::map<std::string, JsonObj<double>>			doubleMap;  // f
-		std::map<std::string, JsonObj<bool>>			boolMap;  // b
-		std::map<std::string, JsonObj<SettingsJson>>	jsonMap;  // j
+		std::map<std::string, JsonObj<std::string> *>	stringMap;  // s
+		std::map<std::string, JsonObj<int64_t> *>		intMap;  // i
+		std::map<std::string, JsonObj<uint64_t> *>		uintMap;  // u
+		std::map<std::string, JsonObj<double> *>		doubleMap;  // f
+		std::map<std::string, JsonObj<bool> *>			boolMap;  // b
+		std::map<std::string, JsonObj<SettingsJson> *>	jsonMap;  // j
 
 	private:
 		template<class T>
-		std::map<std::string, JsonObj<T>> const & _getMap() const {
+		std::map<std::string, JsonObj<T> *> const & _getMap() const {
 			if (typeid(T) == typeid(int64_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&intMap);
 			if (typeid(T) == typeid(int32_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&intMap);
 			if (typeid(T) == typeid(int16_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&intMap);
 			if (typeid(T) == typeid(int8_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&intMap);
 			if (typeid(T) == typeid(uint64_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&uintMap);
 			if (typeid(T) == typeid(uint32_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&uintMap);
 			if (typeid(T) == typeid(uint16_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&uintMap);
 			if (typeid(T) == typeid(uint8_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&uintMap);
 			if (typeid(T) == typeid(double))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&doubleMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&doubleMap);
 			if (typeid(T) == typeid(float))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&doubleMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&doubleMap);
 			if (typeid(T) == typeid(bool))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&boolMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&boolMap);
 			if (typeid(T) == typeid(std::string))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&stringMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&stringMap);
 			if (typeid(T) == typeid(SettingsJson))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> const *>(&jsonMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> const *>(&jsonMap);
 			throw SettingsException(std::string("invalid type ") + typeid(T).name());
 		}
 		template<class T>
-		std::map<std::string, JsonObj<T>> & _getMap() {
+		std::map<std::string, JsonObj<T> *> & _getMap() {
 			if (typeid(T) == typeid(int64_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&intMap);
 			if (typeid(T) == typeid(int32_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&intMap);
 			if (typeid(T) == typeid(int16_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&intMap);
 			if (typeid(T) == typeid(int8_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&intMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&intMap);
 			if (typeid(T) == typeid(uint64_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&uintMap);
 			if (typeid(T) == typeid(uint32_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&uintMap);
 			if (typeid(T) == typeid(uint16_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&uintMap);
 			if (typeid(T) == typeid(uint8_t))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&uintMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&uintMap);
 			if (typeid(T) == typeid(double))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&doubleMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&doubleMap);
 			if (typeid(T) == typeid(float))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&doubleMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&doubleMap);
 			if (typeid(T) == typeid(bool))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&boolMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&boolMap);
 			if (typeid(T) == typeid(std::string))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&stringMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&stringMap);
 			if (typeid(T) == typeid(SettingsJson))
-				return *reinterpret_cast<std::map<std::string, JsonObj<T>> *>(&jsonMap);
+				return *reinterpret_cast<std::map<std::string, JsonObj<T> *> *>(&jsonMap);
 			throw SettingsException(std::string("invalid type ") + typeid(T).name());
+		}
+
+
+		template<class T>
+		void deleteMap(std::map<std::string, JsonObj<T> *> & map) {
+			for (auto it = map.begin(); it != map.end(); it++) {
+				delete it->second;
+			}
+			map.erase(map.begin(), map.end());
+		}
+
+		template<class T>
+		std::map<std::string, JsonObj<T> *> copyMap(std::map<std::string, JsonObj<T> *> const & map) {
+			std::map<std::string, JsonObj<T> *> cpy;
+			for (auto it = map.begin(); it != map.end(); it++) {
+				cpy.insert(std::pair<std::string, JsonObj<T> *>(it->first, new JsonObj<T>(*it->second)));
+			}
+			return cpy;
 		}
 };
 

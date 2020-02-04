@@ -29,6 +29,7 @@ bool	initSettings(std::string const & filename) {
 		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120);
 	s.add<std::string>("userDataFilename", "assets/userData.json");
 	s.add<uint64_t>("boardSize", 20).setMin(5).setMax(50);
+	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2);
 	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(40);
 	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000);
 	s.add<bool>("canExitBorder", false);

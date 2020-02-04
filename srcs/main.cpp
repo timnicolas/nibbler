@@ -15,6 +15,8 @@ int main(int ac, char const **av) {
 	initSettings("assets/settings.json");
 	initUserData(s.s("userDataFilename"));
 
+	s.j("screen").u("height") = s.j("screen").u("width") * 0.6;
+
 	srand(time(NULL));
 	Game	game;
 

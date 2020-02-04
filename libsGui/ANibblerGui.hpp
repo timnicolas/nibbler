@@ -13,6 +13,11 @@
 #define SNAKE_COLOR_2	0x4C90FF
 #define FOOD_COLOR		0xFF0000
 #define BORDER_COLOR	0xAAAAAA
+
+#define GET_R(color) ((color >> 16) & 0xFF)
+#define GET_G(color) ((color >>  8) & 0xFF)
+#define GET_B(color) ((color >>  0) & 0xFF)
+
 #define BORDER_SIZE		5
 
 namespace Direction {
@@ -85,6 +90,8 @@ class ANibblerGui {
 
 		virtual	bool	_init() = 0;
 };
+
+uint32_t mixColor(uint32_t c1, uint32_t c2, float factor);
 
 typedef ANibblerGui *(*nibblerGuiCreator)();
 

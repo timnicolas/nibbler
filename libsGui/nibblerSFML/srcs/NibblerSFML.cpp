@@ -81,15 +81,50 @@ void NibblerSFML::updateInput() {
 }
 
 bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
-	(void)snake;
-	(void)food;
+	// clear screen
 	_win.clear();
 
-	sf::RectangleShape rect(sf::Vector2f(10 + 100 * input.direction, 10 + 100 * (4 - input.direction)));
-	rect.setPosition(100, 100);
-    rect.setFillColor(sf::Color::Green);
+	// set the size of the square
+	float startX = BORDER_SIZE;
+	float startY = BORDER_SIZE;
+	float size = _gameInfo->height - (2 * BORDER_SIZE);
+	float step = size / _gameInfo->boardSize;
+
+	// border
+	sf::RectangleShape rect(sf::Vector2f(size + (2 * BORDER_SIZE), size + (2 * BORDER_SIZE)));
+	rect.setPosition(startX - BORDER_SIZE, startY - BORDER_SIZE);
+	rect.setFillColor(sf::Color(TO_SFML_COLOR(BORDER_COLOR)));
 	_win.draw(rect);
 
+
+	// draw board
+	for (int i = 0; i < _gameInfo->boardSize; i++) {
+		for (int j = 0; j < _gameInfo->boardSize; j++) {
+			sf::RectangleShape rect(sf::Vector2f(step, step));
+			rect.setPosition(startX + step * i, startY + step * j);
+			uint32_t color = ((i + j) & 1) ? SQUARE_COLOR_1 : SQUARE_COLOR_2;
+			rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
+			_win.draw(rect);
+		}
+	}
+	// draw snake
+	int		i = 0;
+	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
+	for (auto it = snake.begin(); it != snake.end(); it++) {
+		sf::RectangleShape rect(sf::Vector2f(step, step));
+		rect.setPosition(startX + step * it->x, startY + step * it->y);
+		uint32_t color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
+		rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
+		_win.draw(rect);
+		i++;
+	}
+	// draw food
+	for (auto it = food.begin(); it != food.end(); it++) {
+		sf::RectangleShape rect(sf::Vector2f(step, step));
+		rect.setPosition(startX + step * it->x, startY + step * it->y);
+		rect.setFillColor(sf::Color(TO_SFML_COLOR(FOOD_COLOR)));
+		_win.draw(rect);
+	}
 
 	_win.display();
 	return true;

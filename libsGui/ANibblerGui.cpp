@@ -79,3 +79,36 @@ void ANibblerGui::Input::reset() {
 	direction = Direction::MOVE_UP;
 	loadGuiID = NO_GUI_LOADED;
 }
+
+// -- Others -------------------------------------------------------------------
+
+uint32_t mixColor(uint32_t c1, uint32_t c2, float factor) {
+	uint8_t cMin;
+	uint8_t cMax;
+
+	cMin = ((c1 >> 16) & 0xFF);
+	cMax = ((c2 >> 16) & 0xFF);
+	uint8_t r;
+	if (cMin < cMax)
+		r = cMin + (cMax - cMin) * factor;
+	else
+		r = cMin - (cMin - cMax) * factor;
+
+	cMin = ((c1 >> 8) & 0xFF);
+	cMax = ((c2 >> 8) & 0xFF);
+	uint8_t g;
+	if (cMin < cMax)
+		g = cMin + (cMax - cMin) * factor;
+	else
+		g = cMin - (cMin - cMax) * factor;
+
+	cMin = ((c1 >> 0) & 0xFF);
+	cMax = ((c2 >> 0) & 0xFF);
+	uint8_t b;
+	if (cMin < cMax)
+		b = cMin + (cMax - cMin) * factor;
+	else
+		b = cMin - (cMin - cMax) * factor;
+
+	return (r << 16) + (g << 8) + (b << 0);
+}

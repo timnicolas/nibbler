@@ -6,7 +6,8 @@ Game::Game() :
   _dynGuiManager(),
   _gameInfo(nullptr),
   _snake(),
-  _speedMs(s.u("speedMs")) {}
+  _speedMs(s.u("speedMs")),
+  _needExtend(0) {}
 
 bool Game::init() {
 	_gameInfo = new GameInfo();
@@ -15,7 +16,7 @@ bool Game::init() {
 	_gameInfo->boardSize = s.u("boardSize");
 	_gameInfo->rules.canExitBorder = s.b("canExitBorder");
 	try {
-		_dynGuiManager.loadGui(0);
+		_dynGuiManager.loadGui(s.u("startGui"));
 		_dynGuiManager.nibblerGui->init(_gameInfo);
 	}
 	catch(DynGuiManager::DynGuiManagerException const & e) {
@@ -32,6 +33,7 @@ void Game::restart() {
 	_dynGuiManager.nibblerGui->input.reset();
 	_snake.clear();
 	_food.clear();
+	_needExtend = 0;
 	int startX = _gameInfo->boardSize / 2;
 	int startY = startX;
 	if (s.u("snakeSize") > userData.u("highScore")) {
