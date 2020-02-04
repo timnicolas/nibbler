@@ -23,6 +23,7 @@ class NibblerSFML : public ANibblerGui {
 	private:
 		sf::RenderWindow	_win;
 		sf::Event			_event;
+		sf::Font			_font;
 
 		virtual bool	_init();
 };

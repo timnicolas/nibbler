@@ -15,7 +15,12 @@ int main(int ac, char const **av) {
 	initSettings("assets/settings.json");
 	initUserData(s.s("userDataFilename"));
 
-	s.j("screen").u("height") = s.j("screen").u("width") * 0.6;
+	s.j("screen").u("height") = s.j("screen").u("width") * 0.8;
+
+	if (s.u("snakeSize") > s.u("boardSize") / 2) {
+		logWarn("max size for snake is " << s.u("boardSize") / 2);
+		s.u("snakeSize") = s.u("boardSize") / 2;
+	}
 
 	srand(time(NULL));
 	Game	game;

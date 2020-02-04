@@ -1,13 +1,14 @@
 {
 	"userDataFilename": "assets/userData.json",
+	"font": "assets/fonts/Pacifico.ttf",
 	"boardSize": 20,
 	"startGui": 1,
-	"snakeSize": 4,
+	"snakeSize": 40,
 	"speedMs": 100,
 	"canExitBorder": true,
 	"screen": {
 		"name": "nibbler",
 		"fps": 60,
-		"width": 1200
+		"width": 1000
 	}
 }

@@ -15,9 +15,11 @@ bool Game::init() {
 	_gameInfo->height = s.j("screen").u("height");
 	_gameInfo->boardSize = s.u("boardSize");
 	_gameInfo->rules.canExitBorder = s.b("canExitBorder");
+	_gameInfo->font = s.s("font");
 	try {
 		_dynGuiManager.loadGui(s.u("startGui"));
-		_dynGuiManager.nibblerGui->init(_gameInfo);
+		if (_dynGuiManager.nibblerGui->init(_gameInfo) == false)
+			return false;
 	}
 	catch(DynGuiManager::DynGuiManagerException const & e) {
 		logErr(e.what());
@@ -65,7 +67,6 @@ void Game::run() {
 	#if DEBUG_FPS_LOW == true
 		bool firstLoop = true;
 	#endif
-
 	while (_dynGuiManager.nibblerGui->input.quit == false) {
 		time_start = getMs();
 
@@ -176,7 +177,8 @@ void Game::_update() {
 		// change Gui
 		_gameInfo->paused = true;
 		_dynGuiManager.loadGui(_dynGuiManager.nibblerGui->input.loadGuiID);
-		_dynGuiManager.nibblerGui->init(_gameInfo);
+		if (_dynGuiManager.nibblerGui->init(_gameInfo) == false)
+			throw GameException("unable to load GUI");
 
 		_dynGuiManager.nibblerGui->input.loadGuiID = NO_GUI_LOADED;
 	}
@@ -235,6 +237,8 @@ void Game::_update() {
 				_gameInfo->direction = _dynGuiManager.nibblerGui->input.direction;
 		}
 	}
+
+	_gameInfo->bestScore = userData.u("highScore");
 }
 
 // -- Exceptions errors --------------------------------------------------------

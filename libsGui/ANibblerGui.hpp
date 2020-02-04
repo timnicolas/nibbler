@@ -13,6 +13,7 @@
 #define SNAKE_COLOR_2	0x4C90FF
 #define FOOD_COLOR		0xFF0000
 #define BORDER_COLOR	0xAAAAAA
+#define TEXT_COLOR		0xAAAAAA
 
 #define GET_R(color) ((color >> 16) & 0xFF)
 #define GET_G(color) ((color >>  8) & 0xFF)
@@ -44,6 +45,9 @@ struct GameInfo {
 	bool		paused;
 	bool		win;
 	bool		gameOver;
+	uint32_t	bestScore;
+
+	std::string	font;
 
 	GameInfo();
 	void restart();
