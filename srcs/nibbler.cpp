@@ -22,16 +22,16 @@ void	initLogs() {
 }
 
 bool	initSettings(std::string const & filename) {
-	s.addj("screen");
-		s.j("screen").adds("name", "nibbler");
-		s.j("screen").addu("width", 1200).setMin(400).setMax(4000);
-		s.j("screen").addu("height", 800).setMin(400).setMax(4000);
-		s.j("screen").addu("fps", 30).setMin(30).setMax(120);
-	s.adds("userDataFilename", "assets/userData.json");
-	s.addu("boardSize", 20).setMin(5).setMax(50);
-	s.addu("snakeSize", 4).setMin(1).setMax(40);
-	s.addu("speedMs", 100).setMin(30).setMax(1000);
-	s.addb("canExitBorder", false);
+	s.add<SettingsJson>("screen");
+		s.j("screen").add<std::string>("name", "nibbler");
+		s.j("screen").add<uint64_t>("width", 1200).setMin(400).setMax(4000);
+		s.j("screen").add<uint64_t>("height", 800).setMin(400).setMax(4000);
+		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120);
+	s.add<std::string>("userDataFilename", "assets/userData.json");
+	s.add<uint64_t>("boardSize", 20).setMin(5).setMax(50);
+	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(40);
+	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000);
+	s.add<bool>("canExitBorder", false);
 
 	try {
 		if (s.loadFile(filename) == false) {
@@ -47,7 +47,7 @@ bool	initSettings(std::string const & filename) {
 }
 
 bool	initUserData(std::string const & filename) {
-	userData.addu("highScore", 0);
+	userData.add<uint64_t>("highScore", 0);
 
 	try {
 		if (userData.loadFile(filename) == false) {
