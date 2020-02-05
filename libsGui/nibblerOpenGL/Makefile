@@ -85,6 +85,7 @@ SRC =	NibblerOpenGL.cpp \
 		debug.cpp \
 		Material.cpp \
 		TextRender.cpp \
+		Skybox.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
@@ -95,6 +96,7 @@ HEAD =	NibblerOpenGL.hpp \
 		debug.hpp \
 		Material.hpp \
 		TextRender.hpp \
+		Skybox.hpp \
 		commonInclude.hpp \
 		../../ANibblerGui.hpp
 
@@ -123,6 +125,7 @@ LIBS_FLAGS_LINUX	= -lGL -lGLU
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  .. \
+					  ../../libs \
 					  /usr/local/opt/freetype/include/freetype2 \
 					  ~/.brew/opt/freetype/include/freetype2 \
 					  /usr/include/freetype2
@@ -141,6 +144,9 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
 	brew install sdl2 sdl2_ttf sdl2_image SDL2_gfx
+	mkdir -p ../../libs
+	# stb_image lib
+	wget -O ../../libs/stb_image.h https://raw.githubusercontent.com/nothings/stb/0224a44/stb_image.h
 fi
 
 exit 0

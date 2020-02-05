@@ -71,6 +71,7 @@ NibblerOpenGL::NibblerOpenGL() :
   _cubeShader(nullptr),
   _cam(nullptr),
   _textRender(nullptr),
+  _skybox(nullptr),
   _lastLoopMs(0) {
 	// init logging
 	#if DEBUG
@@ -91,6 +92,7 @@ NibblerOpenGL::~NibblerOpenGL() {
 	glDeleteVertexArrays(1, &_cubeShaderVAO);
 	delete _cubeShader;
 	delete _textRender;
+	delete _skybox;
 	delete _cam;
 	delete _event;
 	SDL_GL_DeleteContext(_context);
@@ -150,7 +152,6 @@ bool NibblerOpenGL::_init() {
 
 	glEnable(GL_MULTISAMPLE);  // anti aliasing
 	glEnable(GL_CULL_FACE);  // face culling
-	glDisable(GL_CULL_FACE);  // face culling
 	glEnable(GL_BLEND);  // enable blending (used in textRender)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
@@ -162,6 +163,7 @@ bool NibblerOpenGL::_init() {
 		_textRender->loadFont("basicFont", _gameInfo->font, _textBasicHeight);
 		_textTitleHeight = _gameInfo->width / 10;
 		_textRender->loadFont("titleFont", _gameInfo->font, _textTitleHeight);
+		_skybox = new Skybox;
 	}
 	catch (Shader::ShaderError & e) {
         logErr("while loading OpenGL: " << e.what());
@@ -173,7 +175,7 @@ bool NibblerOpenGL::_init() {
 	}
 
 	_cam = new Camera(
-		glm::vec3(4.179586, 32.320001, 34.207786),
+		glm::vec3(4.179586, 32.320001, 15 + _gameInfo->boardSize),
 		glm::vec3(0, 1, 0),
 		-74.3, -53.6);
 
@@ -197,6 +199,9 @@ bool NibblerOpenGL::_init() {
 		reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+	_skybox->getShader().use();
+	_skybox->getShader().setMat4("projection", _projection);
+	_skybox->getShader().unuse();
 	_cubeShader->use();
 	_cubeShader->setMat4("projection", _projection);
 	// set cube material
@@ -280,11 +285,23 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	glViewport(0, 0, _gameInfo->width, _gameInfo->height);
     glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
 
+	CAMERA_MAT4 view = _cam->getViewMatrix();
+
 	_cubeShader->use();
-	_cubeShader->setMat4("view", _cam->getViewMatrix());
+	_cubeShader->setMat4("view", view);
 	_cubeShader->setVec3("viewPos", _cam->pos);
 	glBindVertexArray(_cubeShaderVAO);
+	_cubeShader->unuse();
 
+	CAMERA_MAT4	skyView = view;
+	skyView[3][0] = 0;  // remove translation for the skybox
+	skyView[3][1] = 0;
+	skyView[3][2] = 0;
+	_skybox->getShader().use();
+	_skybox->getShader().setMat4("view", skyView);
+	_skybox->getShader().unuse();
+
+	_cubeShader->use();
 	glm::mat4 model(1.0);
 	glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0);
 
@@ -324,6 +341,9 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		_cubeShader->setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
 	}
+	_cubeShader->unuse();
+
+	_skybox->draw(0.3);
 
 	// text
     {
@@ -332,21 +352,21 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		int lineSz = _textBasicHeight * 1.2;
 		std::string text;
 		text = "Score: " + std::to_string(snake.size());
-		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y -= lineSz;
 		text = "Best: " + std::to_string(_gameInfo->bestScore);
-		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 
 		y = 10;
-		_textRender->write("basicFont", "r: restart", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", "r: restart", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y += lineSz;
-		_textRender->write("basicFont", "arrow: turn", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", "arrow: turn", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y += lineSz;
-		_textRender->write("basicFont", "space: pause", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", "space: pause", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y += lineSz;
-		_textRender->write("basicFont", "[wasd]: move camera", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", "[wasd]: move camera", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y += lineSz;
-		_textRender->write("basicFont", "[ed]: move camera (up-down)", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		_textRender->write("basicFont", "[ed]: move camera (up-down)", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 	}
 
 	if (_gameInfo->win || _gameInfo->gameOver || _gameInfo->paused) {
@@ -368,7 +388,6 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		float textY = _gameInfo->height / 2 - _textTitleHeight / 2;
 		_textRender->write("titleFont", text, textX, textY, 1, TO_OPENGL_COLOR(color));
 	}
-
 
     SDL_GL_SwapWindow(_win);
 	checkError();
