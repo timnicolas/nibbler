@@ -158,7 +158,7 @@ bool NibblerOpenGL::_init() {
 
 	_cam = new Camera(
 		glm::vec3(4.179586, 32.320001, 34.207786),
-		glm::vec3(0.217805, 0.593419, -0.774865),
+		glm::vec3(0, 1, 0),
 		-74.3, -53.6);
 
 	float angle = _cam->zoom;
