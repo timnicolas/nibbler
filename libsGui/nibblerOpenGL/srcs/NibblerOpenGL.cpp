@@ -3,7 +3,8 @@
 
 NibblerOpenGL::NibblerOpenGL() :
   _win(nullptr),
-  _event(new SDL_Event()) {
+  _event(new SDL_Event()),
+  _context(0) {
 	// init logging
 	#if DEBUG
 		logging.setLoglevel(LOGDEBUG);
@@ -18,6 +19,7 @@ NibblerOpenGL::NibblerOpenGL() :
 NibblerOpenGL::~NibblerOpenGL() {
 	logInfo("exit OpenGL");
 	delete _event;
+	SDL_GL_DeleteContext(_context);
 	SDL_DestroyWindow(_win);
     SDL_Quit();
 }
@@ -44,18 +46,37 @@ bool NibblerOpenGL::_init() {
 		return false;
     }
 
+
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+
 	_win = SDL_CreateWindow((_gameInfo->title + " OpenGL").c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		_gameInfo->width, _gameInfo->height, SDL_WINDOW_SHOWN);
+		_gameInfo->width, _gameInfo->height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	if (_win == nullptr) {
         logErr("while loading OpenGL: " << SDL_GetError());
-		SDL_Quit();
 		return false;
 	}
 
-	_surface = SDL_GetWindowSurface(_win);
-	if (_surface == nullptr) {
+	_context = SDL_GL_CreateContext(_win);
+    if (_context == 0) {
         logErr("while loading OpenGL: " << SDL_GetError());
-		SDL_Quit();
+        return false;
+    }
+
+	if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        logErr("while loading OpenGL: failed to init glad");
+        return false;
+	}
+
+	try {
+		_cubeShader = new Shader(CUBE_VS_PATH, CUBE_FS_PATH);
+	}
+	catch (Shader::ShaderError & e) {
+        logErr("while loading OpenGL: " << e.what());
 		return false;
 	}
 
@@ -93,65 +114,13 @@ void NibblerOpenGL::updateInput() {
 }
 
 bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
-	// clear screen
-	SDL_FillRect(_surface, NULL, 0x000000);
+    glClear(GL_COLOR_BUFFER_BIT);
+	glViewport(0, 0, _gameInfo->width, _gameInfo->height);
+    glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
 
-	// set the size of the square
-	float startX = BORDER_SIZE;
-	float startY = BORDER_SIZE;
-	float size = _gameInfo->height - (2 * BORDER_SIZE);
-	float step = size / _gameInfo->boardSize;
+	// std::cout << "draw\n";
 
-	// border
-	SDL_Rect rect = {
-		static_cast<int>(startX - BORDER_SIZE),
-		static_cast<int>(startY - BORDER_SIZE),
-		static_cast<int>(size + (2 * BORDER_SIZE)),
-		static_cast<int>(size + (2 * BORDER_SIZE)),
-	};
-	SDL_FillRect(_surface, &rect, BORDER_COLOR);
-
-
-	// draw board
-	for (int i = 0; i < _gameInfo->boardSize; i++) {
-		for (int j = 0; j < _gameInfo->boardSize; j++) {
-			SDL_Rect rect = {
-				static_cast<int>(startX + step * i),
-				static_cast<int>(startY + step * j),
-				static_cast<int>(step + 0.5),
-				static_cast<int>(step + 0.5),
-			};
-			uint32_t color = ((i + j) & 1) ? SQUARE_COLOR_1 : SQUARE_COLOR_2;
-			SDL_FillRect(_surface, &rect, color);
-		}
-	}
-	// draw snake
-	int		i = 0;
-	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
-	for (auto it = snake.begin(); it != snake.end(); it++) {
-		SDL_Rect rect = {
-			static_cast<int>(startX + step * it->x),
-			static_cast<int>(startY + step * it->y),
-			static_cast<int>(step + 0.5),
-			static_cast<int>(step + 0.5),
-		};
-		uint32_t	color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
-		SDL_FillRect(_surface, &rect, color);
-		i++;
-	}
-	// draw food
-	for (auto it = food.begin(); it != food.end(); it++) {
-		SDL_Rect rect = {
-			static_cast<int>(startX + step * it->x),
-			static_cast<int>(startY + step * it->y),
-			static_cast<int>(step + 0.5),
-			static_cast<int>(step + 0.5),
-		};
-		SDL_FillRect(_surface, &rect, FOOD_COLOR);
-	}
-
-	// render on screen
-	SDL_UpdateWindowSurface(_win);
+    SDL_GL_SwapWindow(_win);
 	return true;
 }
 

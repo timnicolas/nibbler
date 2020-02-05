@@ -54,7 +54,7 @@ NAME = ../../libNibblerOpenGL.so
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
-CFLAGS = -Ofast -std=c++11 -Wall -Wextra
+CFLAGS = -Ofast -std=c++11 -Wall -Wextra -Wno-deprecated
 # flags only for debug mode (make DEBUG=1)
 DEBUG_FLAGS = -g3 -DDEBUG=true
 # classic flags
@@ -80,11 +80,14 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	NibblerOpenGL.cpp \
 		Logging.cpp \
+		Shader.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	NibblerOpenGL.hpp \
 		Logging.hpp \
+		Shader.hpp \
+		commonInclude.hpp \
 		../../ANibblerGui.hpp
 
 
@@ -92,20 +95,22 @@ HEAD =	NibblerOpenGL.hpp \
 # libs configuration
 
 # for c libs
-LIBS_SRC_C		=
+LIBS_SRC_C		= glad/glad.c \
 
 # for cpp libs
 LIBS_SRC_CPP	=
 
 # headers for c & cpp libs
-LIBS_HEAD		=
+LIBS_HEAD		= glad/glad.h \
+				  KHR/khrplatform.h \
+				  stb_image.h \
 
 # all flags for libs
-LIBS_FLAGS			= -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx
+LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx
 # flags for libs on OSX only
-LIBS_FLAGS_OSX		=
+LIBS_FLAGS_OSX		= -framework OpenGL
 # flags for libs on LINUX only
-LIBS_FLAGS_LINUX	=
+LIBS_FLAGS_LINUX	= -lGL -lGLU
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  .. \
