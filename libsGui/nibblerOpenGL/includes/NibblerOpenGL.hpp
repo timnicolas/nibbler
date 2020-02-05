@@ -12,6 +12,8 @@
 
 #define TO_OPENGL_COLOR(color) glm::vec4(GET_R(color) / 255.0, GET_G(color) / 255.0, GET_B(color) / 255.0, 1.0)
 
+#define SIZE_LINE 6
+
 class NibblerOpenGL : public ANibblerGui {
 	public:
 		NibblerOpenGL();
@@ -24,7 +26,6 @@ class NibblerOpenGL : public ANibblerGui {
 
 	private:
 		SDL_Window *	_win;
-		SDL_Surface *	_surface;
 		SDL_Event *		_event;
 		SDL_GLContext	_context;
 

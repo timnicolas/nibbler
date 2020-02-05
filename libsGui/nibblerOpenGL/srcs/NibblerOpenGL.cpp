@@ -100,9 +100,7 @@ NibblerOpenGL::NibblerOpenGL(NibblerOpenGL const &src) {
 
 NibblerOpenGL &NibblerOpenGL::operator=(NibblerOpenGL const &rhs) {
 	if (this != &rhs) {
-		_win = rhs._win;
-		_surface = rhs._surface;
-		_event = rhs._event;
+		logErr("don't use NibblerOpenGL copy operator");
 	}
 	return *this;
 }
@@ -122,7 +120,8 @@ bool NibblerOpenGL::_init() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 32);
+    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -147,8 +146,10 @@ bool NibblerOpenGL::_init() {
 
 	glEnable(GL_MULTISAMPLE);  // anti aliasing
 	glEnable(GL_CULL_FACE);  // face culling
+	glDisable(GL_CULL_FACE);  // face culling
 	glEnable(GL_BLEND);  // enable blending (used in textRender)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
 
 	try {
 		_cubeShader = new Shader(CUBE_VS_PATH, CUBE_FS_PATH);
@@ -176,9 +177,11 @@ bool NibblerOpenGL::_init() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(NibblerOpenGL::_cubeVertices), NibblerOpenGL::_cubeVertices, GL_STATIC_DRAW);
 
     glBindVertexArray(_cubeShaderVAO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, SIZE_LINE * sizeof(float),
+		reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, SIZE_LINE * sizeof(float),
+		reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
 	_cubeShader->use();
@@ -260,7 +263,7 @@ void NibblerOpenGL::updateInput() {
 }
 
 bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _gameInfo->width, _gameInfo->height);
     glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
 
@@ -268,9 +271,6 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 	_cubeShader->setMat4("view", _cam->getViewMatrix());
 	_cubeShader->setVec3("viewPos", _cam->pos);
 	glBindVertexArray(_cubeShaderVAO);
-
-	// std::cout << glm::to_string(_cam->getViewMatrix()) << std::endl;
-
 
 	glm::mat4 model(1.0);
 	glm::vec3 pos = glm::vec3(0.0, 0.0, 0.0);
@@ -309,7 +309,7 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		model = glm::translate(glm::mat4(1.0), pos);
 		_cubeShader->setVec4("color", TO_OPENGL_COLOR(FOOD_COLOR));
 		_cubeShader->setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
 	}
 
     SDL_GL_SwapWindow(_win);
