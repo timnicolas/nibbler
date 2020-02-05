@@ -37,5 +37,6 @@
 *.swp
 .dep
 libs/*
+libsGui/nibblerOpenGL/libs/*
 assets/userData.json
 nibbler

@@ -144,9 +144,12 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
 	brew install sdl2 sdl2_ttf sdl2_image SDL2_gfx
-	mkdir -p ../../libs
+	mkdir -p $(LIBS_DIR) $(LIBS_DIR)/glad $(LIBS_DIR)/KHR
 	# stb_image lib
-	wget -O ../../libs/stb_image.h https://raw.githubusercontent.com/nothings/stb/0224a44/stb_image.h
+	wget -O $(LIBS_DIR)/glad/glad.h https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/glad/glad.h
+	wget -O $(LIBS_DIR)/glad/glad.c https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/glad/glad.c
+	wget -O $(LIBS_DIR)/KHR/khrplatform.h https://raw.githubusercontent.com/tnicolas42/libs/master/cpp/OpenGL/glad/KHR/khrplatform.h
+	wget -O $(LIBS_DIR)/stb_image.h https://raw.githubusercontent.com/nothings/stb/0224a44/stb_image.h
 fi
 
 exit 0
