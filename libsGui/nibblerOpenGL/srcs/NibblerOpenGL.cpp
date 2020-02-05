@@ -184,7 +184,6 @@ void NibblerOpenGL::updateInput() {
 	float dtTime = (time - _lastLoopMs) / 1000.0;
 	_lastLoopMs = time;
 	while (SDL_PollEvent(_event)) {
-		bool isRun = false;
 		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
 			input.quit = true;
 		if (_event->key.type == SDL_KEYDOWN) {
@@ -211,28 +210,30 @@ void NibblerOpenGL::updateInput() {
 				input.loadGuiID = 1;
 			else if (_event->key.keysym.sym == SDLK_3)
 				input.loadGuiID = 2;
-
-			// camera
-			else if (_event->key.keysym.sym == SDLK_LSHIFT)
-				isRun = true;
-			else if (_event->key.keysym.sym == SDLK_w)
-				_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
-			else if (_event->key.keysym.sym == SDLK_s)
-				_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
-			else if (_event->key.keysym.sym == SDLK_a)
-				_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
-			else if (_event->key.keysym.sym == SDLK_d)
-				_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
-			else if (_event->key.keysym.sym == SDLK_e)
-				_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
-			else if (_event->key.keysym.sym == SDLK_q)
-				_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
 		}
 
 		if (_event->type == SDL_MOUSEMOTION) {
 			_cam->processMouseMovement(_event->motion.xrel, -_event->motion.yrel);
 		}
 	}
+
+	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
+
+	bool isRun = false;
+	if (keystates[SDL_SCANCODE_LSHIFT])
+		isRun = true;
+	if (keystates[SDL_SCANCODE_W])
+		_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
+	if (keystates[SDL_SCANCODE_S])
+		_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
+	if (keystates[SDL_SCANCODE_A])
+		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
+	if (keystates[SDL_SCANCODE_D])
+		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
+	if (keystates[SDL_SCANCODE_E] || keystates[SDL_SCANCODE_SPACE])
+		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
+	if (keystates[SDL_SCANCODE_Q] || keystates[SDL_SCANCODE_LCTRL])
+		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
 }
 
 bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
