@@ -81,12 +81,16 @@ DEBUG_DIR	= $(DEP_DIR)
 SRC =	NibblerOpenGL.cpp \
 		Logging.cpp \
 		Shader.cpp \
+		Camera.cpp \
+		debug.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	NibblerOpenGL.hpp \
 		Logging.hpp \
 		Shader.hpp \
+		Camera.hpp \
+		debug.hpp \
 		commonInclude.hpp \
 		../../ANibblerGui.hpp
 
