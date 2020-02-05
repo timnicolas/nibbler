@@ -110,5 +110,4 @@ void main() {
 
 	// apply gamma correction
     FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / GAMMA));
-
 }

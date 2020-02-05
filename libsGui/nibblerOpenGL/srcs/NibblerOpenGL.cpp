@@ -140,7 +140,7 @@ bool NibblerOpenGL::_init() {
 	}
 
 	glEnable(GL_MULTISAMPLE);  // anti aliasing
-	glEnable(GL_CULL_FACE);  // face culling
+	// glEnable(GL_CULL_FACE);  // face culling
 	glEnable(GL_BLEND);  // enable blending (used in textRender)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -152,7 +152,10 @@ bool NibblerOpenGL::_init() {
 		return false;
 	}
 
-	_cam = new Camera(glm::vec3(10, 4, 20));
+	_cam = new Camera(
+		glm::vec3(4.179586, 32.320001, 34.207786),
+		glm::vec3(0.217805, 0.593419, -0.774865),
+		-74.3, -53.6);
 
 	float angle = _cam->zoom;
 	float ratio = static_cast<float>(_gameInfo->width) / _gameInfo->height;
@@ -244,9 +247,9 @@ void NibblerOpenGL::updateInput() {
 		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
 	if (keystates[SDL_SCANCODE_D])
 		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_E] || keystates[SDL_SCANCODE_SPACE])
+	if (keystates[SDL_SCANCODE_E])
 		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_Q] || keystates[SDL_SCANCODE_LCTRL])
+	if (keystates[SDL_SCANCODE_Q])
 		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
 }
 
@@ -277,6 +280,30 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 			_cubeShader->setMat4("model", model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+	}
+	// draw snake
+	pos.y = 1;
+	int		i = 0;
+	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
+	for (auto it = snake.begin(); it != snake.end(); it++) {
+		pos.x = it->x;
+		pos.z = it->y;
+		uint32_t	color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
+		model = glm::translate(glm::mat4(1.0), pos);
+		_cubeShader->setVec4("color", TO_OPENGL_COLOR(color));
+		_cubeShader->setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		i++;
+	}
+	// draw food
+	pos.y = 1;
+	for (auto it = food.begin(); it != food.end(); it++) {
+		pos.x = it->x;
+		pos.z = it->y;
+		model = glm::translate(glm::mat4(1.0), pos);
+		_cubeShader->setVec4("color", TO_OPENGL_COLOR(FOOD_COLOR));
+		_cubeShader->setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
     SDL_GL_SwapWindow(_win);
