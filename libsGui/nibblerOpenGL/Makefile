@@ -84,6 +84,7 @@ SRC =	NibblerOpenGL.cpp \
 		Camera.cpp \
 		debug.cpp \
 		Material.cpp \
+		TextRender.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
@@ -93,6 +94,7 @@ HEAD =	NibblerOpenGL.hpp \
 		Camera.hpp \
 		debug.hpp \
 		Material.hpp \
+		TextRender.hpp \
 		commonInclude.hpp \
 		../../ANibblerGui.hpp
 
@@ -112,7 +114,8 @@ LIBS_HEAD		= glad/glad.h \
 				  stb_image.h \
 
 # all flags for libs
-LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx
+LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx \
+					  -L ~/.brew/opt/freetype/lib -lfreetype
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		= -framework OpenGL
 # flags for libs on LINUX only
@@ -120,6 +123,9 @@ LIBS_FLAGS_LINUX	= -lGL -lGLU
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  .. \
+					  /usr/local/opt/freetype/include/freetype2 \
+					  ~/.brew/opt/freetype/include/freetype2 \
+					  /usr/include/freetype2
 
 ################################################################################
 # configure file

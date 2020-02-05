@@ -4,16 +4,6 @@
 // glad
 #include <glad/glad.h>
 
-#ifdef __APPLE__
-    #include <OpenGL/glu.h>
-#else
-    #include <GL/glu.h>
-    #include <GL/glext.h>
-    #include <GL/glx.h>
-    #include <GL/glxext.h>
-    #define glXGetProcAddress(x) (*glXGetProcAddressARB)((const GLubyte*)x)
-#endif
-
 // glm
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>

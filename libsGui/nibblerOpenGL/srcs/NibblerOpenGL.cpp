@@ -68,6 +68,9 @@ NibblerOpenGL::NibblerOpenGL() :
   _win(nullptr),
   _event(new SDL_Event()),
   _context(0),
+  _cubeShader(nullptr),
+  _cam(nullptr),
+  _textRender(nullptr),
   _lastLoopMs(0) {
 	// init logging
 	#if DEBUG
@@ -87,6 +90,7 @@ NibblerOpenGL::~NibblerOpenGL() {
 	glDeleteBuffers(1, &_cubeShaderVBO);
 	glDeleteVertexArrays(1, &_cubeShaderVAO);
 	delete _cubeShader;
+	delete _textRender;
 	delete _cam;
 	delete _event;
 	SDL_GL_DeleteContext(_context);
@@ -153,8 +157,17 @@ bool NibblerOpenGL::_init() {
 
 	try {
 		_cubeShader = new Shader(CUBE_VS_PATH, CUBE_FS_PATH);
+		_textRender = new TextRender(_gameInfo->width, _gameInfo->height);
+		_textBasicHeight = _gameInfo->width / 40;
+		_textRender->loadFont("basicFont", _gameInfo->font, _textBasicHeight);
+		_textTitleHeight = _gameInfo->width / 10;
+		_textRender->loadFont("titleFont", _gameInfo->font, _textTitleHeight);
 	}
 	catch (Shader::ShaderError & e) {
+        logErr("while loading OpenGL: " << e.what());
+		return false;
+	}
+	catch (TextRender::TextRenderError & e) {
         logErr("while loading OpenGL: " << e.what());
 		return false;
 	}
@@ -167,7 +180,7 @@ bool NibblerOpenGL::_init() {
 	float angle = _cam->zoom;
 	float ratio = static_cast<float>(_gameInfo->width) / _gameInfo->height;
 	float nearD = 0.1f;
-	float farD = 100;
+	float farD = 400;
 	_projection = glm::perspective(glm::radians(angle), ratio, nearD, farD);
 
 	glGenVertexArrays(1, &_cubeShaderVAO);
@@ -311,6 +324,51 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		_cubeShader->setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
 	}
+
+	// text
+    {
+		int x = 20;
+		int y = _gameInfo->height - _textBasicHeight - 10;
+		int lineSz = _textBasicHeight * 1.2;
+		std::string text;
+		text = "Score: " + std::to_string(snake.size());
+		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		y -= lineSz;
+		text = "Best: " + std::to_string(_gameInfo->bestScore);
+		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+
+		y = 10;
+		_textRender->write("basicFont", "r: restart", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		y += lineSz;
+		_textRender->write("basicFont", "arrow: turn", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		y += lineSz;
+		_textRender->write("basicFont", "space: pause", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		y += lineSz;
+		_textRender->write("basicFont", "[wasd]: move camera", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+		y += lineSz;
+		_textRender->write("basicFont", "[ed]: move camera (up-down)", x, y, 1, TO_OPENGL_COLOR(TEXT_COLOR));
+	}
+
+	if (_gameInfo->win || _gameInfo->gameOver || _gameInfo->paused) {
+		std::string	text;
+		uint32_t	color = TEXT_COLOR;
+
+		if (_gameInfo->win) {
+			text = "You win !";
+			color = TEXT_WIN_COLOR;
+		}
+		else if (_gameInfo->gameOver) {
+			text = "Game over";
+			color = TEXT_GAMEOVER_COLOR;
+		}
+		else if (_gameInfo->paused) {
+			text = "Pause";
+		}
+		float textX = _gameInfo->width / 2 - _textRender->strWidth("titleFont", text) / 2;
+		float textY = _gameInfo->height / 2 - _textTitleHeight / 2;
+		_textRender->write("titleFont", text, textX, textY, 1, TO_OPENGL_COLOR(color));
+	}
+
 
     SDL_GL_SwapWindow(_win);
 	checkError();

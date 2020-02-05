@@ -6,6 +6,7 @@
 #include "ANibblerGui.hpp"
 #include "Shader.hpp"
 #include "Camera.hpp"
+#include "TextRender.hpp"
 
 #define CUBE_VS_PATH "libsGui/nibblerOpenGL/shaders/cube_vs.glsl"
 #define CUBE_FS_PATH "libsGui/nibblerOpenGL/shaders/cube_fs.glsl"
@@ -30,11 +31,14 @@ class NibblerOpenGL : public ANibblerGui {
 		SDL_GLContext	_context;
 
 		Shader *			_cubeShader;
+		Camera *			_cam;
+		TextRender *		_textRender;
+		int					_textBasicHeight;
+		int					_textTitleHeight;
 		uint32_t			_cubeShaderVAO;
 		uint32_t			_cubeShaderVBO;
 		static const float	_cubeVertices[];
 		glm::mat4			_projection;
-		Camera *			_cam;
 		uint64_t			_lastLoopMs;
 
 		virtual bool	_init();
