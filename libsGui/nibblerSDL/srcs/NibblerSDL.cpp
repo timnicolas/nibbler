@@ -28,9 +28,7 @@ NibblerSDL::NibblerSDL(NibblerSDL const &src) {
 
 NibblerSDL &NibblerSDL::operator=(NibblerSDL const &rhs) {
 	if (this != &rhs) {
-		_win = rhs._win;
-		_surface = rhs._surface;
-		_event = rhs._event;
+		logErr("don't use NibblerSDL copy operator");
 	}
 	return *this;
 }

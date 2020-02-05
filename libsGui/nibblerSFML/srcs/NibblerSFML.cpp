@@ -25,7 +25,7 @@ NibblerSFML::NibblerSFML(NibblerSFML const &src) {
 
 NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 	if (this != &rhs) {
-		logErr("unable to copy NibblerSFML");
+		logErr("don't use NibblerSFML copy operator");
 	}
 	return *this;
 }

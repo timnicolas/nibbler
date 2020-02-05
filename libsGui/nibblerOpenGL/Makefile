@@ -54,7 +54,7 @@ NAME = ../../libNibblerOpenGL.so
 # compiler (g++ or clang++)
 CC = g++
 # flags for compilation
-CFLAGS = -Ofast -std=c++11 -Wall -Wextra
+CFLAGS = -Ofast -std=c++11 -Wall -Wextra -Wno-deprecated
 # flags only for debug mode (make DEBUG=1)
 DEBUG_FLAGS = -g3 -DDEBUG=true
 # classic flags
@@ -80,11 +80,24 @@ DEBUG_DIR	= $(DEP_DIR)
 # SRCS_DIR/SRC
 SRC =	NibblerOpenGL.cpp \
 		Logging.cpp \
+		Shader.cpp \
+		Camera.cpp \
+		debug.cpp \
+		Material.cpp \
+		TextRender.cpp \
+		Skybox.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
 HEAD =	NibblerOpenGL.hpp \
 		Logging.hpp \
+		Shader.hpp \
+		Camera.hpp \
+		debug.hpp \
+		Material.hpp \
+		TextRender.hpp \
+		Skybox.hpp \
+		commonInclude.hpp \
 		../../ANibblerGui.hpp
 
 
@@ -92,23 +105,30 @@ HEAD =	NibblerOpenGL.hpp \
 # libs configuration
 
 # for c libs
-LIBS_SRC_C		=
+LIBS_SRC_C		= glad/glad.c \
 
 # for cpp libs
 LIBS_SRC_CPP	=
 
 # headers for c & cpp libs
-LIBS_HEAD		=
+LIBS_HEAD		= glad/glad.h \
+				  KHR/khrplatform.h \
+				  stb_image.h \
 
 # all flags for libs
-LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l sfml-graphics -l sfml-window -l sfml-system
+LIBS_FLAGS			= -rpath ~/.brew/lib -L ~/.brew/lib -l SDL2 -l SDL2_image -l SDL2_ttf -l SDL2_gfx \
+					  -L ~/.brew/opt/freetype/lib -lfreetype
 # flags for libs on OSX only
-LIBS_FLAGS_OSX		=
+LIBS_FLAGS_OSX		= -framework OpenGL
 # flags for libs on LINUX only
-LIBS_FLAGS_LINUX	=
+LIBS_FLAGS_LINUX	= -lGL -lGLU
 # includes dir for external libs
 LIBS_INC			= ~/.brew/include \
 					  .. \
+					  ../../libs \
+					  /usr/local/opt/freetype/include/freetype2 \
+					  ~/.brew/opt/freetype/include/freetype2 \
+					  /usr/include/freetype2
 
 ################################################################################
 # configure file
@@ -123,7 +143,10 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
-	brew install sfml
+	brew install sdl2 sdl2_ttf sdl2_image SDL2_gfx
+	mkdir -p ../../libs
+	# stb_image lib
+	wget -O ../../libs/stb_image.h https://raw.githubusercontent.com/nothings/stb/0224a44/stb_image.h
 fi
 
 exit 0
