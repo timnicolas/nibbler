@@ -82,6 +82,10 @@ NibblerOpenGL::NibblerOpenGL() :
 
 NibblerOpenGL::~NibblerOpenGL() {
 	logInfo("exit OpenGL");
+	glDeleteBuffers(1, &_cubeShaderVBO);
+	glDeleteVertexArrays(1, &_cubeShaderVAO);
+	delete _cubeShader;
+	delete _cam;
 	delete _event;
 	SDL_GL_DeleteContext(_context);
 	SDL_DestroyWindow(_win);
