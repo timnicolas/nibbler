@@ -83,6 +83,7 @@ SRC =	NibblerOpenGL.cpp \
 		Shader.cpp \
 		Camera.cpp \
 		debug.cpp \
+		Material.cpp \
 		../../ANibblerGui.cpp
 
 # INC_DIR/HEAD
@@ -91,6 +92,7 @@ HEAD =	NibblerOpenGL.hpp \
 		Shader.hpp \
 		Camera.hpp \
 		debug.hpp \
+		Material.hpp \
 		commonInclude.hpp \
 		../../ANibblerGui.hpp
 

@@ -1,6 +1,7 @@
 #include "NibblerOpenGL.hpp"
 #include "Logging.hpp"
 #include "debug.hpp"
+#include "Material.hpp"
 
 std::chrono::milliseconds getMs() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -159,9 +160,6 @@ bool NibblerOpenGL::_init() {
 	float farD = 100;
 	_projection = glm::perspective(glm::radians(angle), ratio, nearD, farD);
 
-	_cubeShader->use();
-	_cubeShader->setMat4("projection", _projection);
-
 	glGenVertexArrays(1, &_cubeShaderVAO);
     glGenBuffers(1, &(_cubeShaderVBO));
 
@@ -173,6 +171,22 @@ bool NibblerOpenGL::_init() {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+	_cubeShader->use();
+	_cubeShader->setMat4("projection", _projection);
+	// set cube material
+	Material material;
+	_cubeShader->setVec3("material.specular", material.specular);
+	_cubeShader->setFloat("material.shininess", material.shininess);
+
+	// set direction light
+	_cubeShader->setVec3("dirLight.direction", -0.2f, -0.8f, 0.6f);
+	_cubeShader->setVec3("dirLight.ambient", 0.4f, 0.4f, 0.4f);
+	_cubeShader->setVec3("dirLight.diffuse", 0.8f, 0.8f, 0.8f);
+	_cubeShader->setVec3("dirLight.specular", 0.1f, 0.1f, 0.1f);
+
+	// set point light
+	_cubeShader->setBool("pointLight.enabled", false);
 
 	_lastLoopMs = getMs().count();
 
@@ -243,6 +257,7 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 
 	_cubeShader->use();
 	_cubeShader->setMat4("view", _cam->getViewMatrix());
+	_cubeShader->setVec3("viewPos", _cam->pos);
 	glBindVertexArray(_cubeShaderVAO);
 
 	// std::cout << glm::to_string(_cam->getViewMatrix()) << std::endl;
