@@ -30,7 +30,7 @@ class Game {
 		uint32_t						_speedMs;
 
 		void				_move(Direction::Enum direction, int id);
-		void				_moveIA(int id);
+		void				_moveIA(Direction::Enum lastDir, int id);
 		void				_updateFood();
 		void				_update();
 		void				_updateSinglePlayer();

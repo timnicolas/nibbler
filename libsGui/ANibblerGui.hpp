@@ -37,10 +37,10 @@
 
 namespace Direction {
 	enum Enum {
-		MOVE_UP,
-		MOVE_DOWN,
-		MOVE_LEFT,
-		MOVE_RIGHT,
+		MOVE_UP = 0,
+		MOVE_DOWN = 1,
+		MOVE_LEFT = 2,
+		MOVE_RIGHT = 3,
 	};
 }
 

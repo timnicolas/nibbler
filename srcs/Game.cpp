@@ -88,13 +88,12 @@ void Game::run() {
 
 		_dynGuiManager.nibblerGui->updateInput();
 
-
 		// move snake
 		uint32_t now = getMs().count();
 		if (_gameInfo->paused == false && now - lastMoveTime > _speedMs) {
 			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 				if (_gameInfo->isIA[id])
-					_moveIA(id);
+					_moveIA(_gameInfo->direction[id], id);
 				else
 					_move(_gameInfo->direction[id], id);
 			}
@@ -159,7 +158,67 @@ void Game::_updateFood() {
 	}
 }
 
-void Game::_moveIA(int id) {
+void Game::_moveIA(Direction::Enum lastDir, int id) {
+	Vec2 forward;
+	bool possibleDir[4] = {true, true, true, true};  // UP | DOWN | LEFT | RIGHT
+	// check all possible directions for the IA
+	int i = 0;
+	for (int addY = -1; addY <= 1; addY += 2) {  // -1 1
+		int addX = 0;
+		forward = Vec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
+
+		if (_gameInfo->rules.canExitBorder == false
+		&& (forward.x < 0 || forward.x >= _gameInfo->boardSize || forward.y < 0 || forward.y >= _gameInfo->boardSize)) {
+			possibleDir[i] = false;
+		}
+		else {
+			for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
+				auto it = std::find(_snake[id2].begin(), _snake[id2].end(), forward);
+				if (it != _snake[id2].end()) {
+					possibleDir[i] = false;
+				}
+			}
+		}
+		i++;
+	}
+	for (int addX = -1; addX <= 1; addX += 2) {  // -1 1
+		int addY = 0;
+		forward = Vec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
+
+		if (_gameInfo->rules.canExitBorder == false
+		&& (forward.x < 0 || forward.x >= _gameInfo->boardSize || forward.y < 0 || forward.y >= _gameInfo->boardSize)) {
+			possibleDir[i] = false;
+		}
+		else {
+			for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
+				auto it = std::find(_snake[id2].begin(), _snake[id2].end(), forward);
+				if (it != _snake[id2].end()) {
+					possibleDir[i] = false;
+				}
+			}
+		}
+		i++;
+	}
+	// print possibles directions
+	// for (int i = 0; i < 4; i++) { std::cout << std::boolalpha << possibleDir[i] << " "; } std::cout << std::endl;
+	Direction::Enum dir = lastDir;
+	if (possibleDir[lastDir] == false || rand() % IA_CHANGE_DIR_PROBA == 0) {
+		int order[4] = {0, 1, 2, 3};
+		for (int i = 0; i < 30; i++) {
+			int id1 = rand() % 4;
+			int id2 = rand() % 4;
+			int tmp = order[id1];
+			order[id1] = order[id2];
+			order[id2] = tmp;
+		}
+		for (int i = 0; i < 4; i++) {
+			if (possibleDir[order[i]] && i != lastDir) {
+				dir = static_cast<Direction::Enum>(order[i]);
+				break;
+			}
+		}
+	}
+	_gameInfo->direction[id] = dir;
 	_move(_gameInfo->direction[id], id);
 }
 
@@ -338,10 +397,12 @@ void Game::_updateMultiPlayer() {
 		if (_snake[id][0].x < 0 || _snake[id][0].x >= _gameInfo->boardSize
 		|| _snake[id][0].y < 0 || _snake[id][0].y >= _gameInfo->boardSize) {
 			_snake[id].clear();
+			continue;
 		}
 		auto it = std::find(++_snake[id].begin(), _snake[id].end(), _snake[id][0]);
 		if (it != _snake[id].end()) {
 			_snake[id].clear();
+			continue;
 		}
 		for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
 			if (id == id2)
@@ -349,6 +410,7 @@ void Game::_updateMultiPlayer() {
 			auto it = std::find(_snake[id2].begin(), _snake[id2].end(), _snake[id][0]);
 			if (it != _snake[id2].end()) {
 				_snake[id].clear();
+				continue;
 			}
 		}
 	}
