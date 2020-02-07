@@ -382,7 +382,10 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 		}
 		else {
 			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-				text = "Score " + std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
+				text = "Score ";
+				if (_gameInfo->isIA[id])
+					text += "[IA] ";
+				text += std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
 				_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(getColor(id, 1)));
 				y -= lineSz;
 			}
@@ -410,7 +413,8 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 			if (_gameInfo->nbPlayers == 1)
 				text = "You win !";
 			else
-				text = "Player " + std::to_string(_gameInfo->winnerID + 1) + " win !";
+				text = ((_gameInfo->isIA[_gameInfo->winnerID]) ? "IA " : "Player ")
+					+ std::to_string(_gameInfo->winnerID + 1) + " win !";
 			color = TEXT_WIN_COLOR;
 		}
 		else if (_gameInfo->gameOver) {

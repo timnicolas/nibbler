@@ -8,14 +8,26 @@
 #include <deque>
 #include <vector>
 
+#define SNAKE_1_COLOR_1 0x4C90FF
+#define SNAKE_1_COLOR_2 0xd6024f
+
+#define SNAKE_2_COLOR_1 0x4CFF90
+#define SNAKE_2_COLOR_2 0xd64F02
+
+#define SNAKE_3_COLOR_1 0xFF4C90
+#define SNAKE_3_COLOR_2 0x4fd602
+
+#define SNAKE_4_COLOR_1 0xFF904C
+#define SNAKE_4_COLOR_2 0x4f02d6
+
+#define SNAKE_5_COLOR_1 0x904CFF
+#define SNAKE_5_COLOR_2 0x02d64f
+
+#define SNAKE_6_COLOR_1 0x90FF4C
+#define SNAKE_6_COLOR_2 0x024fd6
+
 #define SQUARE_COLOR_1		0x323D4D
 #define SQUARE_COLOR_2		0x27313D
-#define SNAKE_1_COLOR_1		0x024fd6
-#define SNAKE_1_COLOR_2		0x4C90FF
-#define SNAKE_2_COLOR_1		0xd6024f
-#define SNAKE_2_COLOR_2		0xFF4C90
-#define SNAKE_3_COLOR_1		0x4fd602
-#define SNAKE_3_COLOR_2		0x90FF4C
 #define FOOD_COLOR			0xFF0000
 #define BORDER_COLOR		0xAAAAAA
 #define TEXT_COLOR			0xAAAAAA
@@ -51,6 +63,7 @@ struct GameInfo {
 
 	std::vector<Direction::Enum>	direction;
 	std::vector<uint32_t>			scores;
+	std::vector<bool>				isIA;
 
 	bool		paused;
 	bool		win;

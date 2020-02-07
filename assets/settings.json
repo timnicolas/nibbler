@@ -3,8 +3,9 @@
 	"boardSize": 20,
 	"startGui": 1,
 	"snakeSize": 4,
-	"nbPlayers": 2,
-	"nbFood": 2,
+	"nbPlayers": 1,
+	"nbIA": 0,
+	"nbFood": 1,
 	"speedMs": 100,
 	"canExitBorder": true,
 	"screen": {

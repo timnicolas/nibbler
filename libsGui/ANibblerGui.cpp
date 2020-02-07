@@ -43,6 +43,7 @@ GameInfo::GameInfo(int nbPlayers_)
 	for (int id = 0; id < nbPlayers; id++) {
 		direction.push_back(Direction::MOVE_UP);
 		scores.push_back(0);
+		isIA.push_back(false);
 	}
 	restart();
 }
@@ -130,7 +131,10 @@ uint32_t mixColor(uint32_t c1, uint32_t c2, float factor) {
 }
 
 uint32_t getColor(int id, int colorNB) {
-	if (id % 3 == 1) return (colorNB == 1) ? SNAKE_2_COLOR_1 : SNAKE_2_COLOR_2;
-	if (id % 3 == 2) return (colorNB == 1) ? SNAKE_3_COLOR_1 : SNAKE_3_COLOR_2;
+	if (id % 6 == 1) return (colorNB == 1) ? SNAKE_2_COLOR_1 : SNAKE_2_COLOR_2;
+	if (id % 6 == 2) return (colorNB == 1) ? SNAKE_3_COLOR_1 : SNAKE_3_COLOR_2;
+	if (id % 6 == 3) return (colorNB == 1) ? SNAKE_4_COLOR_1 : SNAKE_4_COLOR_2;
+	if (id % 6 == 4) return (colorNB == 1) ? SNAKE_5_COLOR_1 : SNAKE_5_COLOR_2;
+	if (id % 6 == 5) return (colorNB == 1) ? SNAKE_6_COLOR_1 : SNAKE_6_COLOR_2;
 	return (colorNB == 1) ? SNAKE_1_COLOR_1 : SNAKE_1_COLOR_2;
 }

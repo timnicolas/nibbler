@@ -10,7 +10,7 @@ Game::Game() :
   _speedMs(s.u("speedMs")) {}
 
 bool Game::init() {
-	_gameInfo = new GameInfo(s.u("nbPlayers"));
+	_gameInfo = new GameInfo(s.u("nbPlayers") + s.u("nbIA"));
 	_gameInfo->width = s.j("screen").u("width");
 	_gameInfo->height = s.j("screen").u("height");
 	_gameInfo->boardSize = s.u("boardSize");
@@ -23,6 +23,9 @@ bool Game::init() {
 		_snake.push_back(std::deque<Vec2>());
 		_needExtend.push_back(0);
 		_lastDeletedSnake.push_back(Vec2());
+		if (i >= static_cast<int>(s.u("nbPlayers"))) {
+			_gameInfo->isIA[i] = true;
+		}
 	}
 
 	try {
@@ -48,7 +51,7 @@ void Game::restart() {
 	int startY = _gameInfo->boardSize / 2;
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		_needExtend[id] = 0;
-		int startX = _gameInfo->boardSize / (_gameInfo->nbPlayers + 1) * (id + 1);
+		int startX = static_cast<float>(_gameInfo->boardSize) / (_gameInfo->nbPlayers + 1) * (id + 1);
 		_gameInfo->direction[id] = (id & 1) ? Direction::MOVE_UP : Direction::MOVE_DOWN;
 		_snake[id].clear();
 		for (int y = 0; y < static_cast<int>(s.u("snakeSize")); y++) {
@@ -90,7 +93,10 @@ void Game::run() {
 		uint32_t now = getMs().count();
 		if (_gameInfo->paused == false && now - lastMoveTime > _speedMs) {
 			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-				_move(_gameInfo->direction[id], id);
+				if (_gameInfo->isIA[id])
+					_moveIA(id);
+				else
+					_move(_gameInfo->direction[id], id);
 			}
 			lastMoveTime = now;
 		}
@@ -151,6 +157,10 @@ void Game::_updateFood() {
 			}
 		}
 	}
+}
+
+void Game::_moveIA(int id) {
+	_move(_gameInfo->direction[id], id);
 }
 
 void Game::_move(Direction::Enum direction, int id) {
@@ -311,7 +321,7 @@ void Game::_updateMultiPlayer() {
 	// update gameOver
 	int allDie = true;
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		if (_snake[id].size() > 0) {
+		if (_gameInfo->isIA[id] == false && _snake[id].size() > 0) {
 			allDie = false;
 			break;
 		}
