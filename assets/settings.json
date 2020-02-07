@@ -1,13 +1,17 @@
 {
 	"font": "assets/fonts/Roboto-regular.ttf",
 	"boardSize": 20,
-	"startGui": 2,
-	"snakeSize": 4,
+	"nbFood": 3,
 	"nbPlayers": 1,
-	"nbIA": 1,
-	"nbFood": 1,
+	"snakeSize": 4,
 	"speedMs": 100,
+	"startGui": 2,
 	"canExitBorder": true,
+	"ai": {
+		"nbAI": 0,
+		"changeDirProba": 10,
+		"strength": 10
+	},
 	"screen": {
 		"name": "nibbler",
 		"fps": 60,

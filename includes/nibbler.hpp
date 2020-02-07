@@ -5,8 +5,6 @@
 #endif
 #define DEBUG_FPS_LOW	DEBUG & false
 
-#define IA_CHANGE_DIR_PROBA 10
-
 #include "DynGuiManager.hpp"
 #include "SettingsJson.hpp"
 

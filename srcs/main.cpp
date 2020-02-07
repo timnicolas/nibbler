@@ -21,9 +21,9 @@ int start(int ac, char const **av) {
 		logWarn("max size for snake is " << s.u("boardSize") / 2);
 		s.u("snakeSize") = s.u("boardSize") / 2;
 	}
-	if (s.u("nbPlayers") + s.u("nbIA") > s.u("boardSize")) {
+	if (s.u("nbPlayers") + s.j("ai").u("nbAI") > s.u("boardSize")) {
 		logWarn("max players & IA is " << s.u("boardSize"));
-		s.u("nbIA") = s.u("boardSize") - s.u("nbPlayers");
+		s.j("ai").u("nbAI") = s.u("boardSize") - s.u("nbPlayers");
 	}
 	#if DEBUG
 		std::cout << s.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);

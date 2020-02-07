@@ -10,7 +10,7 @@ Game::Game() :
   _speedMs(s.u("speedMs")) {}
 
 bool Game::init() {
-	_gameInfo = new GameInfo(s.u("nbPlayers") + s.u("nbIA"));
+	_gameInfo = new GameInfo(s.u("nbPlayers") + s.j("ai").u("nbAI"));
 	_gameInfo->width = s.j("screen").u("width");
 	_gameInfo->height = s.j("screen").u("height");
 	_gameInfo->boardSize = s.u("boardSize");
@@ -158,12 +158,26 @@ void Game::_updateFood() {
 	}
 }
 
+/*
+check the 4 positions around the snake's head:
+- if there is a food -> go to the food (update direction)
+- create a possibleDir array to tell witch positions are available
+then, change direction if:
+- there is a food
+- there is an obstacle forward
+- randomly (~ every aichangeDirProba)
+go to a direction without obstacle or in a random direction (~ every aiStrength)
+*/
 void Game::_moveIA(Direction::Enum lastDir, int id) {
-	Vec2 forward;
-	bool possibleDir[4] = {true, true, true, true};  // UP | DOWN | LEFT | RIGHT
+	Vec2	forward;
+	bool	isFood = false;
+	int		foodDir;
+	bool	possibleDir[4] = {true, true, true, true};  // UP | DOWN | LEFT | RIGHT
 	// check all possible directions for the IA
 	int i = 0;
 	for (int addY = -1; addY <= 1; addY += 2) {  // -1 1
+		if (isFood)
+			break;
 		int addX = 0;
 		forward = Vec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
 
@@ -179,9 +193,17 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 				}
 			}
 		}
+		// check for food
+		auto it = std::find(_food.begin(), _food.end(), forward);
+		if (it != _food.end()) {
+			isFood = true;
+			foodDir = i;
+		}
 		i++;
 	}
 	for (int addX = -1; addX <= 1; addX += 2) {  // -1 1
+		if (isFood)
+			break;
 		int addY = 0;
 		forward = Vec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
 
@@ -197,12 +219,20 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 				}
 			}
 		}
+		// check for food
+		auto it = std::find(_food.begin(), _food.end(), forward);
+		if (it != _food.end()) {
+			isFood = true;
+			foodDir = i;
+		}
 		i++;
 	}
 	// print possibles directions
 	// for (int i = 0; i < 4; i++) { std::cout << std::boolalpha << possibleDir[i] << " "; } std::cout << std::endl;
 	Direction::Enum dir = lastDir;
-	if (possibleDir[lastDir] == false || rand() % IA_CHANGE_DIR_PROBA == 0) {
+	if (isFood)
+		dir = static_cast<Direction::Enum>(foodDir);
+	else if (possibleDir[lastDir] == false || rand() % s.j("ai").u("changeDirProba") == 0) {
 		int order[4] = {0, 1, 2, 3};
 		for (int i = 0; i < 30; i++) {
 			int id1 = rand() % 4;
@@ -212,12 +242,18 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 			order[id2] = tmp;
 		}
 		for (int i = 0; i < 4; i++) {
-			if (possibleDir[order[i]] && i != lastDir) {
+			if ((possibleDir[order[i]] && i != lastDir) || rand() % s.j("ai").u("strength") == 0) {
 				dir = static_cast<Direction::Enum>(order[i]);
 				break;
 			}
 		}
 	}
+	// if the direction is the inverse of the last direction
+	if ((lastDir == Direction::MOVE_UP && dir == Direction::MOVE_DOWN)
+	|| (lastDir == Direction::MOVE_DOWN && dir == Direction::MOVE_UP)
+	|| (lastDir == Direction::MOVE_LEFT && dir == Direction::MOVE_RIGHT)
+	|| (lastDir == Direction::MOVE_RIGHT && dir == Direction::MOVE_LEFT))
+		dir = lastDir;  // keep last direction
 	_gameInfo->direction[id] = dir;
 	_move(_gameInfo->direction[id], id);
 }
