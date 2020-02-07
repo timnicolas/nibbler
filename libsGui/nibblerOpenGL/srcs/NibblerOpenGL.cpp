@@ -248,15 +248,27 @@ void NibblerOpenGL::updateInput() {
 				input.restart = true;
 
 			else if (_event->key.keysym.sym == SDLK_UP)
-				input.direction = Direction::MOVE_UP;
+				input.direction[0] = Direction::MOVE_UP;
 			else if (_event->key.keysym.sym == SDLK_DOWN)
-				input.direction = Direction::MOVE_DOWN;
+				input.direction[0] = Direction::MOVE_DOWN;
 			else if (_event->key.keysym.sym == SDLK_LEFT)
-				input.direction = Direction::MOVE_LEFT;
+				input.direction[0] = Direction::MOVE_LEFT;
 			else if (_event->key.keysym.sym == SDLK_RIGHT)
-				input.direction = Direction::MOVE_RIGHT;
+				input.direction[0] = Direction::MOVE_RIGHT;
 
-			else if (_event->key.keysym.sym == SDLK_1)
+			// move player 2
+			if (_gameInfo->nbPlayers >= 2) {
+				if (_event->key.keysym.sym == SDLK_w)
+					input.direction[1] = Direction::MOVE_UP;
+				else if (_event->key.keysym.sym == SDLK_s)
+					input.direction[1] = Direction::MOVE_DOWN;
+				else if (_event->key.keysym.sym == SDLK_a)
+					input.direction[1] = Direction::MOVE_LEFT;
+				else if (_event->key.keysym.sym == SDLK_d)
+					input.direction[1] = Direction::MOVE_RIGHT;
+			}
+
+			if (_event->key.keysym.sym == SDLK_1)
 				input.loadGuiID = 0;
 			else if (_event->key.keysym.sym == SDLK_2)
 				input.loadGuiID = 1;
@@ -271,24 +283,26 @@ void NibblerOpenGL::updateInput() {
 
 	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
 
-	bool isRun = false;
-	if (keystates[SDL_SCANCODE_LSHIFT])
-		isRun = true;
-	if (keystates[SDL_SCANCODE_W])
-		_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_S])
-		_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_A])
-		_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_D])
-		_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_E])
-		_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
-	if (keystates[SDL_SCANCODE_Q])
-		_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
+	if (_gameInfo->nbPlayers == 1) {  // move camera only on singlePlayer
+		bool isRun = false;
+		if (keystates[SDL_SCANCODE_LSHIFT])
+			isRun = true;
+		if (keystates[SDL_SCANCODE_W])
+			_cam->processKeyboard(CamMovement::Forward, dtTime, isRun);
+		if (keystates[SDL_SCANCODE_S])
+			_cam->processKeyboard(CamMovement::Backward, dtTime, isRun);
+		if (keystates[SDL_SCANCODE_A])
+			_cam->processKeyboard(CamMovement::Left, dtTime, isRun);
+		if (keystates[SDL_SCANCODE_D])
+			_cam->processKeyboard(CamMovement::Right, dtTime, isRun);
+		if (keystates[SDL_SCANCODE_E])
+			_cam->processKeyboard(CamMovement::Up, dtTime, isRun);
+		if (keystates[SDL_SCANCODE_Q])
+			_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
+	}
 }
 
-bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
+bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _gameInfo->width, _gameInfo->height);
     glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
@@ -325,19 +339,21 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 	}
-	// draw snake
+	// draw snakes
 	pos.y = 1;
-	int		i = 0;
-	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
-	for (auto it = snake.begin(); it != snake.end(); it++) {
-		pos.x = it->x;
-		pos.z = it->y;
-		uint32_t	color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
-		model = glm::translate(glm::mat4(1.0), pos);
-		_cubeShader->setVec4("color", TO_OPENGL_COLOR(color));
-		_cubeShader->setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		i++;
+	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+		int		i = 0;
+		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
+		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
+			pos.x = it->x;
+			pos.z = it->y;
+			uint32_t	color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
+			model = glm::translate(glm::mat4(1.0), pos);
+			_cubeShader->setVec4("color", TO_OPENGL_COLOR(color));
+			_cubeShader->setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+			i++;
+		}
 	}
 	// draw food
 	pos.y = 1;
@@ -359,9 +375,18 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		int y = _gameInfo->height - _textBasicHeight - 10;
 		int lineSz = _textBasicHeight * 1.2;
 		std::string text;
-		text = "Score: " + std::to_string(snake.size());
-		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
-		y -= lineSz;
+		if (_gameInfo->nbPlayers == 1) {
+			text = "Score: " + std::to_string(_gameInfo->scores[0]);
+			_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+			y -= lineSz;
+		}
+		else {
+			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+				text = "Score " + std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
+				_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(getColor(id, 1)));
+				y -= lineSz;
+			}
+		}
 		text = "Best: " + std::to_string(_gameInfo->bestScore);
 		_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 
@@ -382,7 +407,10 @@ bool NibblerOpenGL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		uint32_t	color = TEXT_COLOR;
 
 		if (_gameInfo->win) {
-			text = "You win !";
+			if (_gameInfo->nbPlayers == 1)
+				text = "You win !";
+			else
+				text = "Player " + std::to_string(_gameInfo->winnerID + 1) + " win !";
 			color = TEXT_WIN_COLOR;
 		}
 		else if (_gameInfo->gameOver) {
