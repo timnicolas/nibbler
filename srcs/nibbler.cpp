@@ -32,7 +32,7 @@ bool	initSettings(std::string const & filename) {
 	s.add<std::string>("userDataFilename", "assets/userData.json").disableInFile(true);
 	s.add<std::string>("font", "assets/fonts/Pacifico.json").setDescription("main font ttf file");
 	s.add<uint64_t>("boardSize", 20).setMin(8).setMax(50).setDescription("size of the snake board");
-	s.add<uint64_t>("nbPlayers", 1).setMin(1).setMax(3).setDescription("number of players");
+	s.add<uint64_t>("nbPlayers", 1).setMin(1).setMax(2).setDescription("number of players");
 	s.add<uint64_t>("nbIA", 0).setMin(0).setMax(10).setDescription("number of IA on the game");
 	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
 	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");

@@ -1,10 +1,10 @@
 {
 	"font": "assets/fonts/Roboto-regular.ttf",
 	"boardSize": 20,
-	"startGui": 1,
+	"startGui": 2,
 	"snakeSize": 4,
 	"nbPlayers": 1,
-	"nbIA": 0,
+	"nbIA": 1,
 	"nbFood": 1,
 	"speedMs": 100,
 	"canExitBorder": true,

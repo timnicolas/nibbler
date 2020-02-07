@@ -377,7 +377,7 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 		std::string text;
 		if (_gameInfo->nbPlayers == 1) {
 			text = "Score: " + std::to_string(_gameInfo->scores[0]);
-			_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+			_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(getColor(0, 1)));
 			y -= lineSz;
 		}
 		else {
@@ -386,7 +386,8 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 				if (_gameInfo->isIA[id])
 					text += "[IA] ";
 				text += std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
-				_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(getColor(id, 1)));
+				uint32_t color = (snakes[id].size() > 0) ? getColor(id, 1) : TEXT_COLOR;
+				_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(color));
 				y -= lineSz;
 			}
 		}
