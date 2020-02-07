@@ -111,6 +111,11 @@ NibblerOpenGL &NibblerOpenGL::operator=(NibblerOpenGL const &rhs) {
 	return *this;
 }
 
+float mapFloat(float x, float in_min, float in_max, float out_min, float out_max) {
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+
 bool NibblerOpenGL::_init() {
 	logInfo("loading OpenGL");
 
@@ -174,10 +179,13 @@ bool NibblerOpenGL::_init() {
 		return false;
 	}
 
-	_cam = new Camera(
-		glm::vec3(4.179586, 32.320001, 15 + _gameInfo->boardSize),
-		glm::vec3(0, 1, 0),
-		-74.3, -53.6);
+	glm::vec3 camPos;
+	camPos.x = mapFloat(_gameInfo->boardSize, _gameInfo->minBoardSize, _gameInfo->maxBoardSize, -4, 16);
+	camPos.y = mapFloat(_gameInfo->boardSize, _gameInfo->minBoardSize, _gameInfo->maxBoardSize, 15, 42);
+	camPos.z = mapFloat(_gameInfo->boardSize, _gameInfo->minBoardSize, _gameInfo->maxBoardSize, 18, 80);
+	float yaw = mapFloat(_gameInfo->boardSize, _gameInfo->minBoardSize, _gameInfo->maxBoardSize, -58, -80);
+	float pitch = mapFloat(_gameInfo->boardSize, _gameInfo->minBoardSize, _gameInfo->maxBoardSize, -40, -40);
+	_cam = new Camera(camPos, glm::vec3(0, 1, 0), yaw, pitch);
 
 	float angle = _cam->zoom;
 	float ratio = static_cast<float>(_gameInfo->width) / _gameInfo->height;

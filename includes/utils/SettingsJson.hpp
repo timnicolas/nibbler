@@ -69,6 +69,10 @@ class JsonObj {
 		}
 		JsonObj<T> &		setMin(T value) { _hasMin = true; _min = value; return *this; }
 		JsonObj<T> &		setMax(T value) { _hasMax = true; _max = value; return *this; }
+		T &					getMax() { return _max; }
+		T const &			getMax() const { return _max; }
+		T &					getMin() { return _min; }
+		T const &			getMin() const { return _min; }
 		JsonObj<T> &		setDescription(std::string const & desc) { _description = desc; return *this; }
 		JsonObj<T> &		disableInFile(bool disable = true) { _disableInFile = disable; return *this; }
 		bool				isDisabledInFile() { return _disableInFile; }

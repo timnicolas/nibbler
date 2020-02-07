@@ -37,6 +37,8 @@ struct GameInfo {
 	uint16_t	width;
 	uint16_t	height;
 	uint8_t		boardSize;
+	uint8_t		minBoardSize;
+	uint8_t		maxBoardSize;
 	struct Rules {
 		bool	canExitBorder;
 	};

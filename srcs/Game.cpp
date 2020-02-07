@@ -14,6 +14,8 @@ bool Game::init() {
 	_gameInfo->width = s.j("screen").u("width");
 	_gameInfo->height = s.j("screen").u("height");
 	_gameInfo->boardSize = s.u("boardSize");
+	_gameInfo->minBoardSize = s.update<uint64_t>("boardSize").getMin();
+	_gameInfo->maxBoardSize = s.update<uint64_t>("boardSize").getMax();
 	_gameInfo->rules.canExitBorder = s.b("canExitBorder");
 	_gameInfo->font = s.s("font");
 	try {
