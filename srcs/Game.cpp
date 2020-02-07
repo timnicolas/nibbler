@@ -214,6 +214,12 @@ void Game::_update() {
 		_updateMultiPlayer();
 	}
 
+	// update scores
+	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+		if (_snake[id].size() > 0)
+			_gameInfo->scores[id] = _snake[id].size();
+	}
+
 	// update paused mode
 	if (_gameInfo->win || _gameInfo->gameOver) {
 		_gameInfo->paused = true;

@@ -42,6 +42,7 @@ GameInfo::GameInfo(int nbPlayers_)
 	rules.canExitBorder = true;
 	for (int id = 0; id < nbPlayers; id++) {
 		direction.push_back(Direction::MOVE_UP);
+		scores.push_back(0);
 	}
 	restart();
 }
@@ -50,6 +51,7 @@ void GameInfo::restart() {
 	for (int id = 0; id < nbPlayers; id++) {
 		Direction::Enum dir = (id & 1) ? Direction::MOVE_UP : Direction::MOVE_DOWN;
 		direction[id] = dir;
+		scores[id] = 0;
 	}
 	paused = false;
 	win = false;

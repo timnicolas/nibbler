@@ -50,6 +50,7 @@ struct GameInfo {
 	Rules rules;
 
 	std::vector<Direction::Enum>	direction;
+	std::vector<uint32_t>			scores;
 
 	bool		paused;
 	bool		win;

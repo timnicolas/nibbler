@@ -166,7 +166,7 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 		text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
 
 		if (_gameInfo->nbPlayers == 1) {
-			text.setString("Score : " + std::to_string(snakes[0].size()));
+			text.setString("Score : " + std::to_string(_gameInfo->scores[0]));
 			text.setPosition(textX, textY);
 			_win.draw(text);
 			textY += textLnStep;
@@ -179,7 +179,7 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 				if (id % 3 == 2)
 					c1 = SNAKE_3_COLOR_1;
 				text.setFillColor(sf::Color(TO_SFML_COLOR(c1)));
-				text.setString("Score " + std::to_string(id + 1) + " : " + std::to_string(snakes[id].size()));
+				text.setString("Score " + std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]));
 				text.setPosition(textX, textY);
 				_win.draw(text);
 				textY += textLnStep;
