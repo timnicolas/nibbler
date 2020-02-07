@@ -170,6 +170,10 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 				std::string str = "Score ";
 				if (_gameInfo->isIA[id])
 					str += "[IA] ";
+				else if (id == 0)
+					str += "[arrow] ";
+				else
+					str += "[wasd] ";
 				str += std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
 				text.setString(str);
 				text.setPosition(textX, textY);
@@ -185,11 +189,17 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 
 		textY += textLnStep;
 		textY += textLnStep;
-		text.setString("space: pause");
+		text.setString("arrow: move player 1");
 		text.setPosition(textX, textY);
 		_win.draw(text);
 		textY += textLnStep;
-		text.setString("arrow: turn");
+		if (_gameInfo->nbPlayers > 1 && _gameInfo->isIA[1] == false) {
+			text.setString("[wasd]: move player 2");
+			text.setPosition(textX, textY);
+			_win.draw(text);
+			textY += textLnStep;
+		}
+		text.setString("space: pause");
 		text.setPosition(textX, textY);
 		_win.draw(text);
 		textY += textLnStep;

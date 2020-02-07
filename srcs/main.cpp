@@ -15,7 +15,7 @@ int start(int ac, char const **av) {
 	initSettings("assets/settings.json");
 	initUserData(s.s("userDataFilename"));
 
-	s.j("screen").u("height") = s.j("screen").u("width") * 0.8;
+	s.j("screen").u("height") = s.j("screen").u("width") * 0.7;
 
 	if (s.u("snakeSize") > s.u("boardSize") / 2) {
 		logWarn("max size for snake is " << s.u("boardSize") / 2);

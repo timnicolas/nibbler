@@ -386,6 +386,10 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 				text = "Score ";
 				if (_gameInfo->isIA[id])
 					text += "[IA] ";
+				else if (id == 0)
+					text += "[arrow] ";
+				else
+					text += "[wasd] ";
 				text += std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
 				uint32_t color = (snakes[id].size() > 0) ? getColor(id, 1) : TEXT_COLOR;
 				_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(color));
@@ -398,13 +402,19 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 		y = 10;
 		_textRender->write("basicFont", "r: restart", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y += lineSz;
-		_textRender->write("basicFont", "arrow: turn", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
-		y += lineSz;
 		_textRender->write("basicFont", "space: pause", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+		if (_gameInfo->nbPlayers == 1 || _gameInfo->isIA[1]) {
+			y += lineSz;
+			_textRender->write("basicFont", "[wasd]: move camera", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+			y += lineSz;
+			_textRender->write("basicFont", "[ed]: move camera (up-down)", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+		}
+		else {
+			y += lineSz;
+			_textRender->write("basicFont", "[wasd]: move player 2", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+		}
 		y += lineSz;
-		_textRender->write("basicFont", "[wasd]: move camera", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
-		y += lineSz;
-		_textRender->write("basicFont", "[ed]: move camera (up-down)", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+		_textRender->write("basicFont", "arrow: move player 1", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 	}
 
 	if (_gameInfo->win || _gameInfo->gameOver || _gameInfo->paused) {
