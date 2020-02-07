@@ -8,23 +8,18 @@
 #include <deque>
 #include <vector>
 
-#define SNAKE_1_COLOR_1 0x4C90FF
-#define SNAKE_1_COLOR_2 0xd6024f
-
-#define SNAKE_2_COLOR_1 0x4CFF90
-#define SNAKE_2_COLOR_2 0xd64F02
-
-#define SNAKE_3_COLOR_1 0xFF4C90
-#define SNAKE_3_COLOR_2 0x4fd602
-
-#define SNAKE_4_COLOR_1 0xFF904C
-#define SNAKE_4_COLOR_2 0x4f02d6
-
-#define SNAKE_5_COLOR_1 0x904CFF
-#define SNAKE_5_COLOR_2 0x02d64f
-
-#define SNAKE_6_COLOR_1 0x90FF4C
-#define SNAKE_6_COLOR_2 0x024fd6
+#define SNAKE_1_COLOR_1 0x024fd6  // #024fd6
+#define SNAKE_1_COLOR_2 0x4C90FF  // #4C90FF
+#define SNAKE_2_COLOR_1 0x02d64f  // #02d64f
+#define SNAKE_2_COLOR_2 0x4CFF90  // #4CFF90
+#define SNAKE_3_COLOR_1 0xd64f02  // #d64f02
+#define SNAKE_3_COLOR_2 0xFF904C  // #FF904C
+#define SNAKE_4_COLOR_1 0x4f02d6  // #4f02d6
+#define SNAKE_4_COLOR_2 0x904CFF  // #904CFF
+#define SNAKE_5_COLOR_1 0xd6024f  // #d6024f
+#define SNAKE_5_COLOR_2 0xFF4C90  // #FF4C90
+#define SNAKE_6_COLOR_1 0x4fd602  // #4fd602
+#define SNAKE_6_COLOR_2 0x90FF4C  // #90FF4C
 
 #define SQUARE_COLOR_1		0x323D4D
 #define SQUARE_COLOR_2		0x27313D
