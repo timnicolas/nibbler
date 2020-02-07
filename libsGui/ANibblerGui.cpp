@@ -128,3 +128,9 @@ uint32_t mixColor(uint32_t c1, uint32_t c2, float factor) {
 
 	return (r << 16) + (g << 8) + (b << 0);
 }
+
+uint32_t getColor(int id, int colorNB) {
+	if (id % 3 == 1) return (colorNB == 1) ? SNAKE_2_COLOR_1 : SNAKE_2_COLOR_2;
+	if (id % 3 == 2) return (colorNB == 1) ? SNAKE_3_COLOR_1 : SNAKE_3_COLOR_2;
+	return (colorNB == 1) ? SNAKE_1_COLOR_1 : SNAKE_1_COLOR_2;
+}

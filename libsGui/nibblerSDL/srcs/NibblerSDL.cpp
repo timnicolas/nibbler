@@ -64,33 +64,49 @@ void NibblerSDL::updateInput() {
 	while (SDL_PollEvent(_event)) {
 		if (_event->window.event == SDL_WINDOWEVENT_CLOSE)
 			input.quit = true;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_ESCAPE)
-			input.quit = true;
 
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_SPACE)
-			input.paused = !input.paused;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_r)
-			input.restart = true;
+		if (_event->key.type == SDL_KEYDOWN) {
+			if (_event->key.keysym.sym == SDLK_ESCAPE)
+				input.quit = true;
 
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_UP)
-			input.direction = Direction::MOVE_UP;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_DOWN)
-			input.direction = Direction::MOVE_DOWN;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_LEFT)
-			input.direction = Direction::MOVE_LEFT;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_RIGHT)
-			input.direction = Direction::MOVE_RIGHT;
+			else if (_event->key.keysym.sym == SDLK_SPACE)
+				input.paused = !input.paused;
+			else if (_event->key.keysym.sym == SDLK_r)
+				input.restart = true;
 
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_1)
-			input.loadGuiID = 0;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_2)
-			input.loadGuiID = 1;
-		else if (_event->key.type == SDL_KEYDOWN && _event->key.keysym.sym == SDLK_3)
-			input.loadGuiID = 2;
+			// move player 1
+			else if (_event->key.keysym.sym == SDLK_UP)
+				input.direction[0] = Direction::MOVE_UP;
+			else if (_event->key.keysym.sym == SDLK_DOWN)
+				input.direction[0] = Direction::MOVE_DOWN;
+			else if (_event->key.keysym.sym == SDLK_LEFT)
+				input.direction[0] = Direction::MOVE_LEFT;
+			else if (_event->key.keysym.sym == SDLK_RIGHT)
+				input.direction[0] = Direction::MOVE_RIGHT;
+
+			// move player 2
+			if (_gameInfo->nbPlayers >= 2) {
+				if (_event->key.keysym.sym == SDLK_w)
+					input.direction[1] = Direction::MOVE_UP;
+				else if (_event->key.keysym.sym == SDLK_s)
+					input.direction[1] = Direction::MOVE_DOWN;
+				else if (_event->key.keysym.sym == SDLK_a)
+					input.direction[1] = Direction::MOVE_LEFT;
+				else if (_event->key.keysym.sym == SDLK_d)
+					input.direction[1] = Direction::MOVE_RIGHT;
+			}
+
+			if (_event->key.keysym.sym == SDLK_1)
+				input.loadGuiID = 0;
+			else if (_event->key.keysym.sym == SDLK_2)
+				input.loadGuiID = 1;
+			else if (_event->key.keysym.sym == SDLK_3)
+				input.loadGuiID = 2;
+		}
 	}
 }
 
-bool NibblerSDL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
+bool NibblerSDL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) {
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
 
@@ -123,19 +139,21 @@ bool NibblerSDL::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 			SDL_FillRect(_surface, &rect, color);
 		}
 	}
-	// draw snake
-	int		i = 0;
-	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
-	for (auto it = snake.begin(); it != snake.end(); it++) {
-		SDL_Rect rect = {
-			static_cast<int>(startX + step * it->x),
-			static_cast<int>(startY + step * it->y),
-			static_cast<int>(step + 0.5),
-			static_cast<int>(step + 0.5),
-		};
-		uint32_t	color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
-		SDL_FillRect(_surface, &rect, color);
-		i++;
+	// draw snakes
+	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+		int		i = 0;
+		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
+		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
+			SDL_Rect rect = {
+				static_cast<int>(startX + step * it->x),
+				static_cast<int>(startY + step * it->y),
+				static_cast<int>(step + 0.5),
+				static_cast<int>(step + 0.5),
+			};
+			uint32_t	color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
+			SDL_FillRect(_surface, &rect, color);
+			i++;
+		}
 	}
 	// draw food
 	for (auto it = food.begin(); it != food.end(); it++) {

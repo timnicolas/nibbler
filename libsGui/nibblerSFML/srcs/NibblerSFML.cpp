@@ -61,7 +61,7 @@ void NibblerSFML::updateInput() {
 				else if (_event.key.code == sf::Keyboard::R)
 					input.restart = true;
 
-				// player 1
+				// move player 1
 				else if (_event.key.code == sf::Keyboard::Up)
 					input.direction[0] = Direction::MOVE_UP;
 				else if (_event.key.code == sf::Keyboard::Down)
@@ -71,18 +71,19 @@ void NibblerSFML::updateInput() {
 				else if (_event.key.code == sf::Keyboard::Right)
 					input.direction[0] = Direction::MOVE_RIGHT;
 
-				// player 2
-				else if (_event.key.code == sf::Keyboard::W)
-					input.direction[1] = Direction::MOVE_UP;
-				else if (_event.key.code == sf::Keyboard::S)
-					input.direction[1] = Direction::MOVE_DOWN;
-				else if (_event.key.code == sf::Keyboard::A)
-					input.direction[1] = Direction::MOVE_LEFT;
-				else if (_event.key.code == sf::Keyboard::D)
-					input.direction[1] = Direction::MOVE_RIGHT;
+				// move player 2
+				if (_gameInfo->nbPlayers >= 2) {
+					if (_event.key.code == sf::Keyboard::W)
+						input.direction[1] = Direction::MOVE_UP;
+					else if (_event.key.code == sf::Keyboard::S)
+						input.direction[1] = Direction::MOVE_DOWN;
+					else if (_event.key.code == sf::Keyboard::A)
+						input.direction[1] = Direction::MOVE_LEFT;
+					else if (_event.key.code == sf::Keyboard::D)
+						input.direction[1] = Direction::MOVE_RIGHT;
+				}
 
-
-				else if (_event.key.code == sf::Keyboard::Num1)
+				if (_event.key.code == sf::Keyboard::Num1)
 					input.loadGuiID = 0;
 				else if (_event.key.code == sf::Keyboard::Num2)
 					input.loadGuiID = 1;
@@ -127,20 +128,10 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		int		i = 0;
 		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
-		uint32_t c1 = SNAKE_1_COLOR_1;
-		uint32_t c2 = SNAKE_1_COLOR_2;
-		if (id % 3 == 1) {
-			c1 = SNAKE_2_COLOR_1;
-			c2 = SNAKE_2_COLOR_2;
-		}
-		if (id % 3 == 2) {
-			c1 = SNAKE_3_COLOR_1;
-			c2 = SNAKE_3_COLOR_2;
-		}
 		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
 			sf::RectangleShape rect(sf::Vector2f(step, step));
 			rect.setPosition(startX + step * it->x, startY + step * it->y);
-			uint32_t color = mixColor(c1, c2, i / max);
+			uint32_t color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
 			rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
 			_win.draw(rect);
 			i++;
@@ -173,12 +164,7 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 		}
 		else {
 			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-				uint32_t c1 = SNAKE_1_COLOR_1;
-				if (id % 3 == 1)
-					c1 = SNAKE_2_COLOR_1;
-				if (id % 3 == 2)
-					c1 = SNAKE_3_COLOR_1;
-				text.setFillColor(sf::Color(TO_SFML_COLOR(c1)));
+				text.setFillColor(sf::Color(TO_SFML_COLOR(getColor(id, 1))));
 				text.setString("Score " + std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]));
 				text.setPosition(textX, textY);
 				_win.draw(text);

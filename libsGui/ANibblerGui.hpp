@@ -108,6 +108,7 @@ class ANibblerGui {
 };
 
 uint32_t mixColor(uint32_t c1, uint32_t c2, float factor);
+uint32_t getColor(int id, int colorNb);
 
 typedef ANibblerGui *(*nibblerGuiCreator)();
 
