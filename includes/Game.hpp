@@ -21,15 +21,17 @@ class Game {
 		};
 
 	private:
-		DynGuiManager		_dynGuiManager;
-		GameInfo *			_gameInfo;
-		std::deque<Vec2>	_snake;
-		Vec2				_lastDeletedSnake;
-		std::deque<Vec2>	_food;
-		uint32_t			_speedMs;
-		uint8_t				_needExtend;
+		DynGuiManager					_dynGuiManager;
+		GameInfo *						_gameInfo;
+		std::vector<std::deque<Vec2>>	_snake;
+		std::vector<uint8_t>			_needExtend;
+		std::vector<Vec2>				_lastDeletedSnake;
+		std::deque<Vec2>				_food;
+		uint32_t						_speedMs;
 
-		void				_move(Direction::Enum direction);
+		void				_move(Direction::Enum direction, int id);
 		void				_updateFood();
 		void				_update();
+		void				_updateSinglePlayer();
+		void				_updateMultiPlayer();
 };

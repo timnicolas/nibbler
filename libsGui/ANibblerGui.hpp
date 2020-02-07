@@ -6,11 +6,16 @@
 #include <unistd.h>
 #include <iostream>
 #include <deque>
+#include <vector>
 
 #define SQUARE_COLOR_1		0x323D4D
 #define SQUARE_COLOR_2		0x27313D
-#define SNAKE_COLOR_1		0x024fd6
-#define SNAKE_COLOR_2		0x4C90FF
+#define SNAKE_1_COLOR_1		0x024fd6
+#define SNAKE_1_COLOR_2		0x4C90FF
+#define SNAKE_2_COLOR_1		0xd6024f
+#define SNAKE_2_COLOR_2		0xFF4C90
+#define SNAKE_3_COLOR_1		0x4fd602
+#define SNAKE_3_COLOR_2		0x90FF4C
 #define FOOD_COLOR			0xFF0000
 #define BORDER_COLOR		0xAAAAAA
 #define TEXT_COLOR			0xAAAAAA
@@ -44,16 +49,18 @@ struct GameInfo {
 	};
 	Rules rules;
 
-	Direction::Enum	direction;
+	std::vector<Direction::Enum>	direction;
 
 	bool		paused;
 	bool		win;
 	bool		gameOver;
 	uint32_t	bestScore;
+	int			nbPlayers;
+	int			winnerID;
 
 	std::string	font;
 
-	GameInfo();
+	explicit GameInfo(int nbPlayers_);
 	void restart();
 };
 
@@ -75,14 +82,14 @@ class ANibblerGui {
 
 		virtual	bool	init(GameInfo *gameInfo);
 		virtual void	updateInput() = 0;
-		virtual	bool	draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) = 0;
+		virtual	bool	draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) = 0;
 
 		struct Input {
-			bool		quit;
-			bool		paused;
-			bool		restart;
-			Direction::Enum	direction;
-			uint8_t		loadGuiID;
+			bool							quit;
+			bool							paused;
+			bool							restart;
+			std::vector<Direction::Enum>	direction;
+			uint8_t							loadGuiID;
 
 			Input();
 			Input(Input const &src);

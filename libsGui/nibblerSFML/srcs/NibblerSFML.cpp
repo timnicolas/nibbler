@@ -61,14 +61,25 @@ void NibblerSFML::updateInput() {
 				else if (_event.key.code == sf::Keyboard::R)
 					input.restart = true;
 
+				// player 1
 				else if (_event.key.code == sf::Keyboard::Up)
-					input.direction = Direction::MOVE_UP;
+					input.direction[0] = Direction::MOVE_UP;
 				else if (_event.key.code == sf::Keyboard::Down)
-					input.direction = Direction::MOVE_DOWN;
+					input.direction[0] = Direction::MOVE_DOWN;
 				else if (_event.key.code == sf::Keyboard::Left)
-					input.direction = Direction::MOVE_LEFT;
+					input.direction[0] = Direction::MOVE_LEFT;
 				else if (_event.key.code == sf::Keyboard::Right)
-					input.direction = Direction::MOVE_RIGHT;
+					input.direction[0] = Direction::MOVE_RIGHT;
+
+				// player 2
+				else if (_event.key.code == sf::Keyboard::W)
+					input.direction[1] = Direction::MOVE_UP;
+				else if (_event.key.code == sf::Keyboard::S)
+					input.direction[1] = Direction::MOVE_DOWN;
+				else if (_event.key.code == sf::Keyboard::A)
+					input.direction[1] = Direction::MOVE_LEFT;
+				else if (_event.key.code == sf::Keyboard::D)
+					input.direction[1] = Direction::MOVE_RIGHT;
 
 
 				else if (_event.key.code == sf::Keyboard::Num1)
@@ -85,7 +96,7 @@ void NibblerSFML::updateInput() {
 	}
 }
 
-bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
+bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) {
 	// clear screen
 	_win.clear();
 
@@ -112,16 +123,28 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 			_win.draw(rect);
 		}
 	}
-	// draw snake
-	int		i = 0;
-	float	max = (snake.size() == 1) ? 1 : snake.size() - 1;
-	for (auto it = snake.begin(); it != snake.end(); it++) {
-		sf::RectangleShape rect(sf::Vector2f(step, step));
-		rect.setPosition(startX + step * it->x, startY + step * it->y);
-		uint32_t color = mixColor(SNAKE_COLOR_1, SNAKE_COLOR_2, i / max);
-		rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
-		_win.draw(rect);
-		i++;
+	// draw snakes
+	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+		int		i = 0;
+		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
+		uint32_t c1 = SNAKE_1_COLOR_1;
+		uint32_t c2 = SNAKE_1_COLOR_2;
+		if (id % 3 == 1) {
+			c1 = SNAKE_2_COLOR_1;
+			c2 = SNAKE_2_COLOR_2;
+		}
+		if (id % 3 == 2) {
+			c1 = SNAKE_3_COLOR_1;
+			c2 = SNAKE_3_COLOR_2;
+		}
+		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
+			sf::RectangleShape rect(sf::Vector2f(step, step));
+			rect.setPosition(startX + step * it->x, startY + step * it->y);
+			uint32_t color = mixColor(c1, c2, i / max);
+			rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
+			_win.draw(rect);
+			i++;
+		}
 	}
 	// draw food
 	for (auto it = food.begin(); it != food.end(); it++) {
@@ -142,11 +165,28 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 		text.setCharacterSize(textSize);
 		text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
 
-		text.setString("Score: " + std::to_string(snake.size()));
-		text.setPosition(textX, textY);
-		_win.draw(text);
+		if (_gameInfo->nbPlayers == 1) {
+			text.setString("Score : " + std::to_string(snakes[0].size()));
+			text.setPosition(textX, textY);
+			_win.draw(text);
+			textY += textLnStep;
+		}
+		else {
+			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+				uint32_t c1 = SNAKE_1_COLOR_1;
+				if (id % 3 == 1)
+					c1 = SNAKE_2_COLOR_1;
+				if (id % 3 == 2)
+					c1 = SNAKE_3_COLOR_1;
+				text.setFillColor(sf::Color(TO_SFML_COLOR(c1)));
+				text.setString("Score " + std::to_string(id + 1) + " : " + std::to_string(snakes[id].size()));
+				text.setPosition(textX, textY);
+				_win.draw(text);
+				textY += textLnStep;
+			}
+			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_COLOR)));
+		}
 
-		textY += textLnStep;
 		text.setString("Best: " + std::to_string(_gameInfo->bestScore));
 		text.setPosition(textX, textY);
 		_win.draw(text);
@@ -178,7 +218,10 @@ bool NibblerSFML::draw(std::deque<Vec2> & snake, std::deque<Vec2> & food) {
 
 		if (_gameInfo->win) {
 			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_WIN_COLOR)));
-			text.setString("You win !");
+			if (_gameInfo->nbPlayers == 1)
+				text.setString("You win !");
+			else
+				text.setString("Player " + std::to_string(_gameInfo->winnerID + 1) + " win !");
 		}
 		else if (_gameInfo->gameOver) {
 			text.setFillColor(sf::Color(TO_SFML_COLOR(TEXT_GAMEOVER_COLOR)));

@@ -22,28 +22,39 @@ bool ANibblerGui::init(GameInfo * gameInfo) {
 	_gameInfo = gameInfo;
 
 	input.paused = _gameInfo->paused;
-	input.direction = _gameInfo->direction;
+	input.direction.clear();
+	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+		input.direction.push_back(_gameInfo->direction[id]);
+	}
 
 	return _init();
 }
 
 // -- GameInfo ------------------------------------------------------------------
 
-GameInfo::GameInfo()
+GameInfo::GameInfo(int nbPlayers_)
 : title("nibbler"),
   width(800),
   height(600),
   boardSize(20),
-  rules() {
+  rules(),
+  nbPlayers(nbPlayers_) {
 	rules.canExitBorder = true;
+	for (int id = 0; id < nbPlayers; id++) {
+		direction.push_back(Direction::MOVE_UP);
+	}
 	restart();
 }
 
 void GameInfo::restart() {
-	direction = Direction::MOVE_UP;
+	for (int id = 0; id < nbPlayers; id++) {
+		Direction::Enum dir = (id & 1) ? Direction::MOVE_UP : Direction::MOVE_DOWN;
+		direction[id] = dir;
+	}
 	paused = false;
 	win = false;
 	gameOver = false;
+	winnerID = 0;
 }
 
 // -- Vec2 ---------------------------------------------------------------------
@@ -76,7 +87,10 @@ void ANibblerGui::Input::reset() {
 	quit = false;
 	paused = false;
 	restart = false;
-	direction = Direction::MOVE_UP;
+	for (int id = 0; id < static_cast<int>(direction.size()); id++) {
+		Direction::Enum dir = (id & 1) ? Direction::MOVE_UP : Direction::MOVE_DOWN;
+		direction[id] = dir;
+	}
 	loadGuiID = NO_GUI_LOADED;
 }
 
