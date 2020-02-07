@@ -240,7 +240,7 @@ void Game::_update() {
 
 	// update direction
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		if (_snake[id].size() == 0)
+		if (_snake[id].size() == 0 || _gameInfo->isIA[id])
 			continue;
 		if (_gameInfo->direction[id] != _dynGuiManager.nibblerGui->input.direction[id]) {
 			if (_snake[id].size() <= 1) {

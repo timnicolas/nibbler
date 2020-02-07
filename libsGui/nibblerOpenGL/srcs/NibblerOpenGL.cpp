@@ -257,7 +257,7 @@ void NibblerOpenGL::updateInput() {
 				input.direction[0] = Direction::MOVE_RIGHT;
 
 			// move player 2
-			if (_gameInfo->nbPlayers >= 2) {
+			if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
 				if (_event->key.keysym.sym == SDLK_w)
 					input.direction[1] = Direction::MOVE_UP;
 				else if (_event->key.keysym.sym == SDLK_s)
@@ -277,13 +277,14 @@ void NibblerOpenGL::updateInput() {
 		}
 
 		if (_event->type == SDL_MOUSEMOTION) {
-			_cam->processMouseMovement(_event->motion.xrel, -_event->motion.yrel);
+			if (_gameInfo->nbPlayers == 1 || _gameInfo->isIA[1])  // move camera only on singlePlayer
+				_cam->processMouseMovement(_event->motion.xrel, -_event->motion.yrel);
 		}
 	}
 
 	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
 
-	if (_gameInfo->nbPlayers == 1) {  // move camera only on singlePlayer
+	if (_gameInfo->nbPlayers == 1 || _gameInfo->isIA[1]) {  // move camera only on singlePlayer
 		bool isRun = false;
 		if (keystates[SDL_SCANCODE_LSHIFT])
 			isRun = true;

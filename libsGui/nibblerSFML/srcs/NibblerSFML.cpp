@@ -72,7 +72,7 @@ void NibblerSFML::updateInput() {
 					input.direction[0] = Direction::MOVE_RIGHT;
 
 				// move player 2
-				if (_gameInfo->nbPlayers >= 2) {
+				if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
 					if (_event.key.code == sf::Keyboard::W)
 						input.direction[1] = Direction::MOVE_UP;
 					else if (_event.key.code == sf::Keyboard::S)
