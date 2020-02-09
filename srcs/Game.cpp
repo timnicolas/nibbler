@@ -44,6 +44,7 @@ bool Game::init() {
 
 void Game::restart() {
 	_gameInfo->restart();
+	_gameInfo->paused = s.b("pauseOnStart");
 	_food.clear();
 	if (s.u("snakeSize") > userData.u("highScore")) {
 		userData.u("highScore") = s.u("snakeSize");
@@ -60,6 +61,7 @@ void Game::restart() {
 		}
 	}
 	_dynGuiManager.nibblerGui->input.reset();
+	_dynGuiManager.nibblerGui->input.paused = _gameInfo->paused;
 }
 
 Game::Game(Game const &src) {

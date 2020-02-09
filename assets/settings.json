@@ -7,6 +7,7 @@
 	"speedMs": 100,
 	"startGui": 2,
 	"canExitBorder": true,
+	"pauseOnStart": true,
 	"ai": {
 		"nbAI": 0,
 		"changeDirProba": 10,
