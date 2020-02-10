@@ -3,6 +3,7 @@
 #include "nibbler.hpp"
 
 Game::Game() :
+  _dynSoundManager(),
   _dynGuiManager(),
   _gameInfo(nullptr),
   _snake(),
@@ -10,6 +11,8 @@ Game::Game() :
   _speedMs(s.u("speedMs")) {}
 
 bool Game::init() {
+	_dynSoundManager.addDyn("libNibblerSoundSDL.so", "makeNibblerSoundSDL");
+
 	_dynGuiManager.addDyn("libNibblerSDL.so", "makeNibblerSDL");
 	_dynGuiManager.addDyn("libNibblerSFML.so", "makeNibblerSFML");
 	_dynGuiManager.addDyn("libNibblerOpenGL.so", "makeNibblerOpenGL");
@@ -33,11 +36,18 @@ bool Game::init() {
 	}
 
 	try {
-		_dynGuiManager.load(s.u("startGui"));
-		if (_dynGuiManager.obj->init(_gameInfo) == false)
-			return false;
+		// this will load GUI et SOUND
+		_changeGui(s.u("startGui"), 0);
 	}
 	catch(DynManager<ANibblerGui>::DynManagerException const & e) {
+		logErr(e.what());
+		return false;
+	}
+	catch(DynManager<ANibblerSound>::DynManagerException const & e) {
+		logErr(e.what());
+		return false;
+	}
+	catch(GameException const & e) {
 		logErr(e.what());
 		return false;
 	}
@@ -66,6 +76,7 @@ void Game::restart() {
 	}
 	_dynGuiManager.obj->input.reset();
 	_dynGuiManager.obj->input.paused = _gameInfo->paused;
+	_dynSoundManager.obj->restart();
 }
 
 Game::Game(Game const &src) {
@@ -74,6 +85,8 @@ Game::Game(Game const &src) {
 
 Game::~Game() {
 	delete _gameInfo;
+	_dynGuiManager.unload();
+	_dynSoundManager.unload();
 }
 
 Game &Game::operator=(Game const &rhs) {
@@ -298,6 +311,28 @@ void Game::_move(Direction::Enum direction, int id) {
 	}
 }
 
+void Game::_changeGui(int guiID, int soundID) {
+	_gameInfo->paused = true;
+
+	_dynSoundManager.unload();
+	_dynGuiManager.unload();
+
+	_dynSoundManager.load(soundID);
+	if (_dynSoundManager.obj->init() == false)
+		throw GameException("unable to load Sound");
+
+	if (_dynSoundManager.obj->loadMusic("masterMusic", s.s("masterMusic")) == false)
+		throw GameException("unable to load Sound");
+	_dynSoundManager.obj->playMusic("masterMusic");
+	_dynSoundManager.obj->restart();
+
+	_dynGuiManager.load(guiID);
+	if (_dynGuiManager.obj->init(_gameInfo) == false)
+		throw GameException("unable to load GUI");
+
+	_dynGuiManager.obj->input.loadGuiID = NO_GUI_LOADED;
+}
+
 void Game::_update() {
 	// restart
 	if (_dynGuiManager.obj->input.restart == true) {
@@ -309,13 +344,7 @@ void Game::_update() {
 	// change GUI
 	if (_dynGuiManager.obj->input.loadGuiID < _dynGuiManager.getNbDyn() && \
 	_dynGuiManager.obj->input.loadGuiID != _dynGuiManager.getCurrentID()) {
-		// change Gui
-		_gameInfo->paused = true;
-		_dynGuiManager.load(_dynGuiManager.obj->input.loadGuiID);
-		if (_dynGuiManager.obj->init(_gameInfo) == false)
-			throw GameException("unable to load GUI");
-
-		_dynGuiManager.obj->input.loadGuiID = NO_GUI_LOADED;
+		_changeGui(_dynGuiManager.obj->input.loadGuiID, 0);
 	}
 
 	if (_gameInfo->nbPlayers == 1) {

@@ -1,11 +1,12 @@
 {
 	"font": "assets/fonts/Roboto-regular.ttf",
+	"masterMusic": "assets/music/masterMusic.wav",
 	"boardSize": 20,
 	"nbFood": 3,
 	"nbPlayers": 1,
 	"snakeSize": 4,
 	"speedMs": 100,
-	"startGui": 2,
+	"startGui": 1,
 	"canExitBorder": true,
 	"pauseOnStart": true,
 	"ai": {

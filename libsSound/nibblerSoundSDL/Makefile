@@ -101,7 +101,7 @@ LIBS_SRC_CPP	=
 LIBS_HEAD		=
 
 # all flags for libs
-LIBS_FLAGS			= -L ~/.brew/lib -l SDL2
+LIBS_FLAGS			= -L ~/.brew/lib -l SDL2 -l SDL2_mixer
 # flags for libs on OSX only
 LIBS_FLAGS_OSX		=
 # flags for libs on LINUX only
@@ -123,7 +123,7 @@ if [[ "$$OSTYPE" == "linux-gnu" ]]; then
 # Mac OSX
 elif [[ "$$OSTYPE" == "darwin"* ]]; then
 	echo "install osx dependencies"
-	brew install sdl2 sdl2_ttf sdl2_image SDL2_gfx
+	brew install sdl2 sdl2_mixer
 fi
 
 exit 0

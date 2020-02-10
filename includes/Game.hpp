@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ANibblerGui.hpp"
+#include "ANibblerSound.hpp"
 #include "DynManager.hpp"
 
 class Game {
@@ -22,6 +23,7 @@ class Game {
 		};
 
 	private:
+		DynManager<ANibblerSound>		_dynSoundManager;
 		DynManager<ANibblerGui>			_dynGuiManager;
 		GameInfo *						_gameInfo;
 		std::vector<std::deque<Vec2>>	_snake;
@@ -36,4 +38,5 @@ class Game {
 		void				_update();
 		void				_updateSinglePlayer();
 		void				_updateMultiPlayer();
+		void				_changeGui(int guiID, int soundID);
 };

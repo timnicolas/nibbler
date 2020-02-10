@@ -135,6 +135,7 @@ LIBS_FLAGS_LINUX	=
 LIBS_INC			= ~/.brew/include \
 					  $(LIBS_DIR) \
 					  libsGui \
+					  libsSound \
 
 # libs created by user
 UNCOMPILED_LIBS		= libsGui/nibblerSDL \

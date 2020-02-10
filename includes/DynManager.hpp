@@ -39,7 +39,7 @@ class DynManager {
 			// quit current dyn before loading a new one
 			unload();
 
-			// load librairy
+			// load library
 			_hndl = dlopen(_infos[id].first.c_str(), RTLD_LAZY);
 			if (_hndl == NULL) {
 				throw DynManagerException(dlerror());
