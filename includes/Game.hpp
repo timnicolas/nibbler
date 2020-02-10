@@ -1,6 +1,7 @@
 #pragma once
 
-#include "DynGuiManager.hpp"
+#include "ANibblerGui.hpp"
+#include "DynManager.hpp"
 
 class Game {
 	public:
@@ -21,7 +22,7 @@ class Game {
 		};
 
 	private:
-		DynGuiManager					_dynGuiManager;
+		DynManager<ANibblerGui>			_dynGuiManager;
 		GameInfo *						_gameInfo;
 		std::vector<std::deque<Vec2>>	_snake;
 		std::vector<uint8_t>			_needExtend;

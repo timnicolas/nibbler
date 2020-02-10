@@ -5,7 +5,6 @@
 #endif
 #define DEBUG_FPS_LOW	DEBUG & false
 
-#include "DynGuiManager.hpp"
 #include "SettingsJson.hpp"
 
 void						initLogs();
