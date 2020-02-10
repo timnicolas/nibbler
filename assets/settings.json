@@ -11,6 +11,8 @@
 	"nbPlayers": 1,
 	"snakeSize": 4,
 	"speedMs": 100,
+	"increasingSpeedStep": 10,
+	"maxSpeedMs": 40,
 	"startGui": 2,
 	"canExitBorder": true,
 	"pauseOnStart": true,

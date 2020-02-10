@@ -53,6 +53,7 @@ bool Game::init() {
 void Game::restart() {
 	_gameInfo->restart();
 	_gameInfo->paused = s.b("pauseOnStart");
+	_speedMs = s.u("speedMs");
 	_food.clear();
 	if (s.u("snakeSize") > userData.u("highScore")) {
 		userData.u("highScore") = s.u("snakeSize");
@@ -94,6 +95,7 @@ void Game::run() {
 	float						loopTime = 1000 / s.j("screen").u("fps");
 	std::chrono::milliseconds	time_start;
 	uint32_t					lastMoveTime = 0;
+	uint32_t					nbMoves = 0;
 	#if DEBUG_FPS_LOW == true
 		bool firstLoop = true;
 	#endif
@@ -110,6 +112,11 @@ void Game::run() {
 					_moveIA(_gameInfo->direction[id], id);
 				else
 					_move(_gameInfo->direction[id], id);
+			}
+			nbMoves++;
+			if (s.i("increasingSpeedStep") != -1 && nbMoves % s.i("increasingSpeedStep") == 0) {
+				if (_speedMs > s.u("maxSpeedMs"))
+					_speedMs--;
 			}
 			lastMoveTime = now;
 		}

@@ -42,6 +42,9 @@ bool	initSettings(std::string const & filename) {
 	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");
 	s.add<uint64_t>("nbFood", 1).setMin(0).setMax(10).setDescription("number of food on the board");
 	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");
+	s.add<int64_t>("increasingSpeedStep", 0).setMin(-1).setMax(100)
+		.setDescription("the speed increase each x snake movement (-1 to disable)");
+	s.add<uint64_t>("maxSpeedMs", 50).setMin(30).setMax(1000).setDescription("maximum speed of the snake");
 	s.add<bool>("canExitBorder", false).setDescription("if true, the snakes cannot die in front of the borders");
 	s.add<bool>("pauseOnStart", true).setDescription("if true, the game will start in pause mode");
 	s.add<uint64_t>("startSound", 1).setMin(0).setMax(1).setDescription("id of the starting sound (0 for OFF)");
