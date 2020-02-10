@@ -73,7 +73,6 @@ class DynManager {
 		}
 
 	private:
-
 		uint8_t		_currentID;
 		void		*_hndl;
 		std::vector<std::pair<std::string const, std::string const>> _infos;

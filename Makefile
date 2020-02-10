@@ -104,7 +104,7 @@ SRC =	main.cpp \
 
 # INC_DIR/HEAD
 HEAD =	nibbler.hpp \
-		DynGuiManager.hpp \
+		DynManager.hpp \
 		Game.hpp \
 		../libsGui/ANibblerGui.hpp \
 \
