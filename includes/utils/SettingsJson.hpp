@@ -81,7 +81,9 @@ class JsonObj {
 		std::string	const &	getName() const { return _name; }
 		std::string			getInfo() const {
 			std::ostringstream out;
-			out << "  // " << _description;
+			out << "  // ";
+			if (_description != "")
+				out << _description << " ";
 			out << "<";
 			if (typeid(T) == typeid(std::string)) out << "string";
 			else if (typeid(T) == typeid(int64_t)) out << "int64";
