@@ -70,6 +70,7 @@ void Game::restart() {
 	}
 	dynGuiManager.obj->input.reset();
 	dynGuiManager.obj->input.paused = _gameInfo->paused;
+	dynSoundManager.obj->stopAllSounds();
 	dynSoundManager.obj->restart();
 }
 
@@ -317,6 +318,10 @@ void Game::_changeGui(int guiID, int soundID) {
 
 	if (dynSoundManager.obj->loadMusic("masterMusic", s.s("masterMusic")) == false)
 		throw GameException("unable to load Sound");
+	if (dynSoundManager.obj->loadSound("win", s.s("soundWin"), 128) == false)
+		throw GameException("unable to load Sound");
+	if (dynSoundManager.obj->loadSound("loose", s.s("soundLoose"), 128) == false)
+		throw GameException("unable to load Sound");
 	dynSoundManager.obj->playMusic("masterMusic");
 	dynSoundManager.obj->restart();
 
@@ -341,11 +346,21 @@ void Game::_update() {
 		_changeGui(dynGuiManager.obj->input.loadGuiID, s.u("startSound"));
 	}
 
+	bool lastGameOver = _gameInfo->gameOver;
+	bool lastWin = _gameInfo->win;
 	if (_gameInfo->nbPlayers == 1) {
 		_updateSinglePlayer();
 	}
 	else {
 		_updateMultiPlayer();
+	}
+	if (lastGameOver == false && _gameInfo->gameOver) {
+		dynSoundManager.obj->pause(true);
+		dynSoundManager.obj->playSound("loose");
+	}
+	else if (lastWin == false && _gameInfo->win) {
+		dynSoundManager.obj->pause(true);
+		dynSoundManager.obj->playSound("win");
 	}
 
 	// update scores

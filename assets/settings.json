@@ -2,6 +2,8 @@
 	"font": "assets/fonts/Roboto-regular.ttf",
 	"startSound": 1,
 	"masterMusic": "assets/music/masterMusic.wav",
+	"soundWin": "assets/music/win.wav",
+	"soundLoose": "assets/music/loose.wav",
 	"boardSize": 20,
 	"nbFood": 3,
 	"nbPlayers": 1,

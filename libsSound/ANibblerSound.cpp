@@ -17,6 +17,6 @@ ANibblerSound &ANibblerSound::operator=(ANibblerSound const &rhs) {
 	return *this;
 }
 
-bool ANibblerSound::init() {
-	return _init();
+bool ANibblerSound::init(int nbSoundChannels) {
+	return _init(nbSoundChannels);
 }

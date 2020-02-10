@@ -46,6 +46,8 @@ bool	initSettings(std::string const & filename) {
 	s.add<bool>("canExitBorder", false).setDescription("if true, the snakes cannot die in front of the borders");
 	s.add<bool>("pauseOnStart", true).setDescription("if true, the game will start in pause mode");
 	s.add<std::string>("masterMusic", "assets/music/masterMusic.wav");
+	s.add<std::string>("soundWin", "assets/music/win.wav");
+	s.add<std::string>("soundLoose", "assets/music/loose.wav");
 
 	try {
 		if (s.loadFile(filename) == false) {

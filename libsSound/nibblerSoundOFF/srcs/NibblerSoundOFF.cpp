@@ -27,7 +27,8 @@ NibblerSoundOFF &NibblerSoundOFF::operator=(NibblerSoundOFF const &rhs) {
 	return *this;
 }
 
-bool NibblerSoundOFF::_init() {
+bool NibblerSoundOFF::_init(int nbSoundChannels) {
+	(void)nbSoundChannels;
     return true;
 }
 
@@ -52,6 +53,28 @@ bool	NibblerSoundOFF::pause(bool infinitePlay) {
 }
 
 bool	NibblerSoundOFF::restart() {
+	return true;
+}
+
+bool	NibblerSoundOFF::loadSound(std::string const & name, std::string const & filename, int soundLevel) {
+	(void)name;
+	(void)filename;
+	(void)soundLevel;
+	return true;
+}
+
+bool	NibblerSoundOFF::playSound(std::string const & name, int channel) {
+	(void)name;
+	(void)channel;
+	return true;
+}
+
+bool	NibblerSoundOFF::stopAllSounds() {
+	return true;
+}
+
+bool	NibblerSoundOFF::stopSound(int channel) {
+	(void)channel;
 	return true;
 }
 

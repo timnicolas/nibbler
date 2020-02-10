@@ -16,6 +16,11 @@ class NibblerSoundOFF : public ANibblerSound {
 		virtual bool	pause(bool paused);
 		virtual bool	restart();
 
+		virtual bool	loadSound(std::string const & name, std::string const & filename, int soundLevel);
+		virtual bool	playSound(std::string const & name, int channel = 0);
+		virtual bool	stopAllSounds();
+		virtual bool	stopSound(int channel);
+
 	private:
-		virtual bool	_init();
+		virtual bool	_init(int nbSoundChannels);
 };

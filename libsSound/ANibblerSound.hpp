@@ -14,7 +14,7 @@ class ANibblerSound {
 		ANibblerSound(ANibblerSound const &src);
 		ANibblerSound &operator=(ANibblerSound const &rhs);
 
-		virtual	bool	init();
+		virtual	bool	init(int nbSoundChannels = 10);
 
 		virtual bool	loadMusic(std::string const & name, std::string const & filename) = 0;
 		virtual void	update() = 0;
@@ -22,8 +22,14 @@ class ANibblerSound {
 		virtual bool	pause(bool paused) = 0;
 		virtual bool	restart() = 0;
 
+		virtual bool	loadSound(std::string const & name, std::string const & filename,
+			int soundLevel) = 0;
+		virtual bool	playSound(std::string const & name, int channel = 0) = 0;
+		virtual bool	stopAllSounds() = 0;
+		virtual bool	stopSound(int channel) = 0;
+
 	protected:
-		virtual	bool	_init() = 0;
+		virtual	bool	_init(int nbSoundChannels) = 0;
 };
 
 typedef ANibblerSound *(*nibblerSoundCreator)();

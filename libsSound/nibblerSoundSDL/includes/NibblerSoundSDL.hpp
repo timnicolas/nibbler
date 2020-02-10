@@ -20,8 +20,13 @@ class NibblerSoundSDL : public ANibblerSound {
 		virtual bool	pause(bool paused);
 		virtual bool	restart();
 
+		virtual bool	loadSound(std::string const & name, std::string const & filename, int soundLevel);
+		virtual bool	playSound(std::string const & name, int channel = 0);
+		virtual bool	stopAllSounds();
+		virtual bool	stopSound(int channel);
+
 	private:
-		virtual bool	_init();
+		virtual bool	_init(int nbSoundChannels);
 
 		struct Music {
 			std::string	filename;
@@ -31,4 +36,14 @@ class NibblerSoundSDL : public ANibblerSound {
 		};
 
 		std::map<std::string, Music>	_music;
+		std::string						_actMusic;
+
+		struct Sound {
+			std::string	filename;
+			Mix_Chunk *	sound;
+
+			Sound() : sound(nullptr) {}
+		};
+
+		std::map<std::string, Sound>	_sound;
 };
