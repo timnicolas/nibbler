@@ -316,11 +316,11 @@ void Game::_changeGui(int guiID, int soundID) {
 	if (dynSoundManager.obj->init() == false)
 		throw GameException("unable to load Sound");
 
-	if (dynSoundManager.obj->loadMusic("masterMusic", s.s("masterMusic")) == false)
+	if (dynSoundManager.obj->loadMusic("masterMusic", s.s("masterMusic"), s.u("musicLevel")) == false)
 		throw GameException("unable to load Sound");
-	if (dynSoundManager.obj->loadSound("win", s.s("soundWin"), 128) == false)
+	if (dynSoundManager.obj->loadSound("win", s.s("soundWin"), s.u("soundLevel")) == false)
 		throw GameException("unable to load Sound");
-	if (dynSoundManager.obj->loadSound("loose", s.s("soundLoose"), 128) == false)
+	if (dynSoundManager.obj->loadSound("loose", s.s("soundLoose"), s.u("soundLevel")) == false)
 		throw GameException("unable to load Sound");
 	dynSoundManager.obj->playMusic("masterMusic");
 	dynSoundManager.obj->restart();

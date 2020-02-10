@@ -51,7 +51,7 @@ bool NibblerSoundSDL::_init(int nbSoundChannels) {
     return true;
 }
 
-bool	NibblerSoundSDL::loadMusic(std::string const & name, std::string const & filename) {
+bool	NibblerSoundSDL::loadMusic(std::string const & name, std::string const & filename, int soundLevel) {
 	Music newMusic;
 	newMusic.filename = filename;
 	newMusic.music = Mix_LoadMUS(filename.c_str());
@@ -59,6 +59,7 @@ bool	NibblerSoundSDL::loadMusic(std::string const & name, std::string const & fi
 		logErr("while loading music " << filename << ": " << Mix_GetError());
 		return false;
 	}
+	newMusic.vol = soundLevel;
 	_music.insert(std::pair<std::string, Music>(name, newMusic));
 	return true;
 }
@@ -69,6 +70,7 @@ void	NibblerSoundSDL::update() {
 bool	NibblerSoundSDL::playMusic(std::string const & name, bool infinitePlay) {
 	int nb = (infinitePlay) ? -1 : 1;
 
+	Mix_VolumeMusic(_music[name].vol);
 	if (Mix_PlayMusic(_music[name].music, nb) < 0) {
 		logErr("error: " << Mix_GetError());
 		return false;

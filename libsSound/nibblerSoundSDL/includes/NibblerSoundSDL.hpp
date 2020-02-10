@@ -14,7 +14,7 @@ class NibblerSoundSDL : public ANibblerSound {
 		NibblerSoundSDL(NibblerSoundSDL const &src);
 		NibblerSoundSDL &operator=(NibblerSoundSDL const &rhs);
 
-		virtual bool	loadMusic(std::string const & name, std::string const & filename);
+		virtual bool	loadMusic(std::string const & name, std::string const & filename, int soundLevel);
 		virtual void	update();
 		virtual bool	playMusic(std::string const & name, bool infinitePlay = true);
 		virtual bool	pause(bool paused);
@@ -31,6 +31,7 @@ class NibblerSoundSDL : public ANibblerSound {
 		struct Music {
 			std::string	filename;
 			Mix_Music *	music;
+			int			vol;
 
 			Music() : music(nullptr) {}
 		};

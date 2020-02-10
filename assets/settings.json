@@ -1,6 +1,8 @@
 {
 	"font": "assets/fonts/Roboto-regular.ttf",
 	"startSound": 1,
+	"musicLevel": 0,
+	"soundLevel": 0,
 	"masterMusic": "assets/music/masterMusic.wav",
 	"soundWin": "assets/music/win.wav",
 	"soundLoose": "assets/music/loose.wav",
@@ -9,7 +11,7 @@
 	"nbPlayers": 1,
 	"snakeSize": 4,
 	"speedMs": 100,
-	"startGui": 1,
+	"startGui": 2,
 	"canExitBorder": true,
 	"pauseOnStart": true,
 	"ai": {

@@ -32,9 +32,10 @@ bool NibblerSoundOFF::_init(int nbSoundChannels) {
     return true;
 }
 
-bool	NibblerSoundOFF::loadMusic(std::string const & name, std::string const & filename) {
+bool	NibblerSoundOFF::loadMusic(std::string const & name, std::string const & filename, int soundLevel) {
 	(void)name;
 	(void)filename;
+	(void)soundLevel;
 	return true;
 }
 

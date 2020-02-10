@@ -16,7 +16,8 @@ class ANibblerSound {
 
 		virtual	bool	init(int nbSoundChannels = 10);
 
-		virtual bool	loadMusic(std::string const & name, std::string const & filename) = 0;
+		virtual bool	loadMusic(std::string const & name, std::string const & filename,
+			int soundLevel) = 0;
 		virtual void	update() = 0;
 		virtual bool	playMusic(std::string const & name, bool infinitePlay = true) = 0;
 		virtual bool	pause(bool paused) = 0;

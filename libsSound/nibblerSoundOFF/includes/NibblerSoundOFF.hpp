@@ -10,7 +10,7 @@ class NibblerSoundOFF : public ANibblerSound {
 		NibblerSoundOFF(NibblerSoundOFF const &src);
 		NibblerSoundOFF &operator=(NibblerSoundOFF const &rhs);
 
-		virtual bool	loadMusic(std::string const & name, std::string const & filename);
+		virtual bool	loadMusic(std::string const & name, std::string const & filename, int soundLevel);
 		virtual void	update();
 		virtual bool	playMusic(std::string const & name, bool infinitePlay = true);
 		virtual bool	pause(bool paused);
