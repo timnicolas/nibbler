@@ -80,7 +80,6 @@ bool	NibblerSoundSDL::pause(bool infinitePlay) {
 }
 
 bool	NibblerSoundSDL::restart() {
-	logInfo("restart music");
 	Mix_RewindMusic();
 	Mix_ResumeMusic();
 	return true;

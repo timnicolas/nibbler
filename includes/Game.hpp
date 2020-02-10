@@ -16,6 +16,9 @@ class Game {
 		void	run();
 		void	restart();
 
+		DynManager<ANibblerSound>		dynSoundManager;
+		DynManager<ANibblerGui>			dynGuiManager;
+
 		class GameException : public std::runtime_error {
 			public:
 				GameException();
@@ -23,8 +26,6 @@ class Game {
 		};
 
 	private:
-		DynManager<ANibblerSound>		_dynSoundManager;
-		DynManager<ANibblerGui>			_dynGuiManager;
 		GameInfo *						_gameInfo;
 		std::vector<std::deque<Vec2>>	_snake;
 		std::vector<uint8_t>			_needExtend;

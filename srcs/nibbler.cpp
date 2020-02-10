@@ -39,6 +39,7 @@ bool	initSettings(std::string const & filename) {
 		s.j("ai").add<uint64_t>("changeDirProba", 10).setMin(1).setMax(100)
 			.setDescription("probability to randomly change direction");
 	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
+	s.add<uint64_t>("startSound", 1).setMin(0).setMax(1).setDescription("id of the starting sound (0 for OFF)");
 	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");
 	s.add<uint64_t>("nbFood", 1).setMin(0).setMax(10).setDescription("number of food on the board");
 	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");

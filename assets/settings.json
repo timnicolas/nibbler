@@ -1,5 +1,6 @@
 {
 	"font": "assets/fonts/Roboto-regular.ttf",
+	"startSound": 1,
 	"masterMusic": "assets/music/masterMusic.wav",
 	"boardSize": 20,
 	"nbFood": 3,

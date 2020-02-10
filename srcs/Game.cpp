@@ -3,20 +3,14 @@
 #include "nibbler.hpp"
 
 Game::Game() :
-  _dynSoundManager(),
-  _dynGuiManager(),
+  dynSoundManager(),
+  dynGuiManager(),
   _gameInfo(nullptr),
   _snake(),
   _needExtend(),
   _speedMs(s.u("speedMs")) {}
 
 bool Game::init() {
-	_dynSoundManager.addDyn("libNibblerSoundSDL.so", "makeNibblerSoundSDL");
-
-	_dynGuiManager.addDyn("libNibblerSDL.so", "makeNibblerSDL");
-	_dynGuiManager.addDyn("libNibblerSFML.so", "makeNibblerSFML");
-	_dynGuiManager.addDyn("libNibblerOpenGL.so", "makeNibblerOpenGL");
-
 	_gameInfo = new GameInfo(s.u("nbPlayers") + s.j("ai").u("nbAI"));
 	_gameInfo->width = s.j("screen").u("width");
 	_gameInfo->height = s.j("screen").u("height");
@@ -37,7 +31,7 @@ bool Game::init() {
 
 	try {
 		// this will load GUI et SOUND
-		_changeGui(s.u("startGui"), 0);
+		_changeGui(s.u("startGui"), s.u("startSound"));
 	}
 	catch(DynManager<ANibblerGui>::DynManagerException const & e) {
 		logErr(e.what());
@@ -74,9 +68,9 @@ void Game::restart() {
 			_snake[id].push_back({startX, posY});
 		}
 	}
-	_dynGuiManager.obj->input.reset();
-	_dynGuiManager.obj->input.paused = _gameInfo->paused;
-	_dynSoundManager.obj->restart();
+	dynGuiManager.obj->input.reset();
+	dynGuiManager.obj->input.paused = _gameInfo->paused;
+	dynSoundManager.obj->restart();
 }
 
 Game::Game(Game const &src) {
@@ -85,8 +79,8 @@ Game::Game(Game const &src) {
 
 Game::~Game() {
 	delete _gameInfo;
-	_dynGuiManager.unload();
-	_dynSoundManager.unload();
+	dynGuiManager.unload();
+	dynSoundManager.unload();
 }
 
 Game &Game::operator=(Game const &rhs) {
@@ -102,10 +96,10 @@ void Game::run() {
 	#if DEBUG_FPS_LOW == true
 		bool firstLoop = true;
 	#endif
-	while (_dynGuiManager.obj->input.quit == false) {
+	while (dynGuiManager.obj->input.quit == false) {
 		time_start = getMs();
 
-		_dynGuiManager.obj->updateInput();
+		dynGuiManager.obj->updateInput();
 
 		// move snake
 		uint32_t now = getMs().count();
@@ -124,7 +118,7 @@ void Game::run() {
 		_update();
 
 		// draw on screen
-		_dynGuiManager.obj->draw(_snake, _food);
+		dynGuiManager.obj->draw(_snake, _food);
 
 		// fps
 		std::chrono::milliseconds time_loop = getMs() - time_start;
@@ -314,37 +308,37 @@ void Game::_move(Direction::Enum direction, int id) {
 void Game::_changeGui(int guiID, int soundID) {
 	_gameInfo->paused = true;
 
-	_dynSoundManager.unload();
-	_dynGuiManager.unload();
+	dynSoundManager.unload();
+	dynGuiManager.unload();
 
-	_dynSoundManager.load(soundID);
-	if (_dynSoundManager.obj->init() == false)
+	dynSoundManager.load(soundID);
+	if (dynSoundManager.obj->init() == false)
 		throw GameException("unable to load Sound");
 
-	if (_dynSoundManager.obj->loadMusic("masterMusic", s.s("masterMusic")) == false)
+	if (dynSoundManager.obj->loadMusic("masterMusic", s.s("masterMusic")) == false)
 		throw GameException("unable to load Sound");
-	_dynSoundManager.obj->playMusic("masterMusic");
-	_dynSoundManager.obj->restart();
+	dynSoundManager.obj->playMusic("masterMusic");
+	dynSoundManager.obj->restart();
 
-	_dynGuiManager.load(guiID);
-	if (_dynGuiManager.obj->init(_gameInfo) == false)
+	dynGuiManager.load(guiID);
+	if (dynGuiManager.obj->init(_gameInfo) == false)
 		throw GameException("unable to load GUI");
 
-	_dynGuiManager.obj->input.loadGuiID = NO_GUI_LOADED;
+	dynGuiManager.obj->input.loadGuiID = NO_GUI_LOADED;
 }
 
 void Game::_update() {
 	// restart
-	if (_dynGuiManager.obj->input.restart == true) {
-		_dynGuiManager.obj->input.restart = false;
+	if (dynGuiManager.obj->input.restart == true) {
+		dynGuiManager.obj->input.restart = false;
 		restart();
 		return;
 	}
 
 	// change GUI
-	if (_dynGuiManager.obj->input.loadGuiID < _dynGuiManager.getNbDyn() && \
-	_dynGuiManager.obj->input.loadGuiID != _dynGuiManager.getCurrentID()) {
-		_changeGui(_dynGuiManager.obj->input.loadGuiID, 0);
+	if (dynGuiManager.obj->input.loadGuiID < dynGuiManager.getNbDyn() && \
+	dynGuiManager.obj->input.loadGuiID != dynGuiManager.getCurrentID()) {
+		_changeGui(dynGuiManager.obj->input.loadGuiID, s.u("startSound"));
 	}
 
 	if (_gameInfo->nbPlayers == 1) {
@@ -365,16 +359,16 @@ void Game::_update() {
 		_gameInfo->paused = true;
 	}
 	else {
-		_gameInfo->paused = _dynGuiManager.obj->input.paused;
+		_gameInfo->paused = dynGuiManager.obj->input.paused;
 	}
 
 	// update direction
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		if (_snake[id].size() == 0 || _gameInfo->isIA[id])
 			continue;
-		if (_gameInfo->direction[id] != _dynGuiManager.obj->input.direction[id]) {
+		if (_gameInfo->direction[id] != dynGuiManager.obj->input.direction[id]) {
 			if (_snake[id].size() <= 1) {
-				_gameInfo->direction[id] = _dynGuiManager.obj->input.direction[id];
+				_gameInfo->direction[id] = dynGuiManager.obj->input.direction[id];
 			}
 			else {
 				Vec2 direction(_snake[id][0].x - _snake[id][1].x, _snake[id][0].y - _snake[id][1].y);
@@ -383,14 +377,14 @@ void Game::_update() {
 				if (direction.y > 1) direction.y = -1;
 				else if (direction.y < -1) direction.y = 1;
 
-				if (_dynGuiManager.obj->input.direction[id] == Direction::MOVE_UP && direction.y != 1)
-					_gameInfo->direction[id] = _dynGuiManager.obj->input.direction[id];
-				else if (_dynGuiManager.obj->input.direction[id] == Direction::MOVE_DOWN && direction.y != -1)
-					_gameInfo->direction[id] = _dynGuiManager.obj->input.direction[id];
-				else if (_dynGuiManager.obj->input.direction[id] == Direction::MOVE_LEFT && direction.x != 1)
-					_gameInfo->direction[id] = _dynGuiManager.obj->input.direction[id];
-				else if (_dynGuiManager.obj->input.direction[id] == Direction::MOVE_RIGHT && direction.x != -1)
-					_gameInfo->direction[id] = _dynGuiManager.obj->input.direction[id];
+				if (dynGuiManager.obj->input.direction[id] == Direction::MOVE_UP && direction.y != 1)
+					_gameInfo->direction[id] = dynGuiManager.obj->input.direction[id];
+				else if (dynGuiManager.obj->input.direction[id] == Direction::MOVE_DOWN && direction.y != -1)
+					_gameInfo->direction[id] = dynGuiManager.obj->input.direction[id];
+				else if (dynGuiManager.obj->input.direction[id] == Direction::MOVE_LEFT && direction.x != 1)
+					_gameInfo->direction[id] = dynGuiManager.obj->input.direction[id];
+				else if (dynGuiManager.obj->input.direction[id] == Direction::MOVE_RIGHT && direction.x != -1)
+					_gameInfo->direction[id] = dynGuiManager.obj->input.direction[id];
 			}
 		}
 	}

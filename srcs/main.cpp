@@ -33,6 +33,14 @@ int start(int ac, char const **av) {
 	srand(time(NULL));
 	Game	game;
 
+
+	game.dynSoundManager.addDyn("libNibblerSoundOFF.so", "makeNibblerSoundOFF");
+	game.dynSoundManager.addDyn("libNibblerSoundSDL.so", "makeNibblerSoundSDL");
+
+	game.dynGuiManager.addDyn("libNibblerSDL.so", "makeNibblerSDL");
+	game.dynGuiManager.addDyn("libNibblerSFML.so", "makeNibblerSFML");
+	game.dynGuiManager.addDyn("libNibblerOpenGL.so", "makeNibblerOpenGL");
+
 	if (game.init() == false)
 		return EXIT_FAILURE;
 
