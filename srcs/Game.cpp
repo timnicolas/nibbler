@@ -507,6 +507,13 @@ void Game::_updateSinglePlayer() {
 		if (it != _gameInfo->snakes[id].end()) {
 			_gameInfo->gameOver = true;
 		}
+		// wall
+		for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+			if (it->pos == _gameInfo->snakes[id][0]) {
+				_gameInfo->snakes[id].clear();
+				continue;
+			}
+		}
 		if (_gameInfo->gameOver) {
 			_gameInfo->snakes[id].push_back(_lastDeletedSnake[id]);
 			_gameInfo->snakes[id].pop_front();
@@ -560,16 +567,25 @@ void Game::_updateMultiPlayer() {
 			_gameInfo->snakes[id].clear();
 			continue;
 		}
+		// snake
 		auto it = std::find(++_gameInfo->snakes[id].begin(), _gameInfo->snakes[id].end(), _gameInfo->snakes[id][0]);
 		if (it != _gameInfo->snakes[id].end()) {
 			_gameInfo->snakes[id].clear();
 			continue;
 		}
+		// others snakes
 		for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
 			if (id == id2)
 				continue;
 			auto it = std::find(_gameInfo->snakes[id2].begin(), _gameInfo->snakes[id2].end(), _gameInfo->snakes[id][0]);
 			if (it != _gameInfo->snakes[id2].end()) {
+				_gameInfo->snakes[id].clear();
+				continue;
+			}
+		}
+		// wall
+		for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+			if (it->pos == _gameInfo->snakes[id][0]) {
 				_gameInfo->snakes[id].clear();
 				continue;
 			}
