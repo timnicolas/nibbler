@@ -95,6 +95,17 @@ void NibblerSFML::updateInput() {
 				break;
 		}
 	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
+		input.usingBonus[0] = true;
+	else
+		input.usingBonus[0] = false;
+	if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+			input.usingBonus[1] = true;
+		else
+			input.usingBonus[1] = false;
+	}
 }
 
 bool NibblerSFML::draw() {
@@ -132,16 +143,32 @@ bool NibblerSFML::draw() {
 			sf::RectangleShape rect(sf::Vector2f(step, step));
 			rect.setPosition(startX + step * it->x, startY + step * it->y);
 			uint32_t color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
+			if (i >= 1 && max - i < _gameInfo->nbBonus[id])
+				color = BONUS_COLOR;
 			rect.setFillColor(sf::Color(TO_SFML_COLOR(color)));
 			_win.draw(rect);
 			i++;
 		}
+	}
+	// draw wall
+	for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+		sf::RectangleShape rect(sf::Vector2f(step, step));
+		rect.setPosition(startX + step * it->pos.x, startY + step * it->pos.y);
+		rect.setFillColor(sf::Color(TO_SFML_COLOR(WALL_COLOR)));
+		_win.draw(rect);
 	}
 	// draw food
 	for (auto it = _gameInfo->food.begin(); it != _gameInfo->food.end(); it++) {
 		sf::RectangleShape rect(sf::Vector2f(step, step));
 		rect.setPosition(startX + step * it->x, startY + step * it->y);
 		rect.setFillColor(sf::Color(TO_SFML_COLOR(FOOD_COLOR)));
+		_win.draw(rect);
+	}
+	// draw bonus
+	for (auto it = _gameInfo->bonus.begin(); it != _gameInfo->bonus.end(); it++) {
+		sf::RectangleShape rect(sf::Vector2f(step, step));
+		rect.setPosition(startX + step * it->x, startY + step * it->y);
+		rect.setFillColor(sf::Color(TO_SFML_COLOR(BONUS_COLOR)));
 		_win.draw(rect);
 	}
 
@@ -193,8 +220,16 @@ bool NibblerSFML::draw() {
 		text.setPosition(textX, textY);
 		_win.draw(text);
 		textY += textLnStep;
+		text.setString("Rshift: bonus player 1");
+		text.setPosition(textX, textY);
+		_win.draw(text);
+		textY += textLnStep;
 		if (_gameInfo->nbPlayers > 1 && _gameInfo->isIA[1] == false) {
 			text.setString("[wasd]: move player 2");
+			text.setPosition(textX, textY);
+			_win.draw(text);
+			textY += textLnStep;
+			text.setString("Lshift: bonus player 2");
 			text.setPosition(textX, textY);
 			_win.draw(text);
 			textY += textLnStep;

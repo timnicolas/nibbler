@@ -284,7 +284,6 @@ void NibblerOpenGL::updateInput() {
 
 	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
 
-
 	if (keystates[SDL_SCANCODE_RSHIFT])
 		input.usingBonus[0] = true;
 	else
@@ -306,7 +305,7 @@ void NibblerOpenGL::updateInput() {
 		if (keystates[SDL_SCANCODE_Q])
 			_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
 	}
-	else {if (keystates[SDL_SCANCODE_RSHIFT])
+	else {if (keystates[SDL_SCANCODE_LSHIFT])
 		input.usingBonus[1] = true;
 	else
 		input.usingBonus[1] = false;
@@ -368,6 +367,16 @@ bool NibblerOpenGL::draw() {
 			i++;
 		}
 	}
+	// draw wall
+	pos.y = 1;
+	for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+		pos.x = it->pos.x;
+		pos.z = it->pos.y;
+		model = glm::translate(glm::mat4(1.0), pos);
+		_cubeShader->setVec4("color", TO_OPENGL_COLOR(WALL_COLOR));
+		_cubeShader->setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
+	}
 	// draw food
 	pos.y = 1;
 	for (auto it = _gameInfo->food.begin(); it != _gameInfo->food.end(); it++) {
@@ -385,16 +394,6 @@ bool NibblerOpenGL::draw() {
 		pos.z = it->y;
 		model = glm::translate(glm::mat4(1.0), pos);
 		_cubeShader->setVec4("color", TO_OPENGL_COLOR(BONUS_COLOR));
-		_cubeShader->setMat4("model", model);
-		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
-	}
-	// draw wall
-	pos.y = 1;
-	for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
-		pos.x = it->pos.x;
-		pos.z = it->pos.y;
-		model = glm::translate(glm::mat4(1.0), pos);
-		_cubeShader->setVec4("color", TO_OPENGL_COLOR(WALL_COLOR));
 		_cubeShader->setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
 	}
@@ -443,8 +442,12 @@ bool NibblerOpenGL::draw() {
 		}
 		else {
 			y += lineSz;
+			_textRender->write("basicFont", "Lshift: bonus player 2", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
+			y += lineSz;
 			_textRender->write("basicFont", "[wasd]: move player 2", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		}
+		y += lineSz;
+		_textRender->write("basicFont", "Rshift: bonus player 1", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 		y += lineSz;
 		_textRender->write("basicFont", "arrow: move player 1", x, y, 1, TO_OPENGL_COLOR(0xFFFFFF));
 	}

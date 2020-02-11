@@ -104,6 +104,19 @@ void NibblerSDL::updateInput() {
 				input.loadGuiID = 2;
 		}
 	}
+
+	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
+
+	if (keystates[SDL_SCANCODE_RSHIFT])
+		input.usingBonus[0] = true;
+	else
+		input.usingBonus[0] = false;
+	if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
+		if (keystates[SDL_SCANCODE_LSHIFT])
+			input.usingBonus[1] = true;
+		else
+			input.usingBonus[1] = false;
+	}
 }
 
 bool NibblerSDL::draw() {
@@ -151,9 +164,21 @@ bool NibblerSDL::draw() {
 				static_cast<int>(step + 0.5),
 			};
 			uint32_t	color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
+			if (i >= 1 && max - i < _gameInfo->nbBonus[id])
+				color = BONUS_COLOR;
 			SDL_FillRect(_surface, &rect, color);
 			i++;
 		}
+	}
+	// draw wall
+	for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+		SDL_Rect rect = {
+			static_cast<int>(startX + step * it->pos.x),
+			static_cast<int>(startY + step * it->pos.y),
+			static_cast<int>(step + 0.5),
+			static_cast<int>(step + 0.5),
+		};
+		SDL_FillRect(_surface, &rect, WALL_COLOR);
 	}
 	// draw food
 	for (auto it = _gameInfo->food.begin(); it != _gameInfo->food.end(); it++) {
@@ -164,6 +189,16 @@ bool NibblerSDL::draw() {
 			static_cast<int>(step + 0.5),
 		};
 		SDL_FillRect(_surface, &rect, FOOD_COLOR);
+	}
+	// draw bonus
+	for (auto it = _gameInfo->bonus.begin(); it != _gameInfo->bonus.end(); it++) {
+		SDL_Rect rect = {
+			static_cast<int>(startX + step * it->x),
+			static_cast<int>(startY + step * it->y),
+			static_cast<int>(step + 0.5),
+			static_cast<int>(step + 0.5),
+		};
+		SDL_FillRect(_surface, &rect, BONUS_COLOR);
 	}
 
 	// render on screen
