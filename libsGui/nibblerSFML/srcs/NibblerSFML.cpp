@@ -70,6 +70,8 @@ void NibblerSFML::updateInput() {
 					input.direction[0] = Direction::MOVE_LEFT;
 				else if (_event.key.code == sf::Keyboard::Right)
 					input.direction[0] = Direction::MOVE_RIGHT;
+				else if (_event.key.code == sf::Keyboard::RShift)
+					input.usingBonus[0] = true;
 
 				// move player 2
 				if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
@@ -81,6 +83,8 @@ void NibblerSFML::updateInput() {
 						input.direction[1] = Direction::MOVE_LEFT;
 					else if (_event.key.code == sf::Keyboard::D)
 						input.direction[1] = Direction::MOVE_RIGHT;
+					else if (_event.key.code == sf::Keyboard::LShift)
+						input.usingBonus[1] = true;
 				}
 
 				if (_event.key.code == sf::Keyboard::Num1)
@@ -91,20 +95,17 @@ void NibblerSFML::updateInput() {
 					input.loadGuiID = 2;
 				break;
 
+			case sf::Event::KeyReleased:
+				if (_event.key.code == sf::Keyboard::RShift)
+					input.usingBonus[0] = false;
+				if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
+					if (_event.key.code == sf::Keyboard::LShift)
+						input.usingBonus[1] = false;
+				}
+
 			default:
 				break;
 		}
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
-		input.usingBonus[0] = true;
-	else
-		input.usingBonus[0] = false;
-	if (_gameInfo->nbPlayers >= 2 && _gameInfo->isIA[1] == false) {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-			input.usingBonus[1] = true;
-		else
-			input.usingBonus[1] = false;
 	}
 }
 
