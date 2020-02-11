@@ -14,12 +14,12 @@
 	"increasingSpeedStep": 10,
 	"maxSpeedMs": 40,
 	"startGui": 2,
-	"nbBonus": 30,
-	"wallLife": -1,
+	"nbBonus": 2,
+	"wallLife": 30,
 	"canExitBorder": true,
 	"pauseOnStart": true,
 	"ai": {
-		"nbAI": 1,
+		"nbAI": 0,
 		"changeDirProba": 10,
 		"strength": 10
 	},

@@ -364,6 +364,12 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 	|| (lastDir == Direction::MOVE_RIGHT && dir == Direction::MOVE_LEFT))
 		dir = lastDir;  // keep last direction
 	_gameInfo->direction[id] = dir;
+	if (_gameInfo->nbBonus[id] >= 3) {
+		dynGuiManager.obj->input.usingBonus[id] = true;
+	}
+	else if (_gameInfo->nbBonus[id] <= 0) {
+		dynGuiManager.obj->input.usingBonus[id] = false;
+	}
 	_move(_gameInfo->direction[id], id);
 }
 
