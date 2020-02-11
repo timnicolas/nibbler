@@ -284,6 +284,11 @@ void NibblerOpenGL::updateInput() {
 
 	const Uint8 * keystates = SDL_GetKeyboardState(NULL);
 
+
+	if (keystates[SDL_SCANCODE_RSHIFT])
+		input.usingBonus[0] = true;
+	else
+		input.usingBonus[0] = false;
 	if (_gameInfo->nbPlayers == 1 || _gameInfo->isIA[1]) {  // move camera only on singlePlayer
 		bool isRun = false;
 		if (keystates[SDL_SCANCODE_LSHIFT])
@@ -301,9 +306,14 @@ void NibblerOpenGL::updateInput() {
 		if (keystates[SDL_SCANCODE_Q])
 			_cam->processKeyboard(CamMovement::Down, dtTime, isRun);
 	}
+	else {if (keystates[SDL_SCANCODE_RSHIFT])
+		input.usingBonus[1] = true;
+	else
+		input.usingBonus[1] = false;
+	}
 }
 
-bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) {
+bool NibblerOpenGL::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _gameInfo->width, _gameInfo->height);
     glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
@@ -344,11 +354,13 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 	pos.y = 1;
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		int		i = 0;
-		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
-		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
+		float	max = (_gameInfo->snakes[id].size() == 1) ? 1 : _gameInfo->snakes[id].size() - 1;
+		for (auto it = _gameInfo->snakes[id].begin(); it != _gameInfo->snakes[id].end(); it++) {
 			pos.x = it->x;
 			pos.z = it->y;
 			uint32_t	color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
+			if (i >= 1 && max - i < _gameInfo->nbBonus[id])
+				color = BONUS_COLOR;
 			model = glm::translate(glm::mat4(1.0), pos);
 			_cubeShader->setVec4("color", TO_OPENGL_COLOR(color));
 			_cubeShader->setMat4("model", model);
@@ -358,11 +370,31 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 	}
 	// draw food
 	pos.y = 1;
-	for (auto it = food.begin(); it != food.end(); it++) {
+	for (auto it = _gameInfo->food.begin(); it != _gameInfo->food.end(); it++) {
 		pos.x = it->x;
 		pos.z = it->y;
 		model = glm::translate(glm::mat4(1.0), pos);
 		_cubeShader->setVec4("color", TO_OPENGL_COLOR(FOOD_COLOR));
+		_cubeShader->setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
+	}
+	// draw bonus
+	pos.y = 1;
+	for (auto it = _gameInfo->bonus.begin(); it != _gameInfo->bonus.end(); it++) {
+		pos.x = it->x;
+		pos.z = it->y;
+		model = glm::translate(glm::mat4(1.0), pos);
+		_cubeShader->setVec4("color", TO_OPENGL_COLOR(BONUS_COLOR));
+		_cubeShader->setMat4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
+	}
+	// draw wall
+	pos.y = 1;
+	for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+		pos.x = it->pos.x;
+		pos.z = it->pos.y;
+		model = glm::translate(glm::mat4(1.0), pos);
+		_cubeShader->setVec4("color", TO_OPENGL_COLOR(WALL_COLOR));
 		_cubeShader->setMat4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(_cubeVertices) / (sizeof(float) * SIZE_LINE));
 	}
@@ -391,7 +423,7 @@ bool NibblerOpenGL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2
 				else
 					text += "[wasd] ";
 				text += std::to_string(id + 1) + " : " + std::to_string(_gameInfo->scores[id]);
-				uint32_t color = (snakes[id].size() > 0) ? getColor(id, 1) : TEXT_COLOR;
+				uint32_t color = (_gameInfo->snakes[id].size() > 0) ? getColor(id, 1) : TEXT_COLOR;
 				_textRender->write("basicFont", text, x, y, 1, TO_OPENGL_COLOR(color));
 				y -= lineSz;
 			}

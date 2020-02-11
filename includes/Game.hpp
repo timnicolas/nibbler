@@ -27,15 +27,16 @@ class Game {
 
 	private:
 		GameInfo *						_gameInfo;
-		std::vector<std::deque<Vec2>>	_snake;
 		std::vector<uint8_t>			_needExtend;
 		std::vector<Vec2>				_lastDeletedSnake;
-		std::deque<Vec2>				_food;
+		std::deque<Vec2>				_wall;
 		uint32_t						_speedMs;
 
 		void				_move(Direction::Enum direction, int id);
 		void				_moveIA(Direction::Enum lastDir, int id);
 		void				_updateFood();
+		void				_updateBonus();
+		void				_updateWall();
 		void				_update();
 		void				_updateSinglePlayer();
 		void				_updateMultiPlayer();

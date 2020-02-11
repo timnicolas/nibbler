@@ -1,5 +1,4 @@
-#ifndef ANIBBLERGUI_HPP_
-#define ANIBBLERGUI_HPP_
+#pragma once
 
 #define NO_GUI_LOADED 255
 
@@ -21,13 +20,15 @@
 #define SNAKE_6_COLOR_1 0x4fd602  // #4fd602
 #define SNAKE_6_COLOR_2 0x90FF4C  // #90FF4C
 
-#define SQUARE_COLOR_1		0x323D4D
-#define SQUARE_COLOR_2		0x27313D
-#define FOOD_COLOR			0xFF0000
-#define BORDER_COLOR		0xAAAAAA
-#define TEXT_COLOR			0xAAAAAA
-#define TEXT_WIN_COLOR		0x00FF00
-#define TEXT_GAMEOVER_COLOR	0xFF0000
+#define SQUARE_COLOR_1		0x323D4D  // #323D4D
+#define SQUARE_COLOR_2		0x27313D  // #27313D
+#define FOOD_COLOR			0xFF0000  // #CC0000
+#define BONUS_COLOR			0xCCCC00  // #CCCC00
+#define WALL_COLOR			0x1C1C1C  // #1C1C1C
+#define BORDER_COLOR		0xAAAAAA  // #AAAAAA
+#define TEXT_COLOR			0xAAAAAA  // #AAAAAA
+#define TEXT_WIN_COLOR		0x00FF00  // #00FF00
+#define TEXT_GAMEOVER_COLOR	0xFF0000  // #FF0000
 
 #define GET_R(color) ((color >> 16) & 0xFF)
 #define GET_G(color) ((color >>  8) & 0xFF)
@@ -44,7 +45,30 @@ namespace Direction {
 	};
 }
 
+struct Vec2 {  // the Vec2 is a std::deque of struct Vec2
+	int	x;
+	int	y;
+
+	Vec2();
+	Vec2(int x_, int y_);
+	bool operator==(Vec2 const & other) const;
+};
+
 struct GameInfo {
+	// snake informations
+	std::vector<std::deque<Vec2>>	snakes;
+	std::vector<Direction::Enum>	direction;
+	std::vector<uint32_t>			scores;
+	std::vector<bool>				isIA;
+	std::vector<uint16_t>			nbBonus;
+
+	std::deque<Vec2>				food;
+	std::deque<Vec2>				bonus;
+	struct Wall {
+		Vec2	pos;
+		int		life;
+	};
+	std::deque<Wall>				wall;
 	std::string	title;
 	uint16_t	width;
 	uint16_t	height;
@@ -56,9 +80,6 @@ struct GameInfo {
 	};
 	Rules rules;
 
-	std::vector<Direction::Enum>	direction;
-	std::vector<uint32_t>			scores;
-	std::vector<bool>				isIA;
 
 	bool		paused;
 	bool		win;
@@ -73,15 +94,6 @@ struct GameInfo {
 	void restart();
 };
 
-struct Vec2 {  // the Vec2 is a std::deque of struct Vec2
-	int	x;
-	int	y;
-
-	Vec2();
-	Vec2(int x_, int y_);
-	bool operator==(Vec2 const & other) const;
-};
-
 class ANibblerGui {
 	public:
 		ANibblerGui();
@@ -91,13 +103,14 @@ class ANibblerGui {
 
 		virtual	bool	init(GameInfo *gameInfo);
 		virtual void	updateInput() = 0;
-		virtual	bool	draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) = 0;
+		virtual	bool	draw() = 0;
 
 		struct Input {
 			bool							quit;
 			bool							paused;
 			bool							restart;
 			std::vector<Direction::Enum>	direction;
+			std::vector<bool>				usingBonus;
 			uint8_t							loadGuiID;
 
 			Input();
@@ -119,5 +132,3 @@ uint32_t mixColor(uint32_t c1, uint32_t c2, float factor);
 uint32_t getColor(int id, int colorNb);
 
 typedef ANibblerGui *(*nibblerGuiCreator)();
-
-#endif  // ANIBBLERGUI_HPP_

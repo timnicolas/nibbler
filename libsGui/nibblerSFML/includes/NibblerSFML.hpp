@@ -15,7 +15,7 @@ class NibblerSFML : public ANibblerGui {
 		NibblerSFML &operator=(NibblerSFML const &rhs);
 
 		virtual void	updateInput();
-		virtual bool	draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food);
+		virtual bool	draw();
 
 	private:
 		sf::RenderWindow	_win;

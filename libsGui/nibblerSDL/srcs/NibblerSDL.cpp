@@ -106,7 +106,7 @@ void NibblerSDL::updateInput() {
 	}
 }
 
-bool NibblerSDL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) {
+bool NibblerSDL::draw() {
 	// clear screen
 	SDL_FillRect(_surface, NULL, 0x000000);
 
@@ -142,8 +142,8 @@ bool NibblerSDL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> &
 	// draw snakes
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		int		i = 0;
-		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
-		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
+		float	max = (_gameInfo->snakes[id].size() == 1) ? 1 : _gameInfo->snakes[id].size() - 1;
+		for (auto it = _gameInfo->snakes[id].begin(); it != _gameInfo->snakes[id].end(); it++) {
 			SDL_Rect rect = {
 				static_cast<int>(startX + step * it->x),
 				static_cast<int>(startY + step * it->y),
@@ -156,7 +156,7 @@ bool NibblerSDL::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> &
 		}
 	}
 	// draw food
-	for (auto it = food.begin(); it != food.end(); it++) {
+	for (auto it = _gameInfo->food.begin(); it != _gameInfo->food.end(); it++) {
 		SDL_Rect rect = {
 			static_cast<int>(startX + step * it->x),
 			static_cast<int>(startY + step * it->y),

@@ -6,7 +6,6 @@ Game::Game() :
   dynSoundManager(),
   dynGuiManager(),
   _gameInfo(nullptr),
-  _snake(),
   _needExtend(),
   _speedMs(s.u("speedMs")) {}
 
@@ -21,7 +20,6 @@ bool Game::init() {
 	_gameInfo->font = s.s("font");
 
 	for (int i = 0; i < _gameInfo->nbPlayers; i++) {
-		_snake.push_back(std::deque<Vec2>());
 		_needExtend.push_back(0);
 		_lastDeletedSnake.push_back(Vec2());
 		if (i >= static_cast<int>(s.u("nbPlayers"))) {
@@ -54,7 +52,6 @@ void Game::restart() {
 	_gameInfo->restart();
 	_gameInfo->paused = s.b("pauseOnStart");
 	_speedMs = s.u("speedMs");
-	_food.clear();
 	if (s.u("snakeSize") > userData.u("highScore")) {
 		userData.u("highScore") = s.u("snakeSize");
 	}
@@ -63,10 +60,11 @@ void Game::restart() {
 		_needExtend[id] = 0;
 		int startX = static_cast<float>(_gameInfo->boardSize) / (_gameInfo->nbPlayers + 1) * (id + 1);
 		_gameInfo->direction[id] = (id & 1) ? Direction::MOVE_UP : Direction::MOVE_DOWN;
-		_snake[id].clear();
+		_gameInfo->snakes[id].clear();
+		_gameInfo->nbBonus[id] = 0;
 		for (int y = 0; y < static_cast<int>(s.u("snakeSize")); y++) {
 			int posY = startY + ((id & 1) ? y : -y);
-			_snake[id].push_back({startX, posY});
+			_gameInfo->snakes[id].push_back({startX, posY});
 		}
 	}
 	dynGuiManager.obj->input.reset();
@@ -113,6 +111,7 @@ void Game::run() {
 				else
 					_move(_gameInfo->direction[id], id);
 			}
+			_updateWall();
 			nbMoves++;
 			if (s.i("increasingSpeedStep") != -1 && nbMoves % s.i("increasingSpeedStep") == 0) {
 				if (_speedMs > s.u("maxSpeedMs"))
@@ -123,10 +122,11 @@ void Game::run() {
 
 		// update game
 		_updateFood();
+		_updateBonus();
 		_update();
 
 		// draw on screen
-		dynGuiManager.obj->draw(_snake, _food);
+		dynGuiManager.obj->draw();
 
 		// fps
 		std::chrono::milliseconds time_loop = getMs() - time_start;
@@ -149,15 +149,15 @@ void Game::run() {
 void Game::_updateFood() {
 	// check snake eating
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		auto it = std::find(_food.begin(), _food.end(), _snake[id][0]);
-		if (it != _food.end()) {  // if snake is eating
+		auto it = std::find(_gameInfo->food.begin(), _gameInfo->food.end(), _gameInfo->snakes[id][0]);
+		if (it != _gameInfo->food.end()) {  // if snake is eating
 			_needExtend[id]++;
-			_food.erase(it);
+			_gameInfo->food.erase(it);
 		}
 	}
 
 	// add food
-	while (_food.size() < s.u("nbFood")) {
+	while (_gameInfo->food.size() < s.u("nbFood")) {
 		for (int i = 0; i < 100; i++) {
 			Vec2 newFood = {
 				static_cast<int>(rand() % _gameInfo->boardSize),
@@ -165,16 +165,85 @@ void Game::_updateFood() {
 			};
 			bool ok = true;
 			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-				auto it = std::find(_snake[id].begin(), _snake[id].end(), newFood);
-				if (it != _snake[id].end()) {  // if food is not on the snake
+				auto it = std::find(_gameInfo->snakes[id].begin(), _gameInfo->snakes[id].end(), newFood);
+				if (it != _gameInfo->snakes[id].end()) {  // if food is not on the snake
+					ok = false;
+					break;
+				}
+			}
+			auto it = std::find(_gameInfo->bonus.begin(), _gameInfo->bonus.end(), newFood);
+			if (it != _gameInfo->bonus.end()) {
+				ok = false;
+				break;
+			}
+			for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+				if (it->pos == newFood) {
 					ok = false;
 					break;
 				}
 			}
 			if (ok) {  // no snakes on the food
-				_food.push_back(newFood);
+				_gameInfo->food.push_back(newFood);
 				break;
 			}
+		}
+	}
+}
+
+void Game::_updateBonus() {
+	if (_gameInfo->nbPlayers == 1)
+		return;
+
+	// check snake get bonus
+	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+		auto it = std::find(_gameInfo->bonus.begin(), _gameInfo->bonus.end(), _gameInfo->snakes[id][0]);
+		if (it != _gameInfo->bonus.end()) {  // if snake is gettting a bonus
+			_gameInfo->nbBonus[id]++;
+			_gameInfo->bonus.erase(it);
+		}
+	}
+
+	// add bonus
+	while (_gameInfo->bonus.size() < s.u("nbBonus")) {
+		for (int i = 0; i < 100; i++) {
+			Vec2 newBonus = {
+				static_cast<int>(rand() % _gameInfo->boardSize),
+				static_cast<int>(rand() % _gameInfo->boardSize),
+			};
+			bool ok = true;
+			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
+				auto it = std::find(_gameInfo->snakes[id].begin(), _gameInfo->snakes[id].end(), newBonus);
+				if (it != _gameInfo->snakes[id].end()) {  // if bonus is not on the snake
+					ok = false;
+					break;
+				}
+			}
+			auto it = std::find(_gameInfo->food.begin(), _gameInfo->food.end(), newBonus);
+			if (it != _gameInfo->food.end()) {
+				ok = false;
+				break;
+			}
+			for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+				if (it->pos == newBonus) {
+					ok = false;
+					break;
+				}
+			}
+			if (ok) {  // no snakes on the bonus
+				_gameInfo->bonus.push_back(newBonus);
+				break;
+			}
+		}
+	}
+}
+
+void Game::_updateWall() {
+	for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+		if (it->life > 0) {
+			it->life--;
+		}
+		if (it->life == 0) {
+			_gameInfo->wall.erase(it);
 		}
 	}
 }
@@ -200,7 +269,7 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 		if (isFood)
 			break;
 		int addX = 0;
-		forward = Vec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
+		forward = Vec2(_gameInfo->snakes[id][0].x + addX, _gameInfo->snakes[id][0].y + addY);
 
 		if (_gameInfo->rules.canExitBorder == false
 		&& (forward.x < 0 || forward.x >= _gameInfo->boardSize || forward.y < 0 || forward.y >= _gameInfo->boardSize)) {
@@ -208,15 +277,15 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 		}
 		else {
 			for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
-				auto it = std::find(_snake[id2].begin(), _snake[id2].end(), forward);
-				if (it != _snake[id2].end()) {
+				auto it = std::find(_gameInfo->snakes[id2].begin(), _gameInfo->snakes[id2].end(), forward);
+				if (it != _gameInfo->snakes[id2].end()) {
 					possibleDir[i] = false;
 				}
 			}
 		}
 		// check for food
-		auto it = std::find(_food.begin(), _food.end(), forward);
-		if (it != _food.end()) {
+		auto it = std::find(_gameInfo->food.begin(), _gameInfo->food.end(), forward);
+		if (it != _gameInfo->food.end()) {
 			isFood = true;
 			foodDir = i;
 		}
@@ -226,7 +295,7 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 		if (isFood)
 			break;
 		int addY = 0;
-		forward = Vec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
+		forward = Vec2(_gameInfo->snakes[id][0].x + addX, _gameInfo->snakes[id][0].y + addY);
 
 		if (_gameInfo->rules.canExitBorder == false
 		&& (forward.x < 0 || forward.x >= _gameInfo->boardSize || forward.y < 0 || forward.y >= _gameInfo->boardSize)) {
@@ -234,15 +303,15 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 		}
 		else {
 			for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
-				auto it = std::find(_snake[id2].begin(), _snake[id2].end(), forward);
-				if (it != _snake[id2].end()) {
+				auto it = std::find(_gameInfo->snakes[id2].begin(), _gameInfo->snakes[id2].end(), forward);
+				if (it != _gameInfo->snakes[id2].end()) {
 					possibleDir[i] = false;
 				}
 			}
 		}
 		// check for food
-		auto it = std::find(_food.begin(), _food.end(), forward);
-		if (it != _food.end()) {
+		auto it = std::find(_gameInfo->food.begin(), _gameInfo->food.end(), forward);
+		if (it != _gameInfo->food.end()) {
 			isFood = true;
 			foodDir = i;
 		}
@@ -291,24 +360,28 @@ void Game::_move(Direction::Enum direction, int id) {
 	else if (direction == Direction::MOVE_RIGHT)
 		addX++;
 
-	if (_snake[id].size() > 0) {
-		Vec2 newVec2(_snake[id][0].x + addX, _snake[id][0].y + addY);
+	if (_gameInfo->snakes[id].size() > 0) {
+		Vec2 newVec2(_gameInfo->snakes[id][0].x + addX, _gameInfo->snakes[id][0].y + addY);
 		if (_gameInfo->rules.canExitBorder) {
 			if (newVec2.x < 0) newVec2.x = _gameInfo->boardSize - 1;
 			else if (newVec2.x >= _gameInfo->boardSize) newVec2.x = 0;
 			if (newVec2.y < 0) newVec2.y = _gameInfo->boardSize - 1;
 			else if (newVec2.y >= _gameInfo->boardSize) newVec2.y = 0;
 		}
-		_snake[id].push_front(newVec2);
+		_gameInfo->snakes[id].push_front(newVec2);
 		if (_needExtend[id] > 0) {
 			_needExtend[id]--;
-			if (_snake[id].size() > userData.u("highScore")) {
-				userData.u("highScore") = _snake[id].size();
+			if (_gameInfo->snakes[id].size() > userData.u("highScore")) {
+				userData.u("highScore") = _gameInfo->snakes[id].size();
 			}
 		}
 		else {
-			_lastDeletedSnake[id] = _snake[id].back();
-			_snake[id].pop_back();
+			_lastDeletedSnake[id] = _gameInfo->snakes[id].back();
+			_gameInfo->snakes[id].pop_back();
+			if (dynGuiManager.obj->input.usingBonus[id] && _gameInfo->nbBonus[id] > 0) {
+				_gameInfo->nbBonus[id]--;
+				_gameInfo->wall.push_back({_lastDeletedSnake[id], static_cast<int>(s.i("wallLife"))});
+			}
 		}
 	}
 }
@@ -372,8 +445,8 @@ void Game::_update() {
 
 	// update scores
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		if (_snake[id].size() > 0)
-			_gameInfo->scores[id] = _snake[id].size();
+		if (_gameInfo->snakes[id].size() > 0)
+			_gameInfo->scores[id] = _gameInfo->snakes[id].size();
 	}
 
 	// update paused mode
@@ -386,14 +459,15 @@ void Game::_update() {
 
 	// update direction
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		if (_snake[id].size() == 0 || _gameInfo->isIA[id])
+		if (_gameInfo->snakes[id].size() == 0 || _gameInfo->isIA[id])
 			continue;
 		if (_gameInfo->direction[id] != dynGuiManager.obj->input.direction[id]) {
-			if (_snake[id].size() <= 1) {
+			if (_gameInfo->snakes[id].size() <= 1) {
 				_gameInfo->direction[id] = dynGuiManager.obj->input.direction[id];
 			}
 			else {
-				Vec2 direction(_snake[id][0].x - _snake[id][1].x, _snake[id][0].y - _snake[id][1].y);
+				Vec2 direction(_gameInfo->snakes[id][0].x - _gameInfo->snakes[id][1].x,
+					_gameInfo->snakes[id][0].y - _gameInfo->snakes[id][1].y);
 				if (direction.x > 1) direction.x = -1;
 				else if (direction.x < -1) direction.x = 1;
 				if (direction.y > 1) direction.y = -1;
@@ -417,25 +491,25 @@ void Game::_update() {
 void Game::_updateSinglePlayer() {
 	int id = 0;
 	// update win
-	if (_snake[id].size() >= _gameInfo->boardSize * _gameInfo->boardSize) {
+	if (_gameInfo->snakes[id].size() >= _gameInfo->boardSize * _gameInfo->boardSize) {
 		_gameInfo->win = true;
 	}
 	// update gameOver
 	if (_gameInfo->gameOver == false) {
-		if (_snake[id].size() == 0) {
+		if (_gameInfo->snakes[id].size() == 0) {
 			_gameInfo->gameOver = true;
 		}
-		else if (_snake[id][0].x < 0 || _snake[id][0].x >= _gameInfo->boardSize
-		|| _snake[id][0].y < 0 || _snake[id][0].y >= _gameInfo->boardSize) {
+		else if (_gameInfo->snakes[id][0].x < 0 || _gameInfo->snakes[id][0].x >= _gameInfo->boardSize
+		|| _gameInfo->snakes[id][0].y < 0 || _gameInfo->snakes[id][0].y >= _gameInfo->boardSize) {
 			_gameInfo->gameOver = true;
 		}
-		auto it = std::find(++_snake[id].begin(), _snake[id].end(), _snake[id][0]);
-		if (it != _snake[id].end()) {
+		auto it = std::find(++_gameInfo->snakes[id].begin(), _gameInfo->snakes[id].end(), _gameInfo->snakes[id][0]);
+		if (it != _gameInfo->snakes[id].end()) {
 			_gameInfo->gameOver = true;
 		}
 		if (_gameInfo->gameOver) {
-			_snake[id].push_back(_lastDeletedSnake[id]);
-			_snake[id].pop_front();
+			_gameInfo->snakes[id].push_back(_lastDeletedSnake[id]);
+			_gameInfo->snakes[id].pop_front();
 		}
 	}
 }
@@ -450,12 +524,12 @@ void Game::_updateMultiPlayer() {
 	uint32_t biggerSnakeID = 0;
 	int nbSnakes = 0;
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		allSnakesSize += _snake[id].size();
-		if (_snake[id].size() > biggerSnakeSize) {
-			biggerSnakeSize = _snake[id].size();
+		allSnakesSize += _gameInfo->snakes[id].size();
+		if (_gameInfo->snakes[id].size() > biggerSnakeSize) {
+			biggerSnakeSize = _gameInfo->snakes[id].size();
 			biggerSnakeID = id;
 		}
-		if (_snake[id].size() > 0)
+		if (_gameInfo->snakes[id].size() > 0)
 			nbSnakes++;
 	}
 	if (nbSnakes == 1 || allSnakesSize >= _gameInfo->boardSize * _gameInfo->boardSize) {
@@ -467,7 +541,7 @@ void Game::_updateMultiPlayer() {
 	// update gameOver
 	int allDie = true;
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		if (_gameInfo->isIA[id] == false && _snake[id].size() > 0) {
+		if (_gameInfo->isIA[id] == false && _gameInfo->snakes[id].size() > 0) {
 			allDie = false;
 			break;
 		}
@@ -479,24 +553,24 @@ void Game::_updateMultiPlayer() {
 
 	// update snake die
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-		if (_snake[id].size() == 0)
+		if (_gameInfo->snakes[id].size() == 0)
 			continue;
-		if (_snake[id][0].x < 0 || _snake[id][0].x >= _gameInfo->boardSize
-		|| _snake[id][0].y < 0 || _snake[id][0].y >= _gameInfo->boardSize) {
-			_snake[id].clear();
+		if (_gameInfo->snakes[id][0].x < 0 || _gameInfo->snakes[id][0].x >= _gameInfo->boardSize
+		|| _gameInfo->snakes[id][0].y < 0 || _gameInfo->snakes[id][0].y >= _gameInfo->boardSize) {
+			_gameInfo->snakes[id].clear();
 			continue;
 		}
-		auto it = std::find(++_snake[id].begin(), _snake[id].end(), _snake[id][0]);
-		if (it != _snake[id].end()) {
-			_snake[id].clear();
+		auto it = std::find(++_gameInfo->snakes[id].begin(), _gameInfo->snakes[id].end(), _gameInfo->snakes[id][0]);
+		if (it != _gameInfo->snakes[id].end()) {
+			_gameInfo->snakes[id].clear();
 			continue;
 		}
 		for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
 			if (id == id2)
 				continue;
-			auto it = std::find(_snake[id2].begin(), _snake[id2].end(), _snake[id][0]);
-			if (it != _snake[id2].end()) {
-				_snake[id].clear();
+			auto it = std::find(_gameInfo->snakes[id2].begin(), _gameInfo->snakes[id2].end(), _gameInfo->snakes[id][0]);
+			if (it != _gameInfo->snakes[id2].end()) {
+				_gameInfo->snakes[id].clear();
 				continue;
 			}
 		}

@@ -40,7 +40,7 @@ bool	initSettings(std::string const & filename) {
 			.setDescription("probability to randomly change direction");
 	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
 	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");
-	s.add<uint64_t>("nbFood", 1).setMin(0).setMax(10).setDescription("number of food on the board");
+	s.add<uint64_t>("nbFood", 1).setMin(0).setMax(30).setDescription("number of food on the board");
 	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");
 	s.add<int64_t>("increasingSpeedStep", 0).setMin(-1).setMax(100)
 		.setDescription("the speed increase each x snake movement (-1 to disable)");
@@ -53,6 +53,10 @@ bool	initSettings(std::string const & filename) {
 	s.add<std::string>("masterMusic", "assets/music/masterMusic.wav");
 	s.add<std::string>("soundWin", "assets/music/win.wav");
 	s.add<std::string>("soundLoose", "assets/music/loose.wav");
+	s.add<uint64_t>("nbBonus", 5).setMin(0).setMax(30)
+		.setDescription("number of food on the board. only on multiplayer");
+	s.add<int64_t>("wallLife", 20).setMin(-1).setMax(100)
+		.setDescription("set the life of a wall (-1 for infinite life)");
 
 	try {
 		if (s.loadFile(filename) == false) {

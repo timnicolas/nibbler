@@ -97,7 +97,7 @@ void NibblerSFML::updateInput() {
 	}
 }
 
-bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> & food) {
+bool NibblerSFML::draw() {
 	// clear screen
 	_win.clear();
 
@@ -127,8 +127,8 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 	// draw snakes
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		int		i = 0;
-		float	max = (snakes[id].size() == 1) ? 1 : snakes[id].size() - 1;
-		for (auto it = snakes[id].begin(); it != snakes[id].end(); it++) {
+		float	max = (_gameInfo->snakes[id].size() == 1) ? 1 : _gameInfo->snakes[id].size() - 1;
+		for (auto it = _gameInfo->snakes[id].begin(); it != _gameInfo->snakes[id].end(); it++) {
 			sf::RectangleShape rect(sf::Vector2f(step, step));
 			rect.setPosition(startX + step * it->x, startY + step * it->y);
 			uint32_t color = mixColor(getColor(id, 1), getColor(id, 2), i / max);
@@ -138,7 +138,7 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 		}
 	}
 	// draw food
-	for (auto it = food.begin(); it != food.end(); it++) {
+	for (auto it = _gameInfo->food.begin(); it != _gameInfo->food.end(); it++) {
 		sf::RectangleShape rect(sf::Vector2f(step, step));
 		rect.setPosition(startX + step * it->x, startY + step * it->y);
 		rect.setFillColor(sf::Color(TO_SFML_COLOR(FOOD_COLOR)));
@@ -165,7 +165,7 @@ bool NibblerSFML::draw(std::vector<std::deque<Vec2>> & snakes, std::deque<Vec2> 
 		}
 		else {
 			for (int id = 0; id < _gameInfo->nbPlayers; id++) {
-				uint32_t color = (snakes[id].size() > 0) ? getColor(id, 1) : TEXT_COLOR;
+				uint32_t color = (_gameInfo->snakes[id].size() > 0) ? getColor(id, 1) : TEXT_COLOR;
 				text.setFillColor(sf::Color(TO_SFML_COLOR(color)));
 				std::string str = "Score ";
 				if (_gameInfo->isIA[id])

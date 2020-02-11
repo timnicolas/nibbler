@@ -23,8 +23,10 @@ bool ANibblerGui::init(GameInfo * gameInfo) {
 
 	input.paused = _gameInfo->paused;
 	input.direction.clear();
+	input.usingBonus.clear();
 	for (int id = 0; id < _gameInfo->nbPlayers; id++) {
 		input.direction.push_back(_gameInfo->direction[id]);
+		input.usingBonus.push_back(false);
 	}
 
 	return _init();
@@ -41,6 +43,8 @@ GameInfo::GameInfo(int nbPlayers_)
   nbPlayers(nbPlayers_) {
 	rules.canExitBorder = true;
 	for (int id = 0; id < nbPlayers; id++) {
+		snakes.push_back(std::deque<Vec2>());
+		nbBonus.push_back(0);
 		direction.push_back(Direction::MOVE_UP);
 		scores.push_back(0);
 		isIA.push_back(false);
@@ -58,6 +62,9 @@ void GameInfo::restart() {
 	win = false;
 	gameOver = false;
 	winnerID = 0;
+	food.clear();
+	bonus.clear();
+	wall.clear();
 }
 
 // -- Vec2 ---------------------------------------------------------------------
@@ -93,6 +100,7 @@ void ANibblerGui::Input::reset() {
 	for (int id = 0; id < static_cast<int>(direction.size()); id++) {
 		Direction::Enum dir = (id & 1) ? Direction::MOVE_UP : Direction::MOVE_DOWN;
 		direction[id] = dir;
+		usingBonus[id] = false;
 	}
 	loadGuiID = NO_GUI_LOADED;
 }
