@@ -28,7 +28,7 @@ Then compile the project
 
 ```make -j8 DEBUG=1  # to compile in debug mode```
 
-```make help  # get info about make commands`
+```make help  # get info about make commands```
 
 Run the project:
 
@@ -52,6 +52,10 @@ In addition to the food, you have some bonus (yellow blocs). When you eat a bonu
 #### General commands
 - `r` -> restart game
 - `space` -> play/pause
+- `123` -> change GUI
+  - `1` -> 2D: SDL2
+  - `2` -> 2D: SFML
+  - `3` -> 3D: SDL2 & OpenGL 4
 
 #### Player 1
 - `arrow` -> change the snake direction
