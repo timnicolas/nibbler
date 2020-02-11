@@ -408,7 +408,8 @@ re:
 exec-nolint:
 	@$(MAKE) $(MAKE_OPT)
 	@printf $(MAGENTA)$(BOLD)"EXEC $(PROJECT_NAME)\n--------------------\n"$(NORMAL)
-	@./$(NAME) $(ARGS)
+	@./$(NAME) $(ARGS) || \
+	        (printf $(MAGENTA)$(BOLD)"\n--------------------\n"$(RED)"❌ ERROR: $$?\n"$(NORMAL))
 	@printf $(MAGENTA)$(BOLD)"--------------------\n"$(NORMAL)
 
 exec:
