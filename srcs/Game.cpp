@@ -276,9 +276,16 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 			possibleDir[i] = false;
 		}
 		else {
+			// snake
 			for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
 				auto it = std::find(_gameInfo->snakes[id2].begin(), _gameInfo->snakes[id2].end(), forward);
 				if (it != _gameInfo->snakes[id2].end()) {
+					possibleDir[i] = false;
+				}
+			}
+			// wall
+			for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+				if (it->pos == forward) {
 					possibleDir[i] = false;
 				}
 			}
@@ -302,16 +309,28 @@ void Game::_moveIA(Direction::Enum lastDir, int id) {
 			possibleDir[i] = false;
 		}
 		else {
+			// snake
 			for (int id2 = 0; id2 < _gameInfo->nbPlayers; id2++) {
 				auto it = std::find(_gameInfo->snakes[id2].begin(), _gameInfo->snakes[id2].end(), forward);
 				if (it != _gameInfo->snakes[id2].end()) {
 					possibleDir[i] = false;
 				}
 			}
+			// wall
+			for (auto it = _gameInfo->wall.begin(); it != _gameInfo->wall.end(); it++) {
+				if (it->pos == forward) {
+					possibleDir[i] = false;
+				}
+			}
 		}
-		// check for food
+		// check for food or bonus
 		auto it = std::find(_gameInfo->food.begin(), _gameInfo->food.end(), forward);
 		if (it != _gameInfo->food.end()) {
+			isFood = true;
+			foodDir = i;
+		}
+		auto it2 = std::find(_gameInfo->bonus.begin(), _gameInfo->bonus.end(), forward);
+		if (it2 != _gameInfo->bonus.end()) {
 			isFood = true;
 			foodDir = i;
 		}
