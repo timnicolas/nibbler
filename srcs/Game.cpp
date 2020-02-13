@@ -11,8 +11,16 @@ Game::Game() :
 
 bool Game::init() {
 	_gameInfo = new GameInfo(s.u("nbPlayers") + s.j("ai").u("nbAI"));
-	_gameInfo->width = s.j("screen").u("width");
-	_gameInfo->height = s.j("screen").u("height");
+	_gameInfo->realWidth = s.j("screen").u("width");
+	_gameInfo->realHeight = s.j("screen").u("height");
+	if (s.j("screen").u("width") * HEIGHT_RATIO < s.j("screen").u("height")) {
+		_gameInfo->width = s.j("screen").u("width");
+		_gameInfo->height = s.j("screen").u("width") * HEIGHT_RATIO;
+	}
+	else {
+		_gameInfo->width = s.j("screen").u("height") / HEIGHT_RATIO;
+		_gameInfo->height = s.j("screen").u("height");
+	}
 	_gameInfo->boardSize = s.u("boardSize");
 	_gameInfo->minBoardSize = s.update<uint64_t>("boardSize").getMin();
 	_gameInfo->maxBoardSize = s.update<uint64_t>("boardSize").getMax();

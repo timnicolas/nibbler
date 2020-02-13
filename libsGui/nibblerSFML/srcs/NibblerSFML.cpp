@@ -33,7 +33,7 @@ NibblerSFML &NibblerSFML::operator=(NibblerSFML const &rhs) {
 bool NibblerSFML::_init() {
 	logInfo("loading SFML");
 
-	_win.create(sf::VideoMode(_gameInfo->width, _gameInfo->height), _gameInfo->title + " SFML");
+	_win.create(sf::VideoMode(_gameInfo->realWidth, _gameInfo->realHeight), _gameInfo->title + " SFML");
 
 	if (!_font.loadFromFile(_gameInfo->font)) {
     	logErr("unable to load font " << _gameInfo->font);

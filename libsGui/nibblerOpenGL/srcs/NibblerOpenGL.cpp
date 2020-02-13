@@ -138,7 +138,7 @@ bool NibblerOpenGL::_init() {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	_win = SDL_CreateWindow((_gameInfo->title + " OpenGL").c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		_gameInfo->width, _gameInfo->height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+		_gameInfo->realWidth, _gameInfo->realHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 	if (_win == nullptr) {
         logErr("while loading OpenGL: " << SDL_GetError());
 		return false;
@@ -163,7 +163,7 @@ bool NibblerOpenGL::_init() {
 
 	try {
 		_cubeShader = new Shader(CUBE_VS_PATH, CUBE_FS_PATH);
-		_textRender = new TextRender(_gameInfo->width, _gameInfo->height);
+		_textRender = new TextRender(_gameInfo->realWidth, _gameInfo->realHeight);
 		_textBasicHeight = _gameInfo->width / 40;
 		_textRender->loadFont("basicFont", _gameInfo->font, _textBasicHeight);
 		_textTitleHeight = _gameInfo->width / 10;
@@ -188,7 +188,7 @@ bool NibblerOpenGL::_init() {
 	_cam = new Camera(camPos, glm::vec3(0, 1, 0), yaw, pitch);
 
 	float angle = _cam->zoom;
-	float ratio = static_cast<float>(_gameInfo->width) / _gameInfo->height;
+	float ratio = static_cast<float>(_gameInfo->realWidth) / _gameInfo->realHeight;
 	float nearD = 0.1f;
 	float farD = 400;
 	_projection = glm::perspective(glm::radians(angle), ratio, nearD, farD);
@@ -314,7 +314,7 @@ void NibblerOpenGL::updateInput() {
 
 bool NibblerOpenGL::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, _gameInfo->width, _gameInfo->height);
+	glViewport(0, 0, _gameInfo->realWidth, _gameInfo->realHeight);
     glClearColor(0.11373f, 0.17647f, 0.27059f, 1.0f);
 
 	CAMERA_MAT4 view = _cam->getViewMatrix();
@@ -404,7 +404,7 @@ bool NibblerOpenGL::draw() {
 	// text
     {
 		int x = 20;
-		int y = _gameInfo->height - _textBasicHeight - 10;
+		int y = _gameInfo->realHeight - _textBasicHeight - 10;
 		int lineSz = _textBasicHeight * 1.2;
 		std::string text;
 		if (_gameInfo->nbPlayers == 1) {
@@ -471,8 +471,8 @@ bool NibblerOpenGL::draw() {
 		else if (_gameInfo->paused) {
 			text = "Pause";
 		}
-		float textX = _gameInfo->width / 2 - _textRender->strWidth("titleFont", text) / 2;
-		float textY = _gameInfo->height / 2 - _textTitleHeight / 2;
+		float textX = _gameInfo->realWidth / 2 - _textRender->strWidth("titleFont", text) / 2;
+		float textY = _gameInfo->realHeight / 2 - _textTitleHeight / 2;
 		_textRender->write("titleFont", text, textX, textY, 1, TO_OPENGL_COLOR(color));
 	}
 

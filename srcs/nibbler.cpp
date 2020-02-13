@@ -104,9 +104,9 @@ bool	saveUserData(std::string const & filename) {
 bool	usage() {
 	std::cout << "usage: ./nibbler [-w width] [-h height] [-s] [-u]" << std::endl;
 	std::cout << "\t" COLOR_BOLD "-w" COLOR_EOC ", " COLOR_BOLD "--width" COLOR_EOC " <int>: "
-		"set the width of the gui" << std::endl;
+		"set the width of the gui [it's recommended to use this setting in assets/settings]" << std::endl;
 	std::cout << "\t" COLOR_BOLD "-h" COLOR_EOC ", " COLOR_BOLD "--height" COLOR_EOC " <int>: "
-		"set the height of the gui" << std::endl;
+		"set the height of the gui [it's not recommended to use this setting]" << std::endl;
 	std::cout << "\t" COLOR_BOLD "-s" COLOR_EOC ", " COLOR_BOLD "--settings" COLOR_EOC ": "
 		"show the settings list (update in assets/settings.json)" << std::endl;
 	std::cout << "\t" COLOR_BOLD "-u" COLOR_EOC ", " COLOR_BOLD "--usage" COLOR_EOC ": "

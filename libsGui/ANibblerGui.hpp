@@ -72,6 +72,8 @@ struct GameInfo {
 	};
 	std::deque<Wall>				wall;
 	std::string	title;
+	uint16_t	realWidth;
+	uint16_t	realHeight;
 	uint16_t	width;
 	uint16_t	height;
 	uint8_t		boardSize;
