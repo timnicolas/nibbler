@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <unistd.h>
 #include <chrono>
 
@@ -96,6 +97,50 @@ bool	saveUserData(std::string const & filename) {
 	catch(SettingsJson::SettingsException const & e) {
 		logErr(e.what());
 		return false;
+	}
+	return true;
+}
+
+bool	usage() {
+	std::cout << "usage: ./nibbler [-w width] [-h height] [-s] [-u]" << std::endl;
+	std::cout << "\t" COLOR_BOLD "-w" COLOR_EOC ", " COLOR_BOLD "--width" COLOR_EOC " <int>: "
+		"set the width of the gui" << std::endl;
+	std::cout << "\t" COLOR_BOLD "-h" COLOR_EOC ", " COLOR_BOLD "--height" COLOR_EOC " <int>: "
+		"set the height of the gui" << std::endl;
+	std::cout << "\t" COLOR_BOLD "-s" COLOR_EOC ", " COLOR_BOLD "--settings" COLOR_EOC ": "
+		"show the settings list (update in assets/settings.json)" << std::endl;
+	std::cout << "\t" COLOR_BOLD "-u" COLOR_EOC ", " COLOR_BOLD "--usage" COLOR_EOC ": "
+		"show usage" << std::endl;
+	return false;
+}
+
+bool	argparse(int nbArgs, char const **args) {
+	int i = 0;
+	while (i < nbArgs) {
+		if (strcmp(args[i], "--usage") == 0 || strcmp(args[i], "-u") == 0) {
+			return usage();
+		}
+		else if (strcmp(args[i], "--settings") == 0 || strcmp(args[i], "-s") == 0) {
+			i++;
+			std::cout << s.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);
+		}
+		else if (strcmp(args[i], "--width") == 0 || strcmp(args[i], "-w") == 0) {
+			i++;
+			if (i == nbArgs || args[i][0] == '-')
+				return usage();
+			s.j("screen").update<uint64_t>("width").setValue(atoi(args[i]));
+		}
+		else if (strcmp(args[i], "--height") == 0 || strcmp(args[i], "-h") == 0) {
+			i++;
+			if (i == nbArgs || args[i][0] == '-')
+				return usage();
+			s.j("screen").update<uint64_t>("height").setValue(atoi(args[i]));
+		}
+		else {
+			return usage();
+		}
+
+		i++;
 	}
 	return true;
 }

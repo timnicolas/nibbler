@@ -36,6 +36,8 @@
 
 #define BORDER_SIZE		5
 
+#define HEIGHT_RATIO	0.7  // ratio of height from width
+
 namespace Direction {
 	enum Enum {
 		MOVE_UP = 0,

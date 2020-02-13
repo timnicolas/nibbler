@@ -11,6 +11,8 @@ void						initLogs();
 bool						initSettings(std::string const & filename);
 bool						initUserData(std::string const & filename);
 bool						saveUserData(std::string const & filename);
+bool						usage();
+bool						argparse(int nbArgs, char const **args);
 std::chrono::milliseconds	getMs();
 
 extern SettingsJson s;

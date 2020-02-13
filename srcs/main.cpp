@@ -15,7 +15,7 @@ int start(int ac, char const **av) {
 	initSettings("assets/settings.json");
 	initUserData(s.s("userDataFilename"));
 
-	s.j("screen").u("height") = s.j("screen").u("width") * 0.7;
+	s.j("screen").u("height") = s.j("screen").u("width") * HEIGHT_RATIO;
 
 	if (s.u("snakeSize") > s.u("boardSize") / 2) {
 		logWarn("max size for snake is " << s.u("boardSize") / 2);
@@ -25,10 +25,9 @@ int start(int ac, char const **av) {
 		logWarn("max players & IA is " << s.u("boardSize"));
 		s.j("ai").u("nbAI") = s.u("boardSize") - s.u("nbPlayers");
 	}
-	#if DEBUG
-		std::cout << s.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);
-		std::cout << userData.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);
-	#endif
+
+	if (argparse(ac - 1, av + 1) == false)
+		return EXIT_SUCCESS;
 
 	srand(time(NULL));
 	Game	game;
