@@ -24,40 +24,46 @@ void	initLogs() {
 
 bool	initSettings(std::string const & filename) {
 	s.name("settings").description("main settings");
+
+	s.add<std::string>("font", "assets/fonts/Roboto-regular.ttf").setDescription("main font ttf file");
+	s.add<std::string>("masterMusic", "assets/music/masterMusic.wav");
+	s.add<std::string>("soundLoose", "assets/music/loose.wav");
+	s.add<std::string>("soundWin", "assets/music/win.wav");
+	s.add<std::string>("userDataFilename", "assets/userData.json").disableInFile(true);
+
+	s.add<uint64_t>("boardSize", 20).setMin(8).setMax(50).setDescription("size of the snake board");
+	s.add<uint64_t>("maxSpeedMs", 40).setMin(30).setMax(1000).setDescription("maximum speed of the snake");
+	s.add<uint64_t>("musicLevel", 128).setMin(0).setMax(128).setDescription("set the music level");
+	s.add<uint64_t>("nbBonus", 2).setMin(0).setMax(30)
+		.setDescription("number of food on the board. only on multiplayer");
+	s.add<uint64_t>("nbFood", 1).setMin(0).setMax(30).setDescription("number of food on the board");
+	s.add<uint64_t>("nbPlayers", 1).setMin(1).setMax(2).setDescription("number of players");
+	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");
+	s.add<uint64_t>("soundLevel", 128).setMin(0).setMax(128).setDescription("set the sound level");
+	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");
+	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
+	s.add<uint64_t>("startSound", 1).setMin(0).setMax(1).setDescription("id of the starting sound (0 for OFF)");
+
+	s.add<int64_t>("increasingSpeedStep", 10).setMin(-1).setMax(100)
+		.setDescription("the speed increase each x snake movement (-1 to disable)");
+	s.add<int64_t>("wallLife", 20).setMin(-1).setMax(100)
+		.setDescription("set the life of a wall (-1 for infinite life)");
+
+	s.add<bool>("canExitBorder", false).setDescription("if true, the snakes cannot die in front of the borders");
+	s.add<bool>("pauseOnStart", true).setDescription("if true, the game will start in pause mode");
+
+	s.add<SettingsJson>("ai");
+		s.j("ai").add<uint64_t>("changeDirProba", 10).setMin(1).setMax(100)
+			.setDescription("probability to randomly change direction");
+		s.j("ai").add<uint64_t>("nbAI", 0).setMin(0).setMax(10).setDescription("number of IA on the game");
+		s.j("ai").add<uint64_t>("strength", 10).setMin(1).setMax(100).setDescription("this is the strenght of the AI");
+
 	s.add<SettingsJson>("screen");
 		s.j("screen").add<std::string>("name", "nibbler").setDescription("name of the game");
+		s.j("screen").add<uint64_t>("fps", 60).setMin(30).setMax(120).setDescription("framerate");
 		s.j("screen").add<uint64_t>("width", 1200).setMin(400).setMax(4000).setDescription("width of the screen");
 		s.j("screen").add<uint64_t>("height", 800).setMin(400).setMax(4000).disableInFile(true)
 			.setDescription("height of the screen /!\\ automatically calculed");
-		s.j("screen").add<uint64_t>("fps", 30).setMin(30).setMax(120).setDescription("framerate");
-	s.add<std::string>("userDataFilename", "assets/userData.json").disableInFile(true);
-	s.add<std::string>("font", "assets/fonts/Pacifico.json").setDescription("main font ttf file");
-	s.add<uint64_t>("boardSize", 20).setMin(8).setMax(50).setDescription("size of the snake board");
-	s.add<uint64_t>("nbPlayers", 1).setMin(1).setMax(2).setDescription("number of players");
-	s.add<SettingsJson>("ai");
-		s.j("ai").add<uint64_t>("nbAI", 0).setMin(0).setMax(10).setDescription("number of IA on the game");
-		s.j("ai").add<uint64_t>("strength", 10).setMin(1).setMax(100).setDescription("this is the strenght of the AI");
-		s.j("ai").add<uint64_t>("changeDirProba", 10).setMin(1).setMax(100)
-			.setDescription("probability to randomly change direction");
-	s.add<uint64_t>("startGui", 0).setMin(0).setMax(2).setDescription("id of the startong GUI");
-	s.add<uint64_t>("snakeSize", 4).setMin(1).setMax(25).setDescription("starting size of the snake");
-	s.add<uint64_t>("nbFood", 1).setMin(0).setMax(30).setDescription("number of food on the board");
-	s.add<uint64_t>("speedMs", 100).setMin(30).setMax(1000).setDescription("starting speed of the snake");
-	s.add<int64_t>("increasingSpeedStep", 0).setMin(-1).setMax(100)
-		.setDescription("the speed increase each x snake movement (-1 to disable)");
-	s.add<uint64_t>("maxSpeedMs", 50).setMin(30).setMax(1000).setDescription("maximum speed of the snake");
-	s.add<bool>("canExitBorder", false).setDescription("if true, the snakes cannot die in front of the borders");
-	s.add<bool>("pauseOnStart", true).setDescription("if true, the game will start in pause mode");
-	s.add<uint64_t>("startSound", 1).setMin(0).setMax(1).setDescription("id of the starting sound (0 for OFF)");
-	s.add<uint64_t>("musicLevel", 128).setMin(0).setMax(128).setDescription("set the music level");
-	s.add<uint64_t>("soundLevel", 64).setMin(0).setMax(128).setDescription("set the sound level");
-	s.add<std::string>("masterMusic", "assets/music/masterMusic.wav");
-	s.add<std::string>("soundWin", "assets/music/win.wav");
-	s.add<std::string>("soundLoose", "assets/music/loose.wav");
-	s.add<uint64_t>("nbBonus", 5).setMin(0).setMax(30)
-		.setDescription("number of food on the board. only on multiplayer");
-	s.add<int64_t>("wallLife", 20).setMin(-1).setMax(100)
-		.setDescription("set the life of a wall (-1 for infinite life)");
 
 	try {
 		if (s.loadFile(filename) == false) {
@@ -121,7 +127,6 @@ bool	argparse(int nbArgs, char const **args) {
 			return usage();
 		}
 		else if (strcmp(args[i], "--settings") == 0 || strcmp(args[i], "-s") == 0) {
-			i++;
 			std::cout << s.toString(JsonOpt::VERBOSE | JsonOpt::COLOR);
 		}
 		else if (strcmp(args[i], "--width") == 0 || strcmp(args[i], "-w") == 0) {

@@ -1,31 +1,35 @@
 {
+	"startGui": 0,
+	"boardSize": 20,
+	"snakeSize": 4,
+	"nbPlayers": 1,
+	"nbFood": 1,
+	"nbBonus": 2,
+
+	"speedMs": 100,
+	"maxSpeedMs": 40,
+	"increasingSpeedStep": 10,
+	"wallLife": 20,
+	"pauseOnStart": true,
+	"canExitBorder": false,
 	"font": "assets/fonts/Roboto-regular.ttf",
+
 	"startSound": 1,
+	"masterMusic": "assets/music/masterMusic.wav",
+	"soundLoose": "assets/music/loose.wav",
+	"soundWin": "assets/music/win.wav",
 	"musicLevel": 128,
 	"soundLevel": 128,
-	"masterMusic": "assets/music/masterMusic.wav",
-	"soundWin": "assets/music/win.wav",
-	"soundLoose": "assets/music/loose.wav",
-	"boardSize": 20,
-	"nbFood": 3,
-	"nbPlayers": 1,
-	"snakeSize": 4,
-	"speedMs": 100,
-	"increasingSpeedStep": 10,
-	"maxSpeedMs": 40,
-	"startGui": 2,
-	"nbBonus": 2,
-	"wallLife": 30,
-	"canExitBorder": true,
-	"pauseOnStart": true,
+
 	"ai": {
 		"nbAI": 0,
 		"changeDirProba": 10,
 		"strength": 10
 	},
+
 	"screen": {
 		"name": "nibbler",
 		"fps": 60,
-		"width": 1000
+		"width": 1200
 	}
 }
